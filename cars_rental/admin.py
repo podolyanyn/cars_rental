@@ -1,16 +1,16 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Client
-from .models import ClientOdesa
-from .models import Investor
-from .models import InvestorOdesa
-from .models import Car
-from .models import CarOdesa
-from .models import ClientContract
-from .models import ClientContractOdesa
-from .models import InvestorContract
-from .models import InvestorContractOdesa
+from .models import Client, ClientOdesa, Investor, InvestorOdesa, Car, CarOdesa, ClientContract, ClientContractOdesa, InvestorContract, InvestorContractOdesa
+#from .models import ClientOdesa
+#from .models import Investor
+#from .models import InvestorOdesa
+#from .models import Car
+#from .models import CarOdesa
+#from .models import ClientContract
+#from .models import ClientContractOdesa
+#from .models import InvestorContract
+#from .models import InvestorContractOdesa
 
 admin.site.register(Client)
 admin.site.register(ClientOdesa)
