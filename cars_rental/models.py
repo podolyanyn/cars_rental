@@ -13,6 +13,8 @@ class Client(models.Model):
     when_passport_is_issued = models.DateField('коли виданий паспорт')					# коли виданий паспорт
     rnokpp = models.CharField('реєстраційний номер облікової картки платника податків', max_length=10)		# реєстраційний номер облікової картки платника податків
     phone_number = models.CharField('номер телефону', max_length=15)										# номер телефону
+    phone_number_2 = models.CharField('номер телефону 2', max_length=15, null=True)										# номер телефону 2
+    phone_number_3 = models.CharField('номер телефону 3', max_length=15, null=True)										# номер телефону 3
     # ...
     def __str__(self):
         return self.full_name
@@ -55,6 +57,8 @@ class Car(models.Model):
     production_year = models.IntegerField('Рік випуску')								# рік  випуску
     car_body_number = models.CharField('Номер кузова', max_length=30)					# номер кузова
     license_plate = models.CharField('Номерний знак', max_length=30)					# номерний знак
+    car_color = models.CharField('Колір', max_length=30, null=True)						# Колір
+    car_mileage = models.IntegerField('Пробіг', null=True)											# Пробіг
     # ...
     def __str__(self):
         return self.car_body_number
@@ -120,7 +124,8 @@ class InvestorContract(models.Model):
     contract_period_years = models.IntegerField('Строк контракту, в роках') 			# Строк контракту, в роках
     frequency_payment = models.CharField('Періодичність оплати', max_length=10)			# Періодичність оплати
     amount_payment_usd = models.FloatField('Сума платежу в доларах') 					# Сума платежу в доларах
-    # ...
+    іnterest_rate = models.FloatField('Процентна ставка', null=True) 								# Процентна ставка
+	# ...
     def __str__(self):
         return self.contract_number
 		
