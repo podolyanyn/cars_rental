@@ -83,6 +83,8 @@ class ClientContract(models.Model):
     contract_period_years = models.IntegerField('Строк контракту, в роках') 			# Строк контракту, в роках
     frequency_payment = models.CharField('Періодичність оплати', max_length=10)			# Періодичність оплати
     amount_payment_usd = models.FloatField('Сума платежу в доларах') 					# Сума платежу в доларах
+    commercial_course_usd = models.FloatField('Комерційний курс долара', null=True)		# Комерційний курс долара
+    amount_payment_uah = models.FloatField('Сума платежу в гривнях', null=True)			# Сума платежу в гривнях; автоматичний перерахунок, поле не редагується	
     # ...
     def __str__(self):
         return self.contract_number
