@@ -49,6 +49,13 @@ class InvestorOdesa(models.Model):
     # ...
     def __str__(self):
         return self.full_name
+				
+# Колір авто		
+class Color(models.Model):    
+    name = models.CharField('Колір', max_length=20,  unique=True) 									# назва кольору
+    # ...
+    def __str__(self):
+        return self.name + " " + str(self.id)
 		
 # Авто
 class Car(models.Model):
@@ -57,12 +64,13 @@ class Car(models.Model):
     production_year = models.IntegerField('Рік випуску')								# рік  випуску
     car_body_number = models.CharField('Номер кузова', max_length=30)					# номер кузова
     license_plate = models.CharField('Номерний знак', max_length=30)					# номерний знак
-    car_color = models.CharField('Колір', max_length=30, null=True)						# Колір
-    car_mileage = models.IntegerField('Пробіг', null=True)											# Пробіг
+    #car_color = models.CharField('Колір', max_length=30, null=True)						# Колір
+    color = models.ForeignKey(Color, on_delete=models.CASCADE, default=1)							# Колір
+    car_mileage = models.IntegerField('Пробіг', null=True)								# Пробіг
     # ...
     def __str__(self):
-        return self.car_body_number
-		
+        return self.brand + " " + self.model + " " + self.license_plate
+			
 class CarOdesa(models.Model):
     brand = models.CharField('Марка', max_length=20) 									# марка
     model = models.CharField('Модель', max_length=20)									# модель
@@ -146,6 +154,8 @@ class InvestorContractOdesa(models.Model):
     def __str__(self):
         return self.contract_number
 
+
+		
 #class Choice(models.Model):
 #    question = models.ForeignKey(Question, on_delete=models.CASCADE)
 #    choice_text = models.CharField(max_length=200)

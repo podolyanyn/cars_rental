@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Client, Investor, Car, ClientContract, InvestorContract
+from .models import Client, Investor, Car, ClientContract, InvestorContract, Color
 #from .models import ClientOdesa, InvestorOdesa, CarOdesa, ClientContractOdesa, InvestorContractOdesa
 
 #from .models import ClientOdesa
@@ -24,3 +24,4 @@ admin.site.register(ClientContract)
 #admin.site.register(ClientContractOdesa)
 admin.site.register(InvestorContract)
 #admin.site.register(InvestorContractOdesa)
+admin.site.register(Color)
