@@ -86,6 +86,7 @@ class ClientContract(models.Model):
     contract_number = models.CharField('Номер контракту', max_length=10) 				# номер контракту
     contract_city = models.CharField('Місто, де заключений контракт', max_length=10)	# Назва міста, в якому заключений контракт !!! Доопрацювати вибір зі списку
     contract_date = models.DateField('Дата контракту')									# Дата контракту
+    full_name = models.ForeignKey(Client, on_delete=models.CASCADE, default=1)			# Клієнт
     investor_full_name = models.CharField('ПІБ інвестора',max_length=50)				# ПІБ інвестора	
     director_full_name = models.CharField('ПІБ директора фірми/філіалу фірми',max_length=50)				# ПІБ директора фірми/філіалу фірми
     client_full_name = models.CharField('ПІБ клієнта', max_length=50) 					# ПІБ клієнта
@@ -100,6 +101,29 @@ class ClientContract(models.Model):
     # ...
     def __str__(self):
         return self.contract_number
+		
+# Клієнтський контракт, графік погашення		
+class ClientContractTimetable(models.Model):
+    contract_number = models.ForeignKey(Color, on_delete=models.CASCADE, default=1)							# Колір
+    contract_number = models.CharField('Номер контракту', max_length=10) 				# номер контракту
+    contract_city = models.CharField('Місто, де заключений контракт', max_length=10)	# Назва міста, в якому заключений контракт !!! Доопрацювати вибір зі списку
+    contract_date = models.DateField('Дата контракту')									# Дата контракту
+    full_name = models.ForeignKey(Client, on_delete=models.CASCADE, default=1)			# Клієнт
+    investor_full_name = models.CharField('ПІБ інвестора',max_length=50)				# ПІБ інвестора	
+    director_full_name = models.CharField('ПІБ директора фірми/філіалу фірми',max_length=50)				# ПІБ директора фірми/філіалу фірми
+    client_full_name = models.CharField('ПІБ клієнта', max_length=50) 					# ПІБ клієнта
+    initial_cost_car_usd = models.FloatField('Вартість автомобіля в доларах, на момент складання контракту')# Вартість автомобіля в доларах, на момент складання контракту
+    commercial_course_usd = models.FloatField('Комерційний курс долара', null=True)		# Комерційний курс долара
+    initial_cost_car_uah = models.FloatField('Вартість автомобіля в гривні, на момент складання контракту') # Вартість автомобіля в гривні, на момент складання контракту; автоматичний перерахунок, поле не редагується
+    contract_period_days = models.IntegerField('Строк контракту, в днях') 				# Строк контракту, в днях
+    #contract_period_years = models.IntegerField('Строк контракту, в роках') 			# Строк контракту, в роках
+    frequency_payment = models.CharField('Періодичність оплати', max_length=10)			# Періодичність оплати
+    amount_payment_usd = models.FloatField('Сума платежу в доларах') 					# Сума платежу в доларах    
+    amount_payment_uah = models.FloatField('Сума платежу в гривнях', null=True)			# Сума платежу в гривнях; автоматичний перерахунок, поле не редагується	
+    # ...
+    def __str__(self):
+        return self.contract_number
+		
 		
 class ClientContractOdesa(models.Model):
     contract_number = models.CharField('Номер контракту', max_length=10) 				# номер контракту
