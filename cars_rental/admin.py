@@ -14,9 +14,20 @@ from .models import Client, Investor, Car, ClientContract, InvestorContract, Col
 #from .models import InvestorContract
 #from .models import InvestorContractOdesa
 
-admin.site.register(Client)
+#admin.site.register(Client)
+class ClientAdmin(admin.ModelAdmin):
+    list_display = ('full_name', 'phone_number', 'phone_number_2', 'phone_number_3')
+    search_fields = ['full_name', 'phone_number', 'phone_number_2', 'phone_number_3']
+admin.site.register(Client, ClientAdmin)
+
 #admin.site.register(ClientOdesa)
-admin.site.register(Investor)
+
+#admin.site.register(Investor)
+class InvestorAdmin(admin.ModelAdmin):
+    list_display = ('full_name', 'phone_number')
+    search_fields = ['full_name', 'phone_number']
+admin.site.register(Investor, InvestorAdmin)
+
 #admin.site.register(InvestorOdesa)
 
 
