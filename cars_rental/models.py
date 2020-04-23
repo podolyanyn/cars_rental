@@ -139,19 +139,40 @@ class InvestorContract(models.Model):
     contract_number = models.CharField('Номер контракту', max_length=10) 				# номер контракту
     contract_city = models.CharField('Місто, де заключений контракт', max_length=10)	# Назва міста, в якому заключений контракт !!! Доопрацювати вибір зі списку
     contract_date = models.DateField('Дата контракту')									# Дата контракту
+    investor = models.ForeignKey(Investor, on_delete=models.CASCADE, default=1)			# Інвестор    
     investor_full_name = models.CharField('ПІБ інвестора',max_length=50)				# ПІБ інвестора	
     director_full_name = models.CharField('ПІБ директора фірми/філіалу фірми',max_length=50)				# ПІБ директора фірми/філіалу фірми
     client_full_name = models.CharField('ПІБ клієнта', max_length=50) 					# ПІБ клієнта
+    car = models.OneToOneField(Car, on_delete=models.CASCADE, default=2)			# 	Авто
     initial_cost_car_usd = models.FloatField('Вартість автомобіля в доларах, на момент складання контракту')# Вартість автомобіля в доларах, на момент складання контракту
     initial_cost_car_uah = models.FloatField('Вартість автомобіля в гривні, на момент складання контракту') # Вартість автомобіля в гривні, на момент складання контракту
     contract_period_days = models.IntegerField('Строк контракту, в днях') 				# Строк контракту, в днях
     #contract_period_years = models.IntegerField('Строк контракту, в роках') 			# Строк контракту, в роках
     #frequency_payment = models.CharField('Періодичність оплати', max_length=10)		# Періодичність оплати
-    #amount_payment_usd = models.FloatField('Сума платежу в доларах') 					# Сума платежу в доларах
+    #amount_payment_usd = models.FloatField('Сума платежу в доларах') 					# Сума платежу в доларах; 17.04.2020 пробував закоментити, видавало помилки при міграції, цікаво чому ???
     іnterest_rate = models.FloatField('Процентна ставка', null=True) 								# Процентна ставка
+    period_1 = models.DateField('Період 1', null=True)																# Період 1, тобто перших пів-року
+    period_1_percentage = models.FloatField('Відсоток на період 1', default=0) 											# Відсоток на період 1
+    period_2 = models.DateField('Період 2', null=True)																# Період 2
+    period_2_percentage = models.FloatField('Відсоток на період 2', default=0) 											# Відсоток на період 2
+    period_3 = models.DateField('Період 3', null=True)																# Період 3
+    period_3_percentage = models.FloatField('Відсоток на період 3', default=0) 											# Відсоток на період 3
+    period_4 = models.DateField('Період 4', null=True)																# Період 4
+    period_4_percentage = models.FloatField('Відсоток на період 4', default=0) 											# Відсоток на період 4
 	# ...
     def __str__(self):
         return self.contract_number
+		
+# Інвесторський контракт, графік погашення		
+class InvestorContractTimetable(models.Model):
+    investor_contract = models.ForeignKey(InvestorContract, on_delete=models.CASCADE, default=1)		# клієнтський контракт
+    planned_payment_date = models.DateField('Планова дата платежу', null=True)							# Планова дата платежу
+    planned_amount_payment_usd = models.FloatField('Планова сума платежу, в доларах', null=True)							# Планова сума платежу, в доларах
+    real_payment_date = models.DateField('Дійсна дата платежу', null=True)									# Дійсна дата платежу
+    amount_paid_usd = models.FloatField('Оплачена сума, в доларах', null=True) 											# Оплачена сума, в доларах
+    # ...
+    #def __str__(self):
+    #   return self.contract_number
 		
 class InvestorContractOdesa(models.Model):
     contract_number = models.CharField('Номер контракту', max_length=10) 				# номер контракту
