@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import Client, Investor, Car, ClientContract, InvestorContract, Color, ClientContractTimetable, InvestorContractTimetable, InvestorContractBodyTimetable, InvestorContractBodyPayment
+from .models import Client, Investor, Car, ClientContract, InvestorContract, Color, ClientContractTimetable, InvestorContractPercentagePayment, InvestorContractBodyTimetable, InvestorContractBodyPayment
 #from .models import ClientOdesa, InvestorOdesa, CarOdesa, ClientContractOdesa, InvestorContractOdesa
 
 #from .models import ClientOdesa
@@ -84,8 +84,8 @@ class ClientContractAdmin(admin.ModelAdmin):
 admin.site.register(ClientContract, ClientContractAdmin)
 
 
-class InvestorContractTimetableInline(admin.TabularInline):
-    model = InvestorContractTimetable
+class InvestorContractPercentagePaymentInline(admin.TabularInline):
+    model = InvestorContractPercentagePayment
     extra = 0
     fields = ['planned_payment_date', 'planned_amount_payment_usd', 'real_payment_date', 'amount_paid_usd']
     readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd']
@@ -111,8 +111,8 @@ class InvestorContractAdmin(admin.ModelAdmin):
     #    ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
     #]
     fields = ('contract_number', 'contract_city', 'contract_date', 'investor', 'investor_full_name', 'director_full_name', 'client_full_name', 'car', 'initial_cost_car_usd', 'initial_cost_car_uah', 'contract_period_days', 'number_periods', 'status_body',('period_1', 'period_1_percentage'), ('period_2', 'period_2_percentage'), ('period_3', 'period_3_percentage'), ('period_4', 'period_4_percentage'))
-    inlines = [InvestorContractBodyTimetableInline, InvestorContractBodyPaymentInline, InvestorContractTimetableInline]
-    #inlines = [InvestorContractTimetableInline]
+    inlines = [InvestorContractBodyTimetableInline, InvestorContractBodyPaymentInline, InvestorContractPercentagePaymentInline]
+    #inlines = [InvestorContractPercentagePaymentInline]
     #inlines = [ClientInline]
 	# ...
     list_display = ('contract_number', 'contract_city', 'contract_date', 'investor', 'car')
