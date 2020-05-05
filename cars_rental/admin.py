@@ -40,7 +40,7 @@ class CarAdmin(admin.ModelAdmin):
     #]
     #inlines = [ChoiceInline]
 	# ...
-    list_display = ('brand', 'model', 'production_year', 'car_body_number', 'license_plate', 'color', 'car_mileage')
+    list_display = ('brand', 'model', 'production_year', 'body_number', 'license_plate', 'color', 'mileage')
     #list_filter = ['brand', 'model']
     search_fields = ['license_plate']
     #date_hierarchy = 'pub_date'
@@ -67,11 +67,11 @@ class ClientContractAdmin(admin.ModelAdmin):
     inlines = [ClientContractTimetableInline]	
     #inlines = [ClientInline]
 	# ...
-    list_display = ('contract_number', 'contract_city', 'contract_date', 'client', 'car')
-    #list_editable = ('contract_city', 'contract_date', 'client', 'initial_cost_car_usd', 'commercial_course_usd', 'initial_cost_car_uah', 'contract_period_days')
+    list_display = ('number', 'city', 'date', 'client', 'car')
+    #list_editable = ('city', 'date', 'client', 'initial_cost_car_usd', 'commercial_course_usd', 'initial_cost_car_uah', 'period_days')
     #list_filter = ['brand', 'model']
     #search_fields = [ 'client', 'car']
-    search_fields = [ 'contract_number', 'client__full_name',  'car__license_plate']
+    search_fields = [ 'number', 'client__full_name',  'car__license_plate']
     #date_hierarchy = 'pub_date'
     def save_model(self, request, obj, form, change):
         obj.save()
@@ -94,8 +94,8 @@ class InvestorContractBodyTimetableInline(admin.TabularInline):
     model = InvestorContractBodyTimetable
     extra = 0
     #can_delete = False
-    fields = ['period', 'period_percentage', 'period_percentage_usd']
-    #readonly_fields = ['period_percentage_usd']
+    fields = ['payment_date', 'payment_percentage', 'payment_usd']
+    #readonly_fields = ['payment_usd']
 
 
 class InvestorContractBodyPaymentInline(admin.TabularInline):
@@ -103,23 +103,23 @@ class InvestorContractBodyPaymentInline(admin.TabularInline):
     extra = 0
     #can_delete = False
     fields = ['date', 'sum']
-    #readonly_fields = ['period_percentage_usd']
+    #readonly_fields = ['payment_usd']
 	
 class InvestorContractAdmin(admin.ModelAdmin):
     #fieldsets = [
     #   (None,               {'fields': ['question_text']}),
     #    ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
     #]
-    fields = ('contract_number', 'contract_city', 'contract_date', 'investor', 'investor_full_name', 'director_full_name', 'client_full_name', 'car', 'initial_cost_car_usd', 'initial_cost_car_uah', 'contract_period_days', 'number_periods', 'status_body',('period_1', 'period_1_percentage'), ('period_2', 'period_2_percentage'), ('period_3', 'period_3_percentage'), ('period_4', 'period_4_percentage'))
+    fields = ('number', 'city', 'date', 'investor',  'director_full_name', 'client_full_name', 'car', 'initial_cost_car_usd', 'initial_cost_car_uah', 'period_days', 'number_periods', 'status_body',('period_1', 'period_1_percentage'), ('period_2', 'period_2_percentage'), ('period_3', 'period_3_percentage'), ('period_4', 'period_4_percentage'))
     inlines = [InvestorContractBodyTimetableInline, InvestorContractBodyPaymentInline, InvestorContractPercentagePaymentInline]
     #inlines = [InvestorContractPercentagePaymentInline]
     #inlines = [ClientInline]
 	# ...
-    list_display = ('contract_number', 'contract_city', 'contract_date', 'investor', 'car')
-    #list_editable = ('contract_city', 'contract_date', 'client', 'initial_cost_car_usd', 'commercial_course_usd', 'initial_cost_car_uah', 'contract_period_days')
+    list_display = ('number', 'city', 'date', 'investor', 'car')
+    #list_editable = ('city', 'date', 'client', 'initial_cost_car_usd', 'commercial_course_usd', 'initial_cost_car_uah', 'period_days')
     #list_filter = ['brand', 'model']
     #search_fields = [ 'client', 'car']
-    search_fields = [ 'contract_number', 'investor__full_name',  'car__license_plate']
+    search_fields = [ 'number', 'investor__full_name',  'car__license_plate']
     #date_hierarchy = 'pub_date'
     def save_model(self, request, obj, form, change):
         obj.save()
