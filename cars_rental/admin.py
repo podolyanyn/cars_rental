@@ -87,8 +87,8 @@ admin.site.register(ClientContract, ClientContractAdmin)
 class InvestorContractPercentagePaymentInline(admin.TabularInline):
     model = InvestorContractPercentagePayment
     extra = 0
-    fields = ['planned_payment_date', 'planned_amount_payment_usd', 'real_payment_date', 'amount_paid_usd']
-    readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd']
+    fields = ['date', 'sum']
+    #readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd']
 
 class InvestorContractBodyTimetableInline(admin.TabularInline):
     model = InvestorContractBodyTimetable
@@ -124,7 +124,8 @@ class InvestorContractAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.save()
         #obj.bodytimetable_calc()
-        obj.status_body_calc()
+        #obj.status_body_calc() # видала система помилку при відсутності платежів по тілу: unsupported operand type(s) for -: 'NoneType' and 'float'
+        obj.percentage_calc()
         if obj.control_number_periods() == False:
             self.message_user(request, "tttr")		
 
