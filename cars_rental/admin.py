@@ -110,7 +110,7 @@ class InvestorContractAdmin(admin.ModelAdmin):
     #   (None,               {'fields': ['question_text']}),
     #    ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
     #]
-    fields = ('number', 'city', 'date', 'investor',  'director_full_name', 'client_full_name', 'car', 'initial_cost_car_usd', 'initial_cost_car_uah', 'period_days', 'number_periods', 'status_body',('period_1', 'period_1_percentage'), ('period_2', 'period_2_percentage'), ('period_3', 'period_3_percentage'), ('period_4', 'period_4_percentage'))
+    fields = ('number', 'city', 'date', 'investor',  'director_full_name', 'client_full_name', 'car', 'initial_cost_car_usd', 'initial_cost_car_uah', 'period_days', 'number_periods', 'status_body', 'іnterest_rate', 'last_month_percentage', 'status_percentage')
     inlines = [InvestorContractBodyTimetableInline, InvestorContractBodyPaymentInline, InvestorContractPercentagePaymentInline]
     #inlines = [InvestorContractPercentagePaymentInline]
     #inlines = [ClientInline]

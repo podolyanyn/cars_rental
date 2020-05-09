@@ -178,16 +178,17 @@ class InvestorContract(models.Model):
     #amount_payment_usd = models.FloatField('Сума платежу в доларах') 					# Сума платежу в доларах; 17.04.2020 пробував закоментити, видавало помилки при міграції, цікаво чому ???
     number_periods = models.IntegerField('Кількість періодів', default=4) 				# Кількість періодів
     status_body = models.FloatField('Стан розрахунку по тілу кредита. Переплата/прострочка (-)', null=True) 					# Стан розрахунку по тілу кредита. Переплата/прострочка (-)
-	#status_percentage = models.FloatField('Стан розрахунку по відсотках кредиту. Переплата/прострочка (-)', null=True) 					# Стан розрахунку по тілу кредита. Переплата/прострочка (-)
     іnterest_rate = models.FloatField('Процентна ставка', null=True) 								# Процентна ставка
-    period_1 = models.DateField('Кінцева дата погашення (період 1)', null=True)																# Період 1, тобто перших пів-року
-    period_1_percentage = models.FloatField('Частина основного боргу, у відсотках (період 1)', default=0) 											# Відсоток на період 1
-    period_2 = models.DateField('Кінцева дата погашення (період 2)', null=True)																# Період 2
-    period_2_percentage = models.FloatField('Частина основного боргу, у відсотках (період 2)', default=0) 											# Відсоток на період 2
-    period_3 = models.DateField('Кінцева дата погашення (період 3)', null=True)																# Період 3
-    period_3_percentage = models.FloatField('Частина основного боргу, у відсотках (період 3)', default=0) 											# Відсоток на період 3
-    period_4 = models.DateField('Кінцева дата погашення (період 4)', null=True)																# Період 4
-    period_4_percentage = models.FloatField('Частина основного боргу, у відсотках (період 4)', default=0) 											# Відсоток на період 4     
+    last_month_percentage = models.FloatField('Відсотки за попередній місяць', null=True) 								# Відсотки за попередній місяць
+    status_percentage = models.FloatField('Стан розрахунку по відсотках кредиту. Прострочка (-)', null=True) 					# Стан розрахунку по відсотках кредиту. Прострочка (-)
+    #period_1 = models.DateField('Кінцева дата погашення (період 1)', null=True)																# Період 1, тобто перших пів-року
+    #period_1_percentage = models.FloatField('Частина основного боргу, у відсотках (період 1)', default=0) 											# Відсоток на період 1
+    #period_2 = models.DateField('Кінцева дата погашення (період 2)', null=True)																# Період 2
+    #period_2_percentage = models.FloatField('Частина основного боргу, у відсотках (період 2)', default=0) 											# Відсоток на період 2
+    #period_3 = models.DateField('Кінцева дата погашення (період 3)', null=True)																# Період 3
+    #period_3_percentage = models.FloatField('Частина основного боргу, у відсотках (період 3)', default=0) 											# Відсоток на період 3
+    #period_4 = models.DateField('Кінцева дата погашення (період 4)', null=True)																# Період 4
+    #period_4_percentage = models.FloatField('Частина основного боргу, у відсотках (період 4)', default=0) 											# Відсоток на період 4     
 	# ...
     def __str__(self):
         return self.number
