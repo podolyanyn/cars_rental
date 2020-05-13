@@ -234,14 +234,15 @@ class InvestorContract(models.Model):
     #
     def percentage_calc(self):    
         today=date.today()
-        if today.month == self.date.month: # якщо поточний день та день початку договору знаходяться в одному місяці, то нарахування % за минулий місяць, та стан нарахування % за минулий місяць, рівні 0
+        if today.month == self.date.month and today.year == self.date.year: # якщо поточний день та день початку договору знаходяться в одному місяці одного року, то нарахування % за минулий місяць, та стан нарахування %  рівні 0
             self.last_month_percentage = 0
             self.status_percentage = 0
         else:
             last_month_last_day = today.replace(day=1) - timedelta(days=1) #останній день останнього місяця
             print('last_month_last_day = ', last_month_last_day, ' number = ', last_month_last_day.day)
-            payment_count = 	self.investorcontractbodypayment_set.all().filter(date__lte=last_month_last_day).count() # кількість платежів по тілу до останнього дня останнього місяця
-            print('payment_count = ', payment_count)
+            last_month_last_day_body_payments = self.investorcontractbodypayment_set.all().filter(date__lte=last_month_last_day)  # платежі по тілу до останнього дня останнього місяця
+            last_month_last_day_body_payments_count = last_month_last_day_body_payments.count() # кількість платежів по тілу до останнього дня останнього місяця
+            print('last_month_last_day_body_payments_count = ', last_month_last_day_body_payments_count)
             
             #розрахунок кількості днів в останньому місяці
             if last_month_last_day.year == self.date.year and last_month_last_day.month == self.date.month: #якщо контракт почався в минулому місяці
@@ -249,50 +250,64 @@ class InvestorContract(models.Model):
             else:
                 last_month_days_number = last_month_last_day.day
             print('last_month_days_number = ', last_month_days_number)            
-            
-            if payment_count == 0: #якщо платежів по тілу не було взагалі
-               self.last_month_percentage = self.initial_cost_car_usd * self.іnterest_rate / 100 / 365 * last_month_days_number # % за останній місяць
-               total_calc_percentage = self.initial_cost_car_usd * self.іnterest_rate / 100 / 365 * (last_month_last_day - self.date).days # нараховані % за весь час               
-               total_paid_percentage = self.investorcontractpercentagepayment_set.all().filter(date__lte=today).aggregate(Sum('sum'))['sum__sum'] # сплачені % за весь час 
-               if total_paid_percentage == None:
-                   total_paid_percentage = 0
-               print('last_month_percentage = ', self.last_month_percentage, ' ; total_calc_percentage = ', total_calc_percentage, ' ; total_paid_percentage = ', total_paid_percentage)
-               if today.day > 10: # доперевіряти цю гілку
-                  self.status_percentage = total_paid_percentage - total_calc_percentage - self.last_month_percentage
-               else:
-                  self.status_percentage = total_paid_percentage - total_calc_percentage + self.last_month_percentage
+            """ # тимчасово закрив, наче зробив універсальний алгоритм, можна врахувати, якщо платежів не було взагалі
+            if last_month_last_day_body_payments_count == 0: #якщо платежів по тілу не було взагалі
+                self.last_month_percentage = self.initial_cost_car_usd * coef * last_month_days_number # % за останній місяць
+                total_calc_percentage = self.initial_cost_car_usd * coef * (last_month_last_day - self.date).days # нараховані % за весь час               
+                total_paid_percentage = self.investorcontractpercentagepayment_set.all().filter(date__lte=today).aggregate(Sum('sum'))['sum__sum'] # сплачені % за весь час ; 
+                if total_paid_percentage == None:
+                    total_paid_percentage = 0
+                print('last_month_percentage = ', self.last_month_percentage, ' ; total_calc_percentage = ', total_calc_percentage, ' ; total_paid_percentage = ', total_paid_percentage)
+                if today.day > 10: # доперевіряти цю гілку
+                   self.status_percentage = total_paid_percentage - total_calc_percentage - self.last_month_percentage
+                else:
+                   self.status_percentage = total_paid_percentage - total_calc_percentage + self.last_month_percentage
             else:
-                pass 
+			"""
+            credit_body = self.initial_cost_car_usd # залишок по тілу кредиту, для розрахунку %
+            last_payment_date_body = self.date # остання платіжна дата по тілу кредиту
+            total_calc_percentage = 0 # нараховані % за весь час               
+            self.last_month_percentage = 0 # % за останній місяць
+            last_month_body_payments_count = 0 # к-сть платежів по тілу в останньому місяці
+            coef = self.іnterest_rate / 100 / 365 # коефіцієнт, щоб не перераховувати його кожен раз 
             # пройтись по всіх  платежах по тілу; і врахувати період від останнього платежу по тілу до кінця місяця !
-            #for i in range (payment_count):                               
-            """
-        timetable=self.investorcontractbodytimetable_set.all()
-        #print('timetable.aggregate  = ', timetable.all().aggregate(Sum('payment_usd')) )
-        #timetable=self.investorcontractbodytimetable_set.objects.all()
-        #kkk = self.investorcontractbodytimetable_set.count()
-        #kkk=self.investorcontractbodytimetable_set.count()
-        if today <= timetable[0].payment_date:
-            self.status_body = self.investorcontractbodypayment_set.all().aggregate(Sum('sum'))['sum__sum']            
-			#self.refresh_from_db()
-			#self.status_body.update(self.investorcontractbodypayment_set.all().aggregate(Sum('sum')))
-            #print("self.status_body = ", self.status_body)
-        else:
-            if today > timetable[self.number_periods-1].payment_date:
-                self.status_body = self.investorcontractbodypayment_set.all().aggregate(Sum('sum'))['sum__sum'] -  timetable.aggregate(Sum('payment_usd'))['payment_usd__sum']
+            for i in range(last_month_last_day_body_payments_count):                               
+                total_calc_percentage += credit_body * coef * (last_month_last_day_body_payments[i].date - last_payment_date_body).days # нараховані % за весь час
+                # якщо платіж зроблений в останній місяць
+                if last_month_last_day.year == last_month_last_day_body_payments[i].date.year and last_month_last_day.month == last_month_last_day_body_payments[i].date.month: 
+                    if last_month_body_payments_count == 0: # якщо це перший платіж в останньому місяці, то різницю днів обраховуємо від першого дня чи початку контракту, інакше - від попереднього платежу
+                        if last_month_days_number != last_month_last_day.day: # контракт почався в останній місяць
+                            days_number =  last_month_last_day_body_payments[i].date - self.date
+                        else:
+                            days_number = last_month_last_day_body_payments[i].date - last_month_last_day.replace(day=1)
+                        last_month_body_payments_count = 1
+                        #print('last_month_last_day.replace(day=1) = ', last_month_last_day.replace(day=1), ' last_month_last_day_body_payments[i].date = ', last_month_last_day_body_payments[i].date, ' days_number = ', days_number )
+                    else:
+                        days_number = last_month_last_day_body_payments[i].date - last_month_last_day_body_payments[i-1].date
+                    self.last_month_percentage += credit_body * coef * days_number.days
+                credit_body -= last_month_last_day_body_payments[i].sum
+                last_payment_date_body = last_month_last_day_body_payments[i].date
+                print ('total_calc_percentage = ', total_calc_percentage, ' credit_body = ', credit_body,  ' last_payment_date_body = ', last_payment_date_body, ' self.last_month_percentage = ', self.last_month_percentage)   
+            if last_payment_date_body == last_month_last_day: # якщо останній платіж відбувся в останній день місяця, то більше нічого робити не потрібно
+                pass
             else:
-                for i in 	range(self.number_periods-1):
-                    if timetable[i].payment_date<today<=timetable[i+1].payment_date :
-                        break
-                #print('i = ', i)
-                #print('timetable[i].payment_date = ', timetable[i].payment_date, "type = ", type(timetable[i].payment_date))
-                #print ('self.investorcontractbodypayment_set.date = ', self.investorcontractbodypayment_set.date)
-                self.status_body = self.investorcontractbodypayment_set.all().filter(date__lte=timetable[i].payment_date).aggregate(Sum('sum'))['sum__sum'] -  timetable.filter(payment_date__lte=timetable[i].payment_date).aggregate(Sum('payment_usd'))['payment_usd__sum']
-                #self.status_body = self.investorcontractbodypayment_set.all().filter(date<=timetable[i].payment_date).aggregate(Sum('sum'))['sum__sum'] -  timetable.aggregate(Sum('payment_usd'))['payment_usd__sum']
-            """
+                # донарахувати відсотки загальні та за останній місяць; вивести різницю між сплаченими та нарахованими; врахувати 10-те число                    
+                total_calc_percentage += credit_body * coef * (last_month_last_day - last_payment_date_body).days # нараховані % за весь час
+                if last_month_body_payments_count > 0:
+                    self.last_month_percentage += credit_body * coef * (last_month_last_day - last_payment_date_body).days
+                else:
+                    self.last_month_percentage = credit_body * coef * last_month_days_number # % за останній місяць
+            total_paid_percentage = self.investorcontractpercentagepayment_set.all().filter(date__lte=today).aggregate(Sum('sum'))['sum__sum'] # сплачені % за весь час ;
+            if total_paid_percentage == None:
+                total_paid_percentage = 0
+            print('last_month_percentage = ', self.last_month_percentage, ' ; total_calc_percentage = ', total_calc_percentage, ' ; total_paid_percentage = ', total_paid_percentage)
+            if today.day > 10: # доперевіряти цю гілку
+               self.status_percentage = total_paid_percentage - total_calc_percentage
+            else:
+               self.status_percentage = total_paid_percentage - total_calc_percentage + self.last_month_percentage
+                #self.last_month_percentage += credit_body * coef * (last_month_last_day - last_payment_date_body).days # ??? Якщо платіж не в останньому місяці ?
+                #total_calc_percentage +=                     
         self.save()
-
-
-
 
 # Інвесторський контракт, графік погашення	тіла кредиту		
 # Це саме графік погашення тіла, платежі будуть винесені в окрему таблицю
