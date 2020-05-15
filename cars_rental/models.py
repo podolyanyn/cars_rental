@@ -3,6 +3,25 @@ from datetime import date, timedelta
 from django.db.models import Avg, Max, Min, Sum
 # Create your models here.
 
+#Відділення
+class Branch(models.Model):
+    city = models.CharField('Місто', max_length=25) 									# Місто
+    def __str__(self):
+        return self.city
+
+class ExchangeRateKyiv(models.Model):
+    date = models.DateField('Дата', null=True)							# Дата 
+    sum = models.FloatField('Курс, 1$ = (грн) ', null=True) 		# Курс 
+    #def __str__(self):
+     #   return str(self.date) + " " + str(self.sum)
+class ExchangeRateLviv(models.Model):
+    date = models.DateField('Дата', null=True)							# Дата 
+    sum = models.FloatField('Курс, 1$ = (грн) ', null=True) 		# Курс 
+	
+class ExchangeRateOdesa(models.Model):
+    date = models.DateField('Дата', null=True)							# Дата 
+    sum = models.FloatField('Курс, 1$ = (грн) ', null=True) 		# Курс 
+	
 # Клієнт
 class Client(models.Model):
     full_name = models.CharField('ПІБ', max_length=50) 									# ПІБ
@@ -95,6 +114,7 @@ class ClientContract(models.Model):
 		(5, "субота"),
     )
     number = models.CharField('Номер контракту', max_length=10) 				# номер контракту
+    number_number = models.IntegerField('Номер номеру контракту', null = True)	# номер номеру контракту ), власне сам порядковий номер 1, 2, .. від початку року
     city = models.CharField('Місто, де заключений контракт', max_length=10)	# Назва міста, в якому заключений контракт !!! Доопрацювати вибір зі списку
     date = models.DateField('Дата контракту')									# Дата контракту
     client = models.ForeignKey(Client, on_delete=models.CASCADE, default=1)			# Клієнт    
@@ -111,10 +131,13 @@ class ClientContract(models.Model):
     frequency_payment = models.IntegerField('Періодичність оплати', choices = DAYS_WEEK)			# Періодичність оплати
     amount_payment_usd = models.FloatField('Сума платежу в доларах') 					# Сума платежу в доларах    
     amount_payment_uah = models.FloatField('Сума платежу в гривнях', null=True)			# Сума платежу в гривнях; автоматичний перерахунок, поле не редагується	
+    amount_payment_TO_uah = models.FloatField('Сума на ТО, в гривнях', null=True)			# Сума платежу в гривнях на ТО
+    balance_TO_uah = models.FloatField('Залишок по ТО, в гривнях', null=True)			# Залишок по ТО, в гривнях (надходження - видатки)
     # ...
     def __str__(self):
         return self.number
-	# Розрахунок графіку погашення
+    
+    # Розрахунок графіку погашення
     def timetable_calc(self): 
         #if self.clientcontracttimetable_set.count() > 0:
          #  return
@@ -130,8 +153,16 @@ class ClientContract(models.Model):
             while i <= day_end:
                 self.clientcontracttimetable_set.create(planned_payment_date = i, planned_amount_payment_usd=self.amount_payment_usd, real_payment_date=i, amount_paid_usd=self.amount_payment_usd)
                 i = i + timedelta(days=7)
-
-		
+                
+    # Розрахунок залишку ТО
+    def to_calc(self):
+        self.balance_TO_uah = self.clientcontractto_set.all().aggregate(Sum('sum'))['sum__sum']
+        self.save()
+    
+    # Розрахунок номера контракту
+    def number_calc():
+        return {'number': '200'}
+	
 # Клієнтський контракт, графік погашення	(тіло + %)	
 class ClientContractTimetable(models.Model):
     client_contract = models.ForeignKey(ClientContract, on_delete=models.CASCADE, default=1)		# клієнтський контракт
@@ -142,7 +173,13 @@ class ClientContractTimetable(models.Model):
     # ...
     #def __str__(self):
     #   return self.number
-		
+	
+# Клієнтський контракт, ТО (кошти на ТехОбслуговування)	
+class ClientContractTO(models.Model):
+    client_contract = models.ForeignKey(ClientContract, on_delete=models.CASCADE, default=1)		# клієнтський контракт
+    date = models.DateField('Дата платежу (ТО)', null=True)							# Дата платежу (ТО)
+    sum = models.FloatField('Сума платежу (ТО)', null=True) 							# Сума платежу (ТО)
+	
 		
 class ClientContractOdesa(models.Model):
     number = models.CharField('Номер контракту', max_length=10) 				# номер контракту

@@ -1,7 +1,10 @@
 from django.contrib import admin
+from django.db.models import Max
+from datetime import date
 
 # Register your models here.
-from .models import Client, Investor, Car, ClientContract, InvestorContract, Color, ClientContractTimetable, InvestorContractPercentagePayment, InvestorContractBodyTimetable, InvestorContractBodyPayment
+from .models import Client, Investor, Car, ClientContract, InvestorContract, Color, ClientContractTimetable, InvestorContractPercentagePayment, InvestorContractBodyTimetable
+from .models import InvestorContractBodyPayment, ClientContractTO, Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa
 #from .models import ClientOdesa, InvestorOdesa, CarOdesa, ClientContractOdesa, InvestorContractOdesa
 
 #from .models import ClientOdesa
@@ -59,12 +62,16 @@ class ClientContractTimetableInline(admin.TabularInline):
     extra = 0
     fields = ['planned_payment_date', 'planned_amount_payment_usd', 'real_payment_date', 'amount_paid_usd']
     readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd']
+class ClientContractTOInline(admin.TabularInline):
+    model = ClientContractTO
+    extra = 0
+    fields = ['date', 'sum']
 class ClientContractAdmin(admin.ModelAdmin):
     #fieldsets = [
     #   (None,               {'fields': ['question_text']}),
     #    ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
     #]
-    inlines = [ClientContractTimetableInline]	
+    inlines = [ClientContractTOInline, ClientContractTimetableInline]	
     #inlines = [ClientInline]
 	# ...
     list_display = ('number', 'city', 'date', 'client', 'car')
@@ -76,11 +83,22 @@ class ClientContractAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         obj.save()
         obj.timetable_calc()
+        obj.to_calc()
            #obj.user = request.user
         #super().save_model(request, obj, form, change)
         #self.clientcontracttimetable_set.create(planned_amount_payment_usd=222)
         #super().test()
         #super().save_model(request, obj, form, change)
+    def get_changeform_initial_data(self, request):
+        #return {'number': '100'}
+        # return obj.number_calc()
+        #self.status_body = self.investorcontractbodypayment_set.all().filter(date__lte=timetable[i].payment_date).aggregate(Sum('sum'))['sum__sum']
+        #sss = self.all().aggregate(Max('number_number'))
+        # Розрахунок максимального номеру в поточному році
+        max_number = ClientContract.objects.all().filter(date__year = date.today().year).aggregate(Max('number_number'))['number_number__max']
+        #print ('sss = ', sss)		
+        return {'number': str(date.today().year) + '-' + str(max_number+1) + '/К', 'number_number':max_number+1}
+        		
 admin.site.register(ClientContract, ClientContractAdmin)
 
 
@@ -136,3 +154,17 @@ admin.site.register(InvestorContract, InvestorContractAdmin)
 
 #admin.site.register(InvestorContractOdesa)
 admin.site.register(Color)
+admin.site.register(Branch)
+#admin.site.register(ExchangeRateKyiv)
+
+class ExchangeRateKyivAdmin(admin.ModelAdmin):
+    list_display = ('date', 'sum')    
+admin.site.register(ExchangeRateKyiv, ExchangeRateKyivAdmin)
+
+class ExchangeRateLvivAdmin(admin.ModelAdmin):
+    list_display = ('date', 'sum')    
+admin.site.register(ExchangeRateLviv, ExchangeRateLvivAdmin)
+
+class ExchangeRateOdesaAdmin(admin.ModelAdmin):
+    list_display = ('date', 'sum')    
+admin.site.register(ExchangeRateOdesa, ExchangeRateOdesaAdmin)
