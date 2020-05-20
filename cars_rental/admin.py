@@ -94,9 +94,9 @@ class ClientContractAdmin(admin.ModelAdmin):
         # return obj.number_calc()
         #self.status_body = self.investorcontractbodypayment_set.all().filter(date__lte=timetable[i].payment_date).aggregate(Sum('sum'))['sum__sum']
         #sss = self.all().aggregate(Max('number_number'))
-        # Розрахунок максимального номеру в поточному році
-        max_number = ClientContract.objects.all().filter(date__year = date.today().year).aggregate(Max('number_number'))['number_number__max']
-        #print ('sss = ', sss)		
+        # Розрахунок максимального номеру в поточному році. Використав скорочену форму терн. оператора. Якщо отримую None, то присвоюю 0
+        max_number = ClientContract.objects.all().filter(date__year = date.today().year).aggregate(Max('number_number'))['number_number__max'] or 0
+        print ('max_number = ', max_number)		
         return {'number': str(date.today().year) + '-' + str(max_number+1) + '/К', 'number_number':max_number+1}
         		
 admin.site.register(ClientContract, ClientContractAdmin)
@@ -128,25 +128,41 @@ class InvestorContractAdmin(admin.ModelAdmin):
     #   (None,               {'fields': ['question_text']}),
     #    ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
     #]
-    fields = ('number', 'city', 'date', 'investor',  'director_full_name', 'client_full_name', 'car', 'initial_cost_car_usd', 'initial_cost_car_uah', 'period_days', 'number_periods', 'status_body', 'іnterest_rate', 'last_month_percentage', 'status_percentage')
+    fields = ('number', 'specification_number', 'city', 'date', 'investor',  'director_full_name', 'client_full_name', 'car', 'initial_cost_car_usd', 'initial_cost_car_uah', 'period_days', 'number_periods', 'status_body', 'іnterest_rate', 'last_month_percentage', 'status_percentage')
     inlines = [InvestorContractBodyTimetableInline, InvestorContractBodyPaymentInline, InvestorContractPercentagePaymentInline]
     #inlines = [InvestorContractPercentagePaymentInline]
     #inlines = [ClientInline]
 	# ...
-    list_display = ('number', 'city', 'date', 'investor', 'car')
+    list_display = ('number', 'specification_number', 'city', 'date', 'investor', 'car')
     #list_editable = ('city', 'date', 'client', 'initial_cost_car_usd', 'commercial_course_usd', 'initial_cost_car_uah', 'period_days')
     #list_filter = ['brand', 'model']
     #search_fields = [ 'client', 'car']
     search_fields = [ 'number', 'investor__full_name',  'car__license_plate']
     #date_hierarchy = 'pub_date'
     def save_model(self, request, obj, form, change):
+        # (ПЕРЕВІРИТИ ВЕСЬ РОЗРАХУНОК !!!) Розрахунок номеру контракту та номеру специфікації для даного клієнта
+        # Визначаємо, чи в даного інвестора взагалі є контракти 
+        contracts_set = InvestorContract.objects.all().filter(investor = obj.investor)
+        print ('contracts_set = ', contracts_set )
+        if not contracts_set.exists():
+            obj.number = InvestorContract.objects.all().aggregate(Max('number'))['number__max'] + 1    
+            # Не враховуємо номер контракту даного об'єкту, інакше при зберіганні він його постійно збільшуватиме +1 (??? порібно подумати)
+            #contract_max_number = InvestorContract.objects.all().exclude(number = obj.number).aggregate(Max('number'))['number__max'] or 0    
+        else: # якщо в інвестора вже є контракт
+            obj.number = contracts_set[0].number #номер контракту
+            # !!! тут перевірити, оскільки при повторному зберіганні збільшується на 1
+            obj.specification_number = InvestorContract.objects.all().filter(investor = obj.investor).aggregate(Max('specification_number'))['specification_number__max'] + 1 or 1
+        #print ('max_number = ', max_number )
+        #obj.number = max_number+1
+        
+        #
         obj.save()
         #obj.bodytimetable_calc()
         #obj.status_body_calc() # видала система помилку при відсутності платежів по тілу: unsupported operand type(s) for -: 'NoneType' and 'float'
         obj.percentage_calc()
         if obj.control_number_periods() == False:
             self.message_user(request, "tttr")		
-
+       #
 admin.site.register(InvestorContract, InvestorContractAdmin)
 
 #admin.site.register(ClientContractOdesa)

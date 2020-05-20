@@ -200,7 +200,8 @@ class ClientContractOdesa(models.Model):
 		
 # Інвесторський контракт		
 class InvestorContract(models.Model):
-    number = models.CharField('Номер контракту', max_length=10) 				# номер контракту
+    number = models.IntegerField('Номер контракту', null = True) 				# номер контракту
+    specification_number = models.IntegerField('Номер специфікації контракту', null = True) 				# Номер специфікації контракту
     city = models.CharField('Місто, де заключений контракт', max_length=10)	# Назва міста, в якому заключений контракт !!! Доопрацювати вибір зі списку
     date = models.DateField('Дата контракту')									# Дата контракту
     investor = models.ForeignKey(Investor, on_delete=models.CASCADE, default=1)			# Інвестор    
@@ -229,7 +230,7 @@ class InvestorContract(models.Model):
     #period_4_percentage = models.FloatField('Частина основного боргу, у відсотках (період 4)', default=0) 											# Відсоток на період 4     
 	# ...
     def __str__(self):
-        return self.number
+        return str(self.number)
     def bodytimetable_calc(self): 
         #self.investorcontractbodytimetable_set.create(payment_date = self.period_1, payment_percentage = self.period_1_percentage, payment_usd = self.period_1_percentage / 100 * self.initial_cost_car_usd)		
         self.investorcontractbodytimetable_set.update(payment_usd = payment_percentage / 100 * self.initial_cost_car_usd)		
