@@ -33,8 +33,8 @@ class Client(models.Model):
     when_passport_is_issued = models.DateField('коли виданий паспорт')					# коли виданий паспорт
     rnokpp = models.CharField('реєстраційний номер облікової картки платника податків', max_length=10)		# реєстраційний номер облікової картки платника податків
     phone_number = models.CharField('номер телефону', max_length=15)										# номер телефону
-    phone_number_2 = models.CharField('номер телефону 2', max_length=15, null=True)										# номер телефону 2
-    phone_number_3 = models.CharField('номер телефону 3', max_length=15, null=True)										# номер телефону 3
+    phone_number_2 = models.CharField('номер телефону 2', max_length=15, null=True, blank=True)										# номер телефону 2
+    phone_number_3 = models.CharField('номер телефону 3', max_length=15, null=True, blank=True)										# номер телефону 3
     # ...
     def __str__(self):
         return self.full_name
@@ -179,6 +179,7 @@ class ClientContractTO(models.Model):
     client_contract = models.ForeignKey(ClientContract, on_delete=models.CASCADE, default=1)		# клієнтський контракт
     date = models.DateField('Дата платежу (ТО)', null=True)							# Дата платежу (ТО)
     sum = models.FloatField('Сума платежу (ТО)', null=True) 							# Сума платежу (ТО)
+    note = models.CharField('Примітки', max_length=100, null=True) 															# Примітки
 	
 		
 class ClientContractOdesa(models.Model):
@@ -270,7 +271,8 @@ class InvestorContract(models.Model):
             #print ('karaul')
             #self.message_user(request, "tttr")
             return False
-    #
+			
+    # Розрахунок відсотків
     def percentage_calc(self):    
         today=date.today()
         if today.month == self.date.month and today.year == self.date.year: # якщо поточний день та день початку договору знаходяться в одному місяці одного року, то нарахування % за минулий місяць, та стан нарахування %  рівні 0
@@ -341,9 +343,9 @@ class InvestorContract(models.Model):
                 total_paid_percentage = 0
             print('last_month_percentage = ', self.last_month_percentage, ' ; total_calc_percentage = ', total_calc_percentage, ' ; total_paid_percentage = ', total_paid_percentage)
             if today.day > 10: # доперевіряти цю гілку
-               self.status_percentage = total_paid_percentage - total_calc_percentage
+               self.status_percentage = format(total_paid_percentage - total_calc_percentage, '.2f')
             else:
-               self.status_percentage = total_paid_percentage - total_calc_percentage + self.last_month_percentage
+               self.status_percentage = format(total_paid_percentage - total_calc_percentage + self.last_month_percentage, '.2f')
                 #self.last_month_percentage += credit_body * coef * (last_month_last_day - last_payment_date_body).days # ??? Якщо платіж не в останньому місяці ?
                 #total_calc_percentage +=                     
         self.save()
@@ -401,8 +403,10 @@ class InvestorContractOdesa(models.Model):
     def __str__(self):
         return self.number
 
-
-		
+#class YourModel(models.Model):
+#    pass
+    
+    
 #class Choice(models.Model):
 #    question = models.ForeignKey(Question, on_delete=models.CASCADE)
 #    choice_text = models.CharField(max_length=200)
