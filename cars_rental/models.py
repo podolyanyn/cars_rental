@@ -147,12 +147,13 @@ class ClientContract(models.Model):
             for i in range(7) :
                 day0 = self.date + timedelta(days=i)
                 if day0.weekday() == self.frequency_payment:
-                    day_1 = day0
+                    day_1 = day0 if day0 != self.date else  self.date + timedelta(days=7)
                     break
             i = day_1
             day_end = self.date + timedelta(days=self.period_days)
             while i <= day_end:
-                self.clientcontracttimetable_set.create(planned_payment_date = i, planned_amount_payment_usd=self.amount_payment_usd, real_payment_date=i, amount_paid_usd=self.amount_payment_usd)
+                #self.clientcontracttimetable_set.create(planned_payment_date = i, planned_amount_payment_usd=self.amount_payment_usd, real_payment_date=i, amount_paid_usd=self.amount_payment_usd)
+                self.clientcontracttimetable_set.create(planned_payment_date = i, planned_amount_payment_usd=self.amount_payment_usd, real_payment_date=i, amount_paid_usd=0)
                 i = i + timedelta(days=7)
                 
     # Розрахунок залишку ТО
