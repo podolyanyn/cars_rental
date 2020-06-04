@@ -125,33 +125,45 @@ class ClientContractAdmin(admin.ModelAdmin):
     #   (None,               {'fields': ['question_text']}),
     #    ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
     #]
+    fields = ['number', 'number_number', 'city', 'date', 'client', 'car', 'investor_full_name', 'director_full_name', 'initial_cost_car_usd', 'commercial_course_usd_test', 'initial_cost_car_uah', 'period_days', 'frequency_payment', 'amount_payment_usd', 'amount_payment_uah', 'amount_payment_TO_uah', 'balance_TO_uah']
     inlines = [ClientContractTOInline, ClientContractTimetableInline]	
     #inlines = [ClientInline]
 	# ...
+    #fields = ['number', 'city', 'date', 'client', 'car']
     list_display = ('number', 'city', 'date', 'client', 'car')
     #list_editable = ('city', 'date', 'client', 'initial_cost_car_usd', 'commercial_course_usd', 'initial_cost_car_uah', 'period_days')
     #list_filter = ['brand', 'model']
     #search_fields = [ 'client', 'car']
     search_fields = [ 'number', 'client__full_name',  'car__license_plate']
+    readonly_fields = ['commercial_course_usd_test', 'initial_cost_car_uah']
     #date_hierarchy = 'pub_date'
     def save_model(self, request, obj, form, change):
         obj.save()
         obj.timetable_calc()
         obj.to_calc()
+        obj.get_commercial_course_usd_test()
            #obj.user = request.user
         #super().save_model(request, obj, form, change)
         #self.clientcontracttimetable_set.create(planned_amount_payment_usd=222)
         #super().test()
         #super().save_model(request, obj, form, change)
+		
+    # початкові дані для форми нового об'єкту/редагування об'єкту. 
     def get_changeform_initial_data(self, request):
         #return {'number': '100'}
-        # return obj.number_calc()
+        #return obj.number_calc()
         #self.status_body = self.investorcontractbodypayment_set.all().filter(date__lte=timetable[i].payment_date).aggregate(Sum('sum'))['sum__sum']
         #sss = self.all().aggregate(Max('number_number'))
         # Розрахунок максимального номеру в поточному році. Використав скорочену форму терн. оператора. Якщо отримую None, то присвоюю 0
         max_number = ClientContract.objects.all().filter(date__year = date.today().year).aggregate(Max('number_number'))['number_number__max'] or 0
-        print ('max_number = ', max_number)		
-        return {'number': str(date.today().year) + '-' + str(max_number+1) + '/К', 'number_number':max_number+1}
+        #print ('max_number = ', max_number)		
+        
+        #04.06.2020  закоментовую для commercial_course_usd_test, не знаю, як дістатись до значень об'єкту obj,  тобто ClientContract (зробив через default в моделі)
+        #commercial_c_u = ExchangeRateKyiv.objects.all().filter(date == self.fields['date'])
+        #print ('self = ', self.fields)		
+        return {'number': str(date.today().year) + '-' + str(max_number+1) + '/К', 'number_number':max_number+1} #, 'commercial_course_usd_test':commercial_c_u}
+        
+
         		
 admin.site.register(ClientContract, ClientContractAdmin)
     

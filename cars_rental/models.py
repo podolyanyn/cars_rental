@@ -10,16 +10,20 @@ class Branch(models.Model):
         return self.city
 
 class ExchangeRateKyiv(models.Model):
-    date = models.DateField('Дата', null=True)							# Дата 
+    date = models.DateField('Дата', null=True, unique = True)							# Дата 
     sum = models.FloatField('Курс, 1$ = (грн) ', null=True) 		# Курс 
-    #def __str__(self):
-     #   return str(self.date) + " " + str(self.sum)
+    def __str__(self):
+        return str(self.sum)
+	# Отримати курс на сьогодні
+    #def today_exchange_rate():
+     #   return {'date': date.today()}
+
 class ExchangeRateLviv(models.Model):
-    date = models.DateField('Дата', null=True)							# Дата 
+    date = models.DateField('Дата', null=True, unique = True)							# Дата 
     sum = models.FloatField('Курс, 1$ = (грн) ', null=True) 		# Курс 
 	
 class ExchangeRateOdesa(models.Model):
-    date = models.DateField('Дата', null=True)							# Дата 
+    date = models.DateField('Дата', null=True, unique = True)							# Дата 
     sum = models.FloatField('Курс, 1$ = (грн) ', null=True) 		# Курс 
 	
 # Клієнт
@@ -106,6 +110,7 @@ class CarOdesa(models.Model):
 
 # Клієнтський контракт		
 class ClientContract(models.Model):
+		
     DAYS_WEEK = (
         (0, "понеділок"),
         (1, "вівторок"),
@@ -124,7 +129,9 @@ class ClientContract(models.Model):
     director_full_name = models.CharField('ПІБ директора фірми/філіалу фірми',max_length=50)				# ПІБ директора фірми/філіалу фірми
     #client_full_name = models.CharField('ПІБ клієнта', max_length=50) 					# ПІБ клієнта
     initial_cost_car_usd = models.FloatField('Вартість автомобіля в доларах, на момент складання контракту')# Вартість автомобіля в доларах, на момент складання контракту
-    commercial_course_usd = models.FloatField('Комерційний курс долара', null=True)		# Комерційний курс долара
+    #commercial_course_usd = models.FloatField('Комерційний курс долара', null=True) #, limit_choices_to={'date': date})		# Комерційний курс долара
+    #commercial_course_usd_test = models.ForeignKey(ExchangeRateKyiv, on_delete=models.CASCADE, null=True) #, limit_choices_to={'date': date})		# Комерційний курс долара
+    commercial_course_usd_test = models.FloatField('Комерційний курс долара test', default = 0) #, limit_choices_to={'date': date})		# Комерційний курс долара
     initial_cost_car_uah = models.FloatField('Вартість автомобіля в гривні, на момент складання контракту') # Вартість автомобіля в гривні, на момент складання контракту; автоматичний перерахунок, поле не редагується
     period_days = models.IntegerField('Строк контракту, в днях') 				# Строк контракту, в днях
     #period_years = models.IntegerField('Строк контракту, в роках') 			# Строк контракту, в роках
@@ -135,8 +142,16 @@ class ClientContract(models.Model):
     amount_payment_TO_uah = models.FloatField('Сума на ТО, в гривнях', null=True)			# Сума платежу в гривнях на ТО
     balance_TO_uah = models.FloatField('Залишок по ТО, в гривнях', null=True)			# Залишок по ТО, в гривнях (надходження - видатки)
     # ...
+    # ...
     def __str__(self):
         return self.number
+		
+    # отримання курсу долара та перерахунок вартості авто на грн.
+    def get_commercial_course_usd_test(self):
+        #ExchangeRateKyiv.objects.all().filter(date = self.date): # Queryset повертає True, якщо у результаті вибірки є хоча б один елемент
+        self.commercial_course_usd_test = ExchangeRateKyiv.objects.all().filter(date = self.date)[0].sum if ExchangeRateKyiv.objects.all().filter(date = self.date) else 0
+        self.initial_cost_car_uah = self.initial_cost_car_usd * self.commercial_course_usd_test
+        self.save()
     
     # Розрахунок графіку погашення
     def timetable_calc(self): 
@@ -162,8 +177,13 @@ class ClientContract(models.Model):
         self.save()
     
     # Розрахунок номера контракту
-    def number_calc():
-        return {'number': '200'}
+    #def number_calc():
+    #    return {'number': '200'}
+		
+  
+
+    
+
 	
 # Клієнтський контракт, графік погашення	(тіло + %)	
 class ClientContractTimetable(models.Model):
