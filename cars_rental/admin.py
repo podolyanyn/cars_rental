@@ -196,6 +196,7 @@ class InvestorContractAdmin(admin.ModelAdmin):
     #    ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
     #]
     fields = ('number', 'specification_number', 'city', 'date', 'investor',  'director_full_name', 'client_full_name', 'car', 'initial_cost_car_usd', 'initial_cost_car_uah', 'period_days', 'number_periods', 'status_body', 'іnterest_rate', 'last_month_percentage', 'status_percentage' )
+    readonly_fields = ['number', 'specification_number']
     inlines = [InvestorContractBodyTimetableInline, InvestorContractBodyPaymentInline, InvestorContractPercentagePaymentInline]
     #inlines = [InvestorContractPercentagePaymentInline]
     #inlines = [ClientInline]
@@ -228,8 +229,9 @@ class InvestorContractAdmin(admin.ModelAdmin):
             #contract_max_number = InvestorContract.objects.all().exclude(number = obj.number).aggregate(Max('number'))['number__max'] or 0    
         else: # якщо в інвестора вже є контракт
             obj.number = contracts_set[0].number #номер контракту
-            # !!! тут перевірити, оскільки при повторному зберіганні збільшується на 1
-            obj.specification_number = InvestorContract.objects.all().filter(investor = obj.investor).aggregate(Max('specification_number'))['specification_number__max'] + 1 or 1
+        # !!! тут перевірити, оскільки при повторному зберіганні збільшується на 1
+        result = InvestorContract.objects.all().filter(investor = obj.investor).aggregate(Max('specification_number'))['specification_number__max']
+        obj.specification_number =  result + 1 if result else 1
         #print ('max_number = ', max_number )
         #obj.number = max_number+1
         

@@ -223,8 +223,8 @@ class ClientContractOdesa(models.Model):
 		
 # Інвесторський контракт		
 class InvestorContract(models.Model):
-    number = models.IntegerField('Номер контракту', null = True) 				# номер контракту
-    specification_number = models.IntegerField('Номер специфікації контракту', null = True) 				# Номер специфікації контракту
+    number = models.IntegerField('Номер контракту', null = True, default = None) 				# номер контракту
+    specification_number = models.IntegerField('Номер специфікації контракту', null = True, default = None) 				# Номер специфікації контракту
     city = models.CharField('Місто, де заключений контракт', max_length=10)	# Назва міста, в якому заключений контракт !!! Доопрацювати вибір зі списку
     date = models.DateField('Дата контракту')									# Дата контракту
     investor = models.ForeignKey(Investor, on_delete=models.CASCADE, default=1)			# Інвестор    
