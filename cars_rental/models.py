@@ -138,7 +138,7 @@ class ClientContract(models.Model):
     #frequency_payment = models.CharField('Періодичність оплати', max_length=10)			# Періодичність оплати
     frequency_payment = models.IntegerField('Періодичність оплати', choices = DAYS_WEEK)			# Періодичність оплати
     amount_payment_usd = models.FloatField('Сума платежу в доларах') 					# Сума платежу в доларах    
-    amount_payment_uah = models.FloatField('Сума платежу в гривнях', null=True)			# Сума платежу в гривнях; автоматичний перерахунок, поле не редагується
+    amount_payment_uah = models.FloatField('Сума платежу в гривнях', default = 0)			# Сума платежу в гривнях; автоматичний перерахунок, поле не редагується
     
     loan_amount_paid_usd = models.FloatField('Виплачена сума кредиту', default = 0)			#Виплачена сума кредиту
     loan_amount_to_be_paid_usd = models.FloatField('Cума кредиту до оплати', default = 0)			#Cума кредиту до оплати
