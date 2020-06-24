@@ -140,12 +140,12 @@ class ClientContract(models.Model):
     amount_payment_usd = models.FloatField('Сума платежу в доларах') 					# Сума платежу в доларах    
     amount_payment_uah = models.FloatField('Сума платежу в гривнях', default = 0)			# Сума платежу в гривнях; автоматичний перерахунок, поле не редагується
     
-    loan_amount_paid_usd = models.FloatField('Виплачена сума кредиту', default = 0)			#Виплачена сума кредиту
-    loan_amount_to_be_paid_usd = models.FloatField('Cума кредиту до оплати', default = 0)			#Cума кредиту до оплати
-    status_body_usd = models.FloatField('Стан розрахунку по кредиту. Переплата/прострочка (-)', default = 0) 					# Стан розрахунку по кредиту. Переплата/прострочка (-)	
+    loan_amount_paid_usd = models.FloatField('Виплачена сума кредиту', default = 0, null = True)			#Виплачена сума кредиту
+    loan_amount_to_be_paid_usd = models.FloatField('Cума кредиту до оплати', default = 0, null = True)			#Cума кредиту до оплати
+    status_body_usd = models.FloatField('Стан розрахунку по кредиту. Переплата/прострочка (-)', default = 0, null = True) 					# Стан розрахунку по кредиту. Переплата/прострочка (-)	
     
-    amount_payment_TO_uah = models.FloatField('Сума на ТО, в гривнях', null=True)			# Сума платежу в гривнях на ТО
-    balance_TO_uah = models.FloatField('Залишок по ТО, в гривнях', null=True)			# Залишок по ТО, в гривнях (надходження - видатки)
+    amount_payment_TO_uah = models.FloatField('Сума на ТО, в гривнях', default = 0, null = True)			# Сума платежу в гривнях на ТО
+    balance_TO_uah = models.FloatField('Залишок по ТО, в гривнях', default = 0, null = True)			# Залишок по ТО, в гривнях (надходження - видатки)
     # ...
     # ...
     def __str__(self):
@@ -190,8 +190,8 @@ class ClientContract(models.Model):
         """ Розрахунок виплаченої суми кредиту та залишку по кредиту """
     
         today=date.today()
-        #self.loan_amount_paid = self.ClientContractTimetable_set.all().filter(date__lte=timetable[i].payment_date).aggregate(Sum('sum'))['sum__sum']
-        self.loan_amount_paid_usd = self.clientcontracttimetable_set.all().filter(real_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum']
+        #self.loan_amount_paid_usd = self.clientcontracttimetable_set.all().filter(real_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum']
+        self.loan_amount_paid_usd = self.clientcontracttimetable_set.all().filter(real_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0
         self.loan_amount_to_be_paid_usd = self.initial_cost_car_usd - self.loan_amount_paid_usd
         self.save()
 	
