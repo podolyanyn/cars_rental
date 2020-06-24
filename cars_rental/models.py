@@ -132,13 +132,18 @@ class ClientContract(models.Model):
     #commercial_course_usd = models.FloatField('Комерційний курс долара', null=True) #, limit_choices_to={'date': date})		# Комерційний курс долара
     #commercial_course_usd_test = models.ForeignKey(ExchangeRateKyiv, on_delete=models.CASCADE, null=True) #, limit_choices_to={'date': date})		# Комерційний курс долара
     commercial_course_usd_test = models.FloatField('Комерційний курс долара test', default = 0) #, limit_choices_to={'date': date})		# Комерційний курс долара
-    initial_cost_car_uah = models.FloatField('Вартість автомобіля в гривні, на момент складання контракту') # Вартість автомобіля в гривні, на момент складання контракту; автоматичний перерахунок, поле не редагується
+    initial_cost_car_uah = models.FloatField('Вартість автомобіля в гривні, на момент складання контракту', default = 0) # Вартість автомобіля в гривні, на момент складання контракту; автоматичний перерахунок, поле не редагується
     period_days = models.IntegerField('Строк контракту, в днях') 				# Строк контракту, в днях
     #period_years = models.IntegerField('Строк контракту, в роках') 			# Строк контракту, в роках
     #frequency_payment = models.CharField('Періодичність оплати', max_length=10)			# Періодичність оплати
     frequency_payment = models.IntegerField('Періодичність оплати', choices = DAYS_WEEK)			# Періодичність оплати
     amount_payment_usd = models.FloatField('Сума платежу в доларах') 					# Сума платежу в доларах    
-    amount_payment_uah = models.FloatField('Сума платежу в гривнях', null=True)			# Сума платежу в гривнях; автоматичний перерахунок, поле не редагується	
+    amount_payment_uah = models.FloatField('Сума платежу в гривнях', null=True)			# Сума платежу в гривнях; автоматичний перерахунок, поле не редагується
+    
+    loan_amount_paid_usd = models.FloatField('Виплачена сума кредиту', default = 0)			#Виплачена сума кредиту
+    loan_amount_to_be_paid_usd = models.FloatField('Cума кредиту до оплати', default = 0)			#Cума кредиту до оплати
+    status_body_usd = models.FloatField('Стан розрахунку по кредиту. Переплата/прострочка (-)', default = 0) 					# Стан розрахунку по кредиту. Переплата/прострочка (-)	
+    
     amount_payment_TO_uah = models.FloatField('Сума на ТО, в гривнях', null=True)			# Сума платежу в гривнях на ТО
     balance_TO_uah = models.FloatField('Залишок по ТО, в гривнях', null=True)			# Залишок по ТО, в гривнях (надходження - видатки)
     # ...
@@ -151,6 +156,7 @@ class ClientContract(models.Model):
         #ExchangeRateKyiv.objects.all().filter(date = self.date): # Queryset повертає True, якщо у результаті вибірки є хоча б один елемент
         self.commercial_course_usd_test = ExchangeRateKyiv.objects.all().filter(date = self.date)[0].sum if ExchangeRateKyiv.objects.all().filter(date = self.date) else 0
         self.initial_cost_car_uah = self.initial_cost_car_usd * self.commercial_course_usd_test
+        self.amount_payment_uah = self.amount_payment_usd * self.commercial_course_usd_test
         self.save()
     
     # Розрахунок графіку погашення
@@ -179,19 +185,24 @@ class ClientContract(models.Model):
     # Розрахунок номера контракту
     #def number_calc():
     #    return {'number': '200'}
-		
-  
-
-    
-
 	
+    def calc_loan_amount_paid(self):
+        """ Розрахунок виплаченої суми кредиту та залишку по кредиту """
+    
+        today=date.today()
+        #self.loan_amount_paid = self.ClientContractTimetable_set.all().filter(date__lte=timetable[i].payment_date).aggregate(Sum('sum'))['sum__sum']
+        self.loan_amount_paid_usd = self.clientcontracttimetable_set.all().filter(real_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum']
+        self.loan_amount_to_be_paid_usd = self.initial_cost_car_usd - self.loan_amount_paid_usd
+        self.save()
+	
+
 # Клієнтський контракт, графік погашення	(тіло + %)	
 class ClientContractTimetable(models.Model):
     client_contract = models.ForeignKey(ClientContract, on_delete=models.CASCADE, default=1)		# клієнтський контракт
     planned_payment_date = models.DateField('Планова дата платежу', null=True)							# Планова дата платежу
     planned_amount_payment_usd = models.FloatField('Планова сума платежу, в доларах', null=True)							# Планова сума платежу, в доларах
     real_payment_date = models.DateField('Дійсна дата платежу', null=True)									# Дійсна дата платежу
-    amount_paid_usd = models.FloatField('Оплачена сума, в доларах', null=True) 											# Оплачена сума, в доларах
+    amount_paid_usd = models.FloatField('Оплачена сума, в доларах', null=True) 							# Оплачена сума, в доларах
     # ...
     #def __str__(self):
     #   return self.number

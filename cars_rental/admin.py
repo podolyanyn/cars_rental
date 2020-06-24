@@ -125,23 +125,25 @@ class ClientContractAdmin(admin.ModelAdmin):
     #   (None,               {'fields': ['question_text']}),
     #    ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
     #]
-    fields = ['number', 'number_number', 'city', 'date', 'client', 'car', 'investor_full_name', 'director_full_name', 'initial_cost_car_usd', 'commercial_course_usd_test', 'initial_cost_car_uah', 'period_days', 'frequency_payment', 'amount_payment_usd', 'amount_payment_uah', 'amount_payment_TO_uah', 'balance_TO_uah']
+    fields = ['number', 'number_number', 'city', 'date', 'client', 'car', 'investor_full_name', 'director_full_name', 'initial_cost_car_usd', 'commercial_course_usd_test', 'initial_cost_car_uah', 'period_days', 'frequency_payment', 'amount_payment_usd', 'amount_payment_uah', 'amount_payment_TO_uah', 'balance_TO_uah', 'loan_amount_paid_usd', 'loan_amount_to_be_paid_usd', 'status_body_usd']
     inlines = [ClientContractTOInline, ClientContractTimetableInline]	
     #inlines = [ClientInline]
 	# ...
     #fields = ['number', 'city', 'date', 'client', 'car']
-    list_display = ('number', 'city', 'date', 'client', 'car')
+    list_display = ('number', 'city', 'date', 'client', 'car', 'initial_cost_car_usd', 'loan_amount_paid_usd', 'loan_amount_to_be_paid_usd')
     #list_editable = ('city', 'date', 'client', 'initial_cost_car_usd', 'commercial_course_usd', 'initial_cost_car_uah', 'period_days')
     #list_filter = ['brand', 'model']
     #search_fields = [ 'client', 'car']
     search_fields = [ 'number', 'client__full_name',  'car__license_plate']
-    readonly_fields = ['commercial_course_usd_test', 'initial_cost_car_uah']
+    readonly_fields = ['commercial_course_usd_test', 'initial_cost_car_uah', 'amount_payment_uah', 'loan_amount_paid_usd', 'loan_amount_to_be_paid_usd', 'status_body_usd']
     #date_hierarchy = 'pub_date'
     def save_model(self, request, obj, form, change):
         obj.save()
         obj.timetable_calc()
         obj.to_calc()
         obj.get_commercial_course_usd_test()
+        obj.calc_loan_amount_paid()
+        #obj.save()
            #obj.user = request.user
         #super().save_model(request, obj, form, change)
         #self.clientcontracttimetable_set.create(planned_amount_payment_usd=222)
