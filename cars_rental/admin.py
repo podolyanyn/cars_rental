@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.db import models
 from django.forms import NumberInput, TextInput, Textarea
 from django.db.models import Max
-from datetime import date
+from datetime import date, timedelta
 
 from django import forms
 from django.template import loader
@@ -110,23 +110,40 @@ class CarInline(admin.StackedInline):
 class ClientInline(admin.StackedInline):
     model = Client
     #extra = 1
+class ClientContractTimetableInlineEdit(admin.TabularInline):
+    """Для виведення даних для поточного періоду, менеджер може редагувати"""
+    model = ClientContractTimetable
+    extra = 0
+    fields = ['planned_payment_date', 'planned_amount_payment_usd', 'real_payment_date', 'amount_paid_usd', 'note']
+    readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd', 'real_payment_date']
+    
+    def get_queryset(self, request):
+        """ Вибрати лише той запис з графіку погашень, в який менеджер зможе вносити зміни """
+        """Alter the queryset to return no existing entries"""
+        # get the existing query set, then empty it.
+        qs = super(ClientContractTimetableInlineEdit, self).get_queryset(request)
+        #return qs.filter(birthday__gte=date(1980, 1, 1), birthday__lte=date(1989, 12, 31)).exists()
+        return qs.filter(planned_payment_date__gte=date.today(), planned_payment_date__lt=(date.today() + timedelta(days = 6)))
+        
+
 class ClientContractTimetableInline(admin.TabularInline):
     model = ClientContractTimetable
     extra = 0
-    fields = ['planned_payment_date', 'planned_amount_payment_usd', 'real_payment_date', 'amount_paid_usd']
-    readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd']
+    fields = ['planned_payment_date', 'planned_amount_payment_usd', 'real_payment_date', 'amount_paid_usd', 'note']
+    readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd', 'real_payment_date', 'amount_paid_usd', 'note']
+
 class ClientContractTOInline(admin.TabularInline):
     model = ClientContractTO
     extra = 0
     fields = ['date', 'sum', 'note']
-    
+
 class ClientContractAdmin(admin.ModelAdmin):
     #fieldsets = [
     #   (None,               {'fields': ['question_text']}),
     #    ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
     #]
     fields = ['number', 'number_number', 'city', 'date', 'client', 'car', 'investor_full_name', 'director_full_name', 'initial_cost_car_usd', 'commercial_course_usd_test', 'initial_cost_car_uah', 'period_days', 'frequency_payment', 'amount_payment_usd', 'amount_payment_uah', 'amount_payment_TO_uah', 'balance_TO_uah', 'loan_amount_paid_usd', 'loan_amount_to_be_paid_usd', 'status_body_usd']
-    inlines = [ClientContractTOInline, ClientContractTimetableInline]	
+    inlines = [ClientContractTOInline, ClientContractTimetableInlineEdit , ClientContractTimetableInline]	
     #inlines = [ClientInline]
 	# ...
     #fields = ['number', 'city', 'date', 'client', 'car']

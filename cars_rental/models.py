@@ -161,10 +161,10 @@ class ClientContract(models.Model):
     
     # Розрахунок графіку погашення
     def timetable_calc(self): 
-        #if self.clientcontracttimetable_set.count() > 0:
-         #  return
-        #else:
-        #today = date.today()
+        if self.clientcontracttimetable_set.count() > 0:
+            return
+        else:
+            #today = date.today()
             for i in range(7) :
                 day0 = self.date + timedelta(days=i)
                 if day0.weekday() == self.frequency_payment:
@@ -174,7 +174,7 @@ class ClientContract(models.Model):
             day_end = self.date + timedelta(days=self.period_days)
             while i <= day_end:
                 #self.clientcontracttimetable_set.create(planned_payment_date = i, planned_amount_payment_usd=self.amount_payment_usd, real_payment_date=i, amount_paid_usd=self.amount_payment_usd)
-                self.clientcontracttimetable_set.create(planned_payment_date = i, planned_amount_payment_usd=self.amount_payment_usd, real_payment_date=i, amount_paid_usd=0)
+                self.clientcontracttimetable_set.create(planned_payment_date = i, planned_amount_payment_usd=self.amount_payment_usd, real_payment_date=None, amount_paid_usd=0)
                 i = i + timedelta(days=7)
                 
     # Розрахунок залишку ТО
@@ -203,6 +203,7 @@ class ClientContractTimetable(models.Model):
     planned_amount_payment_usd = models.FloatField('Планова сума платежу, в доларах', null=True)							# Планова сума платежу, в доларах
     real_payment_date = models.DateField('Дійсна дата платежу', null=True)									# Дійсна дата платежу
     amount_paid_usd = models.FloatField('Оплачена сума, в доларах', null=True) 							# Оплачена сума, в доларах
+    note = models.CharField('Примітки', max_length=100, null=True) 															# Примітки
     # ...
     #def __str__(self):
     #   return self.number
