@@ -8,24 +8,41 @@ class Branch(models.Model):
     city = models.CharField('Місто', max_length=25) 									# Місто
     def __str__(self):
         return self.city
+		
+    class Meta:        
+        verbose_name = "Відділення"
+        verbose_name_plural = "Відділення"
 
 class ExchangeRateKyiv(models.Model):
     date = models.DateField('Дата', null=True, unique = True)							# Дата 
     sum = models.FloatField('Курс, 1$ = (грн) ', null=True) 		# Курс 
+	
     def __str__(self):
         return str(self.sum)
 	# Отримати курс на сьогодні
     #def today_exchange_rate():
      #   return {'date': date.today()}
-
+	 
+    class Meta:        
+        verbose_name = "Валютний курс (Київ)"
+        verbose_name_plural = "Валютний курс (Київ)"
+		
 class ExchangeRateLviv(models.Model):
     date = models.DateField('Дата', null=True, unique = True)							# Дата 
     sum = models.FloatField('Курс, 1$ = (грн) ', null=True) 		# Курс 
+
+    class Meta:        
+        verbose_name = "Валютний курс (Львів)"
+        verbose_name_plural = "Валютний курс (Львів)"
 	
 class ExchangeRateOdesa(models.Model):
     date = models.DateField('Дата', null=True, unique = True)							# Дата 
     sum = models.FloatField('Курс, 1$ = (грн) ', null=True) 		# Курс 
-	
+
+    class Meta:        
+        verbose_name = "Валютний курс (Одеса)"
+        verbose_name_plural = "Валютний курс (Одеса)"
+		
 # Клієнт
 class Client(models.Model):
     full_name = models.CharField('ПІБ', max_length=50) 									# ПІБ
@@ -44,6 +61,10 @@ class Client(models.Model):
     def __str__(self):
         return self.full_name
 
+    class Meta:        
+        verbose_name = "Клієнт"
+        verbose_name_plural = "Клієнти"
+
 class ClientOdesa(models.Model):
     full_name = models.CharField('ПІБ', max_length=50) 									# ПІБ
     residence_address = models.CharField('адреса проживання', max_length=100)			# адреса проживання 
@@ -57,7 +78,10 @@ class ClientOdesa(models.Model):
     # ...
     def __str__(self):
         return self.full_name
-	
+
+    class Meta:        
+        verbose_name = "Клієнт (Одеса)"
+        verbose_name_plural = "Клієнти (Одеса)"
 	
 # Інвестор
 class Investor(models.Model):
@@ -66,6 +90,10 @@ class Investor(models.Model):
     # ...
     def __str__(self):
         return self.full_name
+
+    class Meta:        
+        verbose_name = "Інвестор"
+        verbose_name_plural = "Інвестори"
 		
 # Інвестор
 class InvestorOdesa(models.Model):
@@ -75,6 +103,9 @@ class InvestorOdesa(models.Model):
     def __str__(self):
         return self.full_name
 
+    class Meta:        
+        verbose_name = "Інвестор (Одеса)"
+        verbose_name_plural = "Інвестори (Одеса)"
 
 		
 # Колір авто		
@@ -83,7 +114,11 @@ class Color(models.Model):
     # ...
     def __str__(self):
         return self.name #+ " " + str(self.id)
-		
+
+    class Meta:        
+        verbose_name = "Колір авто"
+        verbose_name_plural = "Кольори авто"
+
 # Авто
 class Car(models.Model):
     brand = models.CharField('Марка', max_length=20) 									# марка
@@ -97,7 +132,11 @@ class Car(models.Model):
     # ...
     def __str__(self):
         return self.brand + " " + self.model + " " + self.license_plate
-			
+
+    class Meta:        
+        verbose_name = "Автомобіль"
+        verbose_name_plural = "Автомобілі"
+		
 class CarOdesa(models.Model):
     brand = models.CharField('Марка', max_length=20) 									# марка
     model = models.CharField('Модель', max_length=20)									# модель
@@ -108,6 +147,10 @@ class CarOdesa(models.Model):
     def __str__(self):
         return self.body_number
 
+    class Meta:        
+        verbose_name = "Автомобіль (Одеса)"
+        verbose_name_plural = "Автомобілі (Одеса)"
+		
 # Клієнтський контракт		
 class ClientContract(models.Model):
 		
@@ -150,6 +193,10 @@ class ClientContract(models.Model):
     # ...
     def __str__(self):
         return self.number
+		
+    class Meta:        
+        verbose_name = "Клієнтський контракт"
+        verbose_name_plural = "Клієнтські контракти"
 		
     # отримання курсу долара та перерахунок вартості авто на грн.
     def get_commercial_course_usd_test(self):
@@ -207,6 +254,9 @@ class ClientContractTimetable(models.Model):
     # ...
     #def __str__(self):
     #   return self.number
+    class Meta:        
+        verbose_name = "Клієнтський контракт, графік погашення"
+        verbose_name_plural = "Клієнтський контракт, графік погашення"
 	
 # Клієнтський контракт, ТО (кошти на ТехОбслуговування)	
 class ClientContractTO(models.Model):
@@ -215,6 +265,9 @@ class ClientContractTO(models.Model):
     sum = models.FloatField('Сума платежу (ТО)', null=True) 							# Сума платежу (ТО)
     note = models.CharField('Примітки', max_length=100, null=True) 															# Примітки
 	
+    class Meta:        
+        verbose_name = "Клієнтський контракт, ТО"
+        verbose_name_plural = "Клієнтський контракт, ТО"
 		
 class ClientContractOdesa(models.Model):
     number = models.CharField('Номер контракту', max_length=10) 				# номер контракту
@@ -232,6 +285,13 @@ class ClientContractOdesa(models.Model):
     # ...
     def __str__(self):
         return self.number
+
+class ClientContractWeeklyCarReport(ClientContract):
+    """ Проксі-Клас для звіту -Тижневий звіт по авто- """
+    class Meta:
+        proxy = True
+        verbose_name = "Клієнтський контракт, Тижневий звіт по авто"
+        verbose_name_plural = "Клієнтський контракт, Тижневий звіт по авто"
 		
 # Інвесторський контракт		
 class InvestorContract(models.Model):
@@ -266,6 +326,11 @@ class InvestorContract(models.Model):
 	# ...
     def __str__(self):
         return str(self.number)
+		
+    class Meta:        
+        verbose_name = "Інвесторський контракт"
+        verbose_name_plural = "Інвесторські контракти"
+		
     def bodytimetable_calc(self): 
         #self.investorcontractbodytimetable_set.create(payment_date = self.period_1, payment_percentage = self.period_1_percentage, payment_usd = self.period_1_percentage / 100 * self.initial_cost_car_usd)		
         self.investorcontractbodytimetable_set.update(payment_usd = payment_percentage / 100 * self.initial_cost_car_usd)		
@@ -305,7 +370,7 @@ class InvestorContract(models.Model):
             #print ('karaul')
             #self.message_user(request, "tttr")
             return False
-			
+
     # Розрахунок відсотків
     def percentage_calc(self):    
         today=date.today()
@@ -398,12 +463,18 @@ class InvestorContractBodyTimetable(models.Model):
     #   return self.number
     class Meta:
         ordering = ['payment_date']
+        verbose_name = "Інвесторський контракт, графік погашення	тіла кредиту"
+        verbose_name_plural = "Інвесторський контракт, графік погашення тіла кредиту"
 
 # Інвесторський контракт, платежі по тілу кредиту
 class InvestorContractBodyPayment(models.Model):
     investor_contract = models.ForeignKey(InvestorContract, on_delete=models.CASCADE, default=1)		# інвесторський контракт
     date = models.DateField('Дата платежу', null=True)																# Дата платежу
     sum = models.FloatField('Сума платежу (погашення тіла боргу)', default=0) 							# Сума платежу (погашення тіла боргу)
+	
+    class Meta:        
+        verbose_name = "Інвесторський контракт, платежі по тілу кредиту"
+        verbose_name_plural = "Інвесторський контракт, платежі по тілу кредиту"
 		
 # Інвесторський контракт, платежі по % на тіло кредиту !!! змінити назву полів
 class InvestorContractPercentagePayment(models.Model):
@@ -415,10 +486,9 @@ class InvestorContractPercentagePayment(models.Model):
     # ...
     #def __str__(self):
     #   return self.number
-	
-
-	
-
+    class Meta:        
+        verbose_name = "Інвесторський контракт, платежі по % на тіло кредиту"
+        verbose_name_plural = "Інвесторський контракт, платежі по % на тіло кредиту"
 		
 class InvestorContractOdesa(models.Model):
     number = models.CharField('Номер контракту', max_length=10) 				# номер контракту
@@ -445,3 +515,4 @@ class InvestorContractOdesa(models.Model):
 #    question = models.ForeignKey(Question, on_delete=models.CASCADE)
 #    choice_text = models.CharField(max_length=200)
 #    votes = models.IntegerField(default=0)
+

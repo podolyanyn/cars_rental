@@ -12,7 +12,7 @@ from django.utils.safestring import mark_safe
 
 # Register your models here.
 from .models import Client, Investor, Car, ClientContract, InvestorContract, Color, ClientContractTimetable, InvestorContractPercentagePayment, InvestorContractBodyTimetable
-from .models import InvestorContractBodyPayment, ClientContractTO, Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa#, YourModel
+from .models import InvestorContractBodyPayment, ClientContractTO, Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa, ClientContractWeeklyCarReport#, YourModel
 from .forms import yourForm
 #from .models import ClientOdesa, InvestorOdesa, CarOdesa, ClientContractOdesa, InvestorContractOdesa
 
@@ -182,8 +182,6 @@ class ClientContractAdmin(admin.ModelAdmin):
         #print ('self = ', self.fields)		
         return {'number': str(date.today().year) + '-' + str(max_number+1) + '/К', 'number_number':max_number+1} #, 'commercial_course_usd_test':commercial_c_u}
         
-
-        		
 admin.site.register(ClientContract, ClientContractAdmin)
     
 
@@ -283,8 +281,7 @@ admin.site.register(ExchangeRateLviv, ExchangeRateLvivAdmin)
 class ExchangeRateOdesaAdmin(admin.ModelAdmin):
     list_display = ('date', 'sum')    
 admin.site.register(ExchangeRateOdesa, ExchangeRateOdesaAdmin)
-
-  
+ 
 
 #class MyModelAdmin(admin.ModelAdmin):
 #   formfield_overrides = {
@@ -294,3 +291,7 @@ admin.site.register(ExchangeRateOdesa, ExchangeRateOdesaAdmin)
 
 #admin.site.register(MyModel, MyModelAdmin)
 
+class WeeklyCarReportAdmin(admin.ModelAdmin):
+    """ Тижневий звіт по авто """
+    list_display = ('client', 'car', 'amount_payment_usd', 'frequency_payment')    
+admin.site.register(ClientContractWeeklyCarReport, WeeklyCarReportAdmin)
