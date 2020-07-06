@@ -123,7 +123,8 @@ class ClientContractTimetableInlineEdit(admin.TabularInline):
         # get the existing query set, then empty it.
         qs = super(ClientContractTimetableInlineEdit, self).get_queryset(request)
         #return qs.filter(birthday__gte=date(1980, 1, 1), birthday__lte=date(1989, 12, 31)).exists()
-        return qs.filter(planned_payment_date__gte=date.today(), planned_payment_date__lt=(date.today() + timedelta(days = 6)))
+        #return qs.filter(planned_payment_date__gte=date.today(), planned_payment_date__lt=(date.today() + timedelta(days = 6)))
+        return qs.filter(planned_payment_date__lte=date.today() , planned_payment_date__gt=(date.today() - timedelta(days = 7)))
         
 
 class ClientContractTimetableInline(admin.TabularInline):
