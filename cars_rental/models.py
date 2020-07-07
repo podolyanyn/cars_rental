@@ -183,9 +183,9 @@ class ClientContract(models.Model):
     amount_payment_usd = models.FloatField('Сума платежу в доларах') 					# Сума платежу в доларах    
     amount_payment_uah = models.FloatField('Сума платежу в гривнях', default = 0)			# Сума платежу в гривнях; автоматичний перерахунок, поле не редагується
     
-    loan_amount_paid_usd = models.FloatField('Виплачена сума кредиту', default = 0, null = True)			#Виплачена сума кредиту
-    loan_amount_to_be_paid_usd = models.FloatField('Cума кредиту до оплати', default = 0, null = True)			#Cума кредиту до оплати
-    status_body_usd = models.FloatField('Стан розрахунку по кредиту. Переплата/прострочка (-)', default = 0, null = True) 					# Стан розрахунку по кредиту. Переплата/прострочка (-)	
+    loan_amount_paid_usd = models.FloatField('Сума виплачених платежів', default = 0, null = True)										#Сума виплачених платежів (Було - Виплачена сума кредиту)
+    loan_amount_to_be_paid_usd = models.FloatField('Сума платежів до оплати', default = 0, null = True)								#Сума платежів до оплати (Було - Cума кредиту до оплати)
+    status_body_usd = models.FloatField('Стан розрахунку по платежах. Переплата/прострочка (-)', default = 0, null = True) 	# Стан розрахунку по платежам. Переплата/прострочка (-) (Було - Стан розрахунку по кредиту. Переплата/прострочка (-))
     
     amount_payment_TO_uah = models.FloatField('Сума на ТО, в гривнях', default = 0, null = True)			# Сума платежу в гривнях на ТО
     balance_TO_uah = models.FloatField('Залишок по ТО, в гривнях', default = 0, null = True)			# Залишок по ТО, в гривнях (надходження - видатки)
