@@ -250,24 +250,30 @@ class ClientContractTimetable(models.Model):
     planned_amount_payment_usd = models.FloatField('Планова сума платежу, в доларах', null=True)							# Планова сума платежу, в доларах
     real_payment_date = models.DateField('Дійсна дата платежу', null=True)									# Дійсна дата платежу
     amount_paid_usd = models.FloatField('Оплачена сума, в доларах', null=True) 							# Оплачена сума, в доларах
-    note = models.CharField('Примітки', max_length=100, null=True) 															# Примітки
+    note = models.CharField('Примітки', max_length=100, null=True, blank = True) 							# Примітки
     # ...
     #def __str__(self):
     #   return self.number
     class Meta:        
         verbose_name = "Клієнтський контракт, графік погашення"
         verbose_name_plural = "Клієнтський контракт, графік погашення"
-	
+
+    def __str__(self):
+        return ""
+		
 # Клієнтський контракт, ТО (кошти на ТехОбслуговування)	
 class ClientContractTO(models.Model):
     client_contract = models.ForeignKey(ClientContract, on_delete=models.CASCADE, default=1)		# клієнтський контракт
-    date = models.DateField('Дата платежу (ТО)', null=True)							# Дата платежу (ТО)
-    sum = models.FloatField('Сума платежу (ТО)', null=True) 							# Сума платежу (ТО)
-    note = models.CharField('Примітки', max_length=100, null=True) 															# Примітки
+    date = models.DateField('Дата платежу (ТО)', null=True)															# Дата платежу (ТО)
+    sum = models.FloatField('Сума платежу (ТО)', null=True) 															# Сума платежу (ТО)
+    note = models.CharField('Примітки', max_length=100, null=True, blank = True) 							# Примітки
 	
     class Meta:        
         verbose_name = "Клієнтський контракт, ТО"
         verbose_name_plural = "Клієнтський контракт, ТО"
+
+    def __str__(self):
+        return ""
 		
 class ClientContractOdesa(models.Model):
     number = models.CharField('Номер контракту', max_length=10) 				# номер контракту

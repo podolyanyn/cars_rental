@@ -111,7 +111,7 @@ class ClientInline(admin.StackedInline):
     model = Client
     #extra = 1
 class ClientContractTimetableInlineEdit(admin.TabularInline):
-    """Для виведення даних для поточного періоду, менеджер може редагувати"""
+    """Для виведення даних оплати для поточного періоду, менеджер може редагувати"""
     model = ClientContractTimetable
     extra = 0
     fields = ['planned_payment_date', 'planned_amount_payment_usd', 'real_payment_date', 'amount_paid_usd', 'note']
@@ -126,7 +126,12 @@ class ClientContractTimetableInlineEdit(admin.TabularInline):
         #return qs.filter(planned_payment_date__gte=date.today(), planned_payment_date__lt=(date.today() + timedelta(days = 6)))
         return qs.filter(planned_payment_date__lte=date.today() , planned_payment_date__gt=(date.today() - timedelta(days = 7)))
         
-
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        obj.real_payment_date = date.today()
+        print ("я тут був")
+	
+	
 class ClientContractTimetableInline(admin.TabularInline):
     model = ClientContractTimetable
     extra = 0
