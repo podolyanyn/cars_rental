@@ -142,6 +142,15 @@ class ClientContractTOInline(admin.TabularInline):
     model = ClientContractTO
     extra = 0
     fields = ['date', 'sum', 'note']
+	
+    def has_view_permission(self, request, obj=None):
+        return True
+
+    def has_add_permission(self, request, obj=None):
+        #print('info =', request.user.groups.all())
+        #print('self.fields =', self.fields) 
+        #return True
+        return not request.user.groups.filter(name='Manager').exists()
 
 class ClientContractAdmin(admin.ModelAdmin):
     #fieldsets = [
