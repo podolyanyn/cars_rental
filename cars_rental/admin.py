@@ -126,10 +126,7 @@ class ClientContractTimetableInlineEdit(admin.TabularInline):
         #return qs.filter(planned_payment_date__gte=date.today(), planned_payment_date__lt=(date.today() + timedelta(days = 6)))
         return qs.filter(planned_payment_date__lte=date.today() , planned_payment_date__gt=(date.today() - timedelta(days = 7)))
         
-    def save_model(self, request, obj, form, change):
-        obj.save()
-        obj.real_payment_date = date.today()
-        print ("я тут був")
+
 	
 	
 class ClientContractTimetableInline(admin.TabularInline):
@@ -142,16 +139,30 @@ class ClientContractTOInline(admin.TabularInline):
     model = ClientContractTO
     extra = 0
     fields = ['date', 'sum', 'note']
+    readonly_fields = ['date']
 	
-    def has_view_permission(self, request, obj=None):
-        return True
+    #def has_view_permission(self, request, obj=None):
+        #""" без цього методу для менеджера невидимий весь блок ТО, якщо ще не має жодного запису """
+        #return True
 
-    def has_add_permission(self, request, obj=None):
+    #def has_add_permission(self, request, obj=None):
         #print('info =', request.user.groups.all())
         #print('self.fields =', self.fields) 
         #return True
-        return not request.user.groups.filter(name='Manager').exists()
+        #return not request.user.groups.filter(name='Manager').exists()
+	
+    #def get_formset(self, request, obj=None):
+        #formset.form.base_fields['date'].initial
+        #self.fields[2].initial = 'aaaa'
+        #self.initial['sum'] = 222
 
+    def has_delete_permission(self, request, obj=None):
+        #print('info =', request.user.groups.all())
+        #print('self.fields =', self.fields) 
+        #return True
+        #return not request.user.groups.filter(name='Manager').exists() and 
+        print ("obj = ", obj)
+		
 class ClientContractAdmin(admin.ModelAdmin):
     #fieldsets = [
     #   (None,               {'fields': ['question_text']}),

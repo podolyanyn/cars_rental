@@ -264,7 +264,7 @@ class ClientContractTimetable(models.Model):
 # Клієнтський контракт, ТО (кошти на ТехОбслуговування)	
 class ClientContractTO(models.Model):
     client_contract = models.ForeignKey(ClientContract, on_delete=models.CASCADE, default=1)		# клієнтський контракт
-    date = models.DateField('Дата платежу (ТО)', null=True)															# Дата платежу (ТО)
+    date = models.DateField('Дата платежу (ТО)', null=True, default = date.today())															# Дата платежу (ТО)
     sum = models.FloatField('Сума платежу (ТО)', null=True) 															# Сума платежу (ТО)
     note = models.CharField('Примітки', max_length=100, null=True, blank = True) 							# Примітки
 	
