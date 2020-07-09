@@ -221,7 +221,7 @@ class ClientContract(models.Model):
             day_end = self.date + timedelta(days=self.period_days)
             while i <= day_end:
                 #self.clientcontracttimetable_set.create(planned_payment_date = i, planned_amount_payment_usd=self.amount_payment_usd, real_payment_date=i, amount_paid_usd=self.amount_payment_usd)
-                self.clientcontracttimetable_set.create(planned_payment_date = i, planned_amount_payment_usd=self.amount_payment_usd, real_payment_date=None, amount_paid_usd=0)
+                self.clientcontracttimetable_set.create(planned_payment_date = i, planned_amount_payment_usd=self.amount_payment_usd, amount_paid_usd=None)
                 i = i + timedelta(days=7)
                 
     # Розрахунок залишку ТО
@@ -238,19 +238,19 @@ class ClientContract(models.Model):
     
         today=date.today()
         #self.loan_amount_paid_usd = self.clientcontracttimetable_set.all().filter(real_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum']
-        self.loan_amount_paid_usd = self.clientcontracttimetable_set.all().filter(real_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0
+        self.loan_amount_paid_usd = self.clientcontracttimetable_set.all().filter(planned_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0
         self.loan_amount_to_be_paid_usd = self.initial_cost_car_usd - self.loan_amount_paid_usd
         self.save()
 	
 
 # Клієнтський контракт, графік погашення	(тіло + %)	
 class ClientContractTimetable(models.Model):
-    client_contract = models.ForeignKey(ClientContract, on_delete=models.CASCADE, default=1)		# клієнтський контракт
-    planned_payment_date = models.DateField('Планова дата платежу', null=True)							# Планова дата платежу
-    planned_amount_payment_usd = models.FloatField('Планова сума платежу, в доларах', null=True)							# Планова сума платежу, в доларах
-    real_payment_date = models.DateField('Дійсна дата платежу', null=True)									# Дійсна дата платежу
-    amount_paid_usd = models.FloatField('Оплачена сума, в доларах', null=True) 							# Оплачена сума, в доларах
-    note = models.CharField('Примітки', max_length=100, null=True, blank = True) 							# Примітки
+    client_contract = models.ForeignKey(ClientContract, on_delete=models.CASCADE, default=1)								# клієнтський контракт
+    planned_payment_date = models.DateField('Дата платежу', null=True, default = date.today())													# Планова дата платежу -> Дата платежу
+    planned_amount_payment_usd = models.FloatField('Планова сума платежу, в доларах', null=True, blank=True)	# Планова сума платежу, в доларах
+    #real_payment_date = models.DateField('Дійсна дата платежу', null=True, blank=True, default = date.today())										# Дійсна дата платежу
+    amount_paid_usd = models.FloatField('Оплачена сума, в доларах', null=True, blank=True) 													# Оплачена сума, в доларах
+    note = models.CharField('Примітки', max_length=100, null=True, blank = True) 													# Примітки
     # ...
     #def __str__(self):
     #   return self.number

@@ -111,27 +111,36 @@ class ClientInline(admin.StackedInline):
     model = Client
     #extra = 1
 class ClientContractTimetableInlineEdit(admin.TabularInline):
-    """Для виведення даних оплати для поточного періоду, менеджер може редагувати"""
+    """ Оплата за сьогодні, менеджер може редагувати"""
     model = ClientContractTimetable
     extra = 0
-    fields = ['planned_payment_date', 'planned_amount_payment_usd', 'real_payment_date', 'amount_paid_usd', 'note']
-    readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd', 'real_payment_date']
+    fields = ['planned_payment_date', 'planned_amount_payment_usd', 'amount_paid_usd', 'note']
+    readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd']
+    #verbose_name = "Клієнтський контракт, графік погашення; Введення даних"
+    verbose_name_plural = "Клієнтський контракт, графік погашення; Введення даних"
     
     def get_queryset(self, request):
-        """ Вибрати лише той запис з графіку погашень, в який менеджер зможе вносити зміни """
-        """Alter the queryset to return no existing entries"""
-        # get the existing query set, then empty it.
+        """ Вибрати  запис з графіку погашень, якщо планова дата співпадає з сьогоднішнім днем """
         qs = super(ClientContractTimetableInlineEdit, self).get_queryset(request)
-        #return qs.filter(birthday__gte=date(1980, 1, 1), birthday__lte=date(1989, 12, 31)).exists()
-        #return qs.filter(planned_payment_date__gte=date.today(), planned_payment_date__lt=(date.today() + timedelta(days = 6)))
-        return qs.filter(planned_payment_date__lte=date.today() , planned_payment_date__gt=(date.today() - timedelta(days = 7)))	
+        return qs.filter(planned_payment_date = date.today() )
 	
 class ClientContractTimetableInline(admin.TabularInline):
     model = ClientContractTimetable
     extra = 0
-    fields = ['planned_payment_date', 'planned_amount_payment_usd', 'real_payment_date', 'amount_paid_usd', 'note']
-    readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd', 'real_payment_date', 'amount_paid_usd', 'note']
+    fields = ['planned_payment_date', 'planned_amount_payment_usd', 'amount_paid_usd', 'note']
+    #readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd', 'real_payment_date', 'amount_paid_usd', 'note']
+    ordering = ['planned_payment_date']
 
+	
+    def has_delete_permission(self, request, obj=None):
+        return not request.user.groups.filter(name='Manager').exists()  
+    
+    def has_add_permission(self, request, obj=None):
+        return not request.user.groups.filter(name='Manager').exists()
+		
+    def has_change_permission(self, request, obj=None):
+        return not request.user.groups.filter(name='Manager').exists()
+		
 class ClientContractTOTodayInline(admin.TabularInline):
     """Дані по ТО за сьогодні, менеджер може редагувати"""
     model = ClientContractTOToday
