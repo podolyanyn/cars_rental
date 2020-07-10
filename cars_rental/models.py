@@ -1,6 +1,7 @@
 from django.db import models
 from datetime import date, timedelta
 from django.db.models import Avg, Max, Min, Sum
+from django.utils import timezone
 # Create your models here.
 
 #Відділення
@@ -246,7 +247,7 @@ class ClientContract(models.Model):
 # Клієнтський контракт, графік погашення	(тіло + %)	
 class ClientContractTimetable(models.Model):
     client_contract = models.ForeignKey(ClientContract, on_delete=models.CASCADE, default=1)								# клієнтський контракт
-    planned_payment_date = models.DateField('Дата платежу', null=True, default = date.today())													# Планова дата платежу -> Дата платежу
+    planned_payment_date = models.DateTimeField('Дата платежу', null=True, default = timezone.now)													# Планова дата платежу -> Дата платежу
     planned_amount_payment_usd = models.FloatField('Планова сума платежу, в доларах', null=True, blank=True)	# Планова сума платежу, в доларах
     #real_payment_date = models.DateField('Дійсна дата платежу', null=True, blank=True, default = date.today())										# Дійсна дата платежу
     amount_paid_usd = models.FloatField('Оплачена сума, в доларах', null=True, blank=True) 													# Оплачена сума, в доларах
@@ -265,7 +266,7 @@ class ClientContractTimetable(models.Model):
 class ClientContractTO(models.Model):
     """ Клієнтський контракт, ТО (кошти на ТехОбслуговування) """
     client_contract = models.ForeignKey(ClientContract, on_delete=models.CASCADE, default=1)		# клієнтський контракт
-    date = models.DateField('Дата платежу (ТО)', null=True, default = date.today())															# Дата платежу (ТО)
+    date = models.DateField('Дата платежу (ТО)', null=True, default = date.today)															# Дата платежу (ТО)
     sum = models.FloatField('Сума платежу (ТО)', null=True) 															# Сума платежу (ТО)
     note = models.CharField('Примітки', max_length=100, null=True, blank = True) 							# Примітки
 	

@@ -117,6 +117,9 @@ class ClientContractTimetableInlineEdit(admin.TabularInline):
         """ Вибрати  запис з графіку погашень, якщо планова дата співпадає з сьогоднішнім днем """
         qs = super(ClientContractTimetableInlineEdit, self).get_queryset(request)
         return qs.filter(planned_payment_date = date.today() )
+
+    def has_change_permission(self, request, obj=None):
+       return not request.user.groups.filter(name='Manager').exists()
 	
 class ClientContractTimetableInline(admin.TabularInline):
     model = ClientContractTimetable
@@ -133,7 +136,7 @@ class ClientContractTimetableInline(admin.TabularInline):
         return not request.user.groups.filter(name='Manager').exists()
 		
     def has_change_permission(self, request, obj=None):
-        return not request.user.groups.filter(name='Manager').exists()
+       return not request.user.groups.filter(name='Manager').exists()
 		
 class ClientContractTOTodayInline(admin.TabularInline):
     """Дані по ТО за сьогодні, менеджер може редагувати"""
@@ -334,7 +337,8 @@ admin.site.register(ExchangeRateOdesa, ExchangeRateOdesaAdmin)
 
 class WeeklyCarReportAdmin(ExportMixin, admin.ModelAdmin):
     """ Тижневий звіт по авто """
-    list_display = ('client', 'car', 'amount_payment_usd', 'frequency_payment')    
+    list_display = ('client', 'car', 'amount_payment_usd', 'frequency_payment')
+    #list_filter = ['brand', 'model']    
 admin.site.register(ClientContractWeeklyCarReport, WeeklyCarReportAdmin)
 
 # Робота з модулем django-import-export
