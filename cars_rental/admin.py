@@ -8,23 +8,12 @@ from django import forms
 from django.template import loader
 from django.utils.safestring import mark_safe
 
-
-
 # Register your models here.
 from .models import Client, Investor, Car, ClientContract, InvestorContract, Color, ClientContractTimetable, InvestorContractPercentagePayment, InvestorContractBodyTimetable
 from .models import InvestorContractBodyPayment, ClientContractTO, ClientContractTOToday, Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa, ClientContractWeeklyCarReport#, YourModel
 from .forms import yourForm
-#from .models import ClientOdesa, InvestorOdesa, CarOdesa, ClientContractOdesa, InvestorContractOdesa
-
-#from .models import ClientOdesa
-#from .models import Investor
-#from .models import InvestorOdesa
-#from .models import Car
-#from .models import CarOdesa
-#from .models import ClientContract
-#from .models import ClientContractOdesa
-#from .models import InvestorContract
-#from .models import InvestorContractOdesa
+from import_export import resources
+from import_export.admin import  ExportMixin
 
 
 #------------- Блок експериментів з віджетами
@@ -69,8 +58,14 @@ class InvestorContractAdmin(admin.ModelAdmin):
 admin.site.register(InvestorContract, InvestorContractAdmin)
 """
 
-#admin.site.register(Client)
+
+
+
+
+#@admin.register(Client)
+#class ClientAdmin(ImportExportModelAdmin):
 class ClientAdmin(admin.ModelAdmin):
+#class ClientAdmin(admin.ModelAdmin):
     # 24.04 Зміна шаблону. Правда, чомусь для всіх об'єктів цей шаблон підтягнувся, не лише для клієнта.
     # 30.05 Хоча шаблон був закритий він чомусь підтягувався для клієнта. Закешувався ? Все стало ок, лише після того, як змінив ім'я шаблону на change_form_.html
     # change_form_template = 'admin/change_form.html'     	
@@ -78,7 +73,6 @@ class ClientAdmin(admin.ModelAdmin):
     search_fields = ['full_name', 'phone_number', 'phone_number_2', 'phone_number_3']
 admin.site.register(Client, ClientAdmin)
 
-#admin.site.register(ClientOdesa)
 
 #admin.site.register(Investor)
 class InvestorAdmin(admin.ModelAdmin):
@@ -338,7 +332,16 @@ admin.site.register(ExchangeRateOdesa, ExchangeRateOdesaAdmin)
 
 #admin.site.register(MyModel, MyModelAdmin)
 
-class WeeklyCarReportAdmin(admin.ModelAdmin):
+class WeeklyCarReportAdmin(ExportMixin, admin.ModelAdmin):
     """ Тижневий звіт по авто """
     list_display = ('client', 'car', 'amount_payment_usd', 'frequency_payment')    
 admin.site.register(ClientContractWeeklyCarReport, WeeklyCarReportAdmin)
+
+# Робота з модулем django-import-export
+#class ClientResource(resources.ModelResource):
+#    class Meta:
+#        model = Client
+#		
+#@admin.register(Client)
+#class ClientAdmin(ImportExportModelAdmin):
+#    pass
