@@ -261,8 +261,9 @@ class ClientContractTimetable(models.Model):
     def __str__(self):
         return ""
 		
-# Клієнтський контракт, ТО (кошти на ТехОбслуговування)	
+
 class ClientContractTO(models.Model):
+    """ Клієнтський контракт, ТО (кошти на ТехОбслуговування) """
     client_contract = models.ForeignKey(ClientContract, on_delete=models.CASCADE, default=1)		# клієнтський контракт
     date = models.DateField('Дата платежу (ТО)', null=True, default = date.today())															# Дата платежу (ТО)
     sum = models.FloatField('Сума платежу (ТО)', null=True) 															# Сума платежу (ТО)
@@ -272,6 +273,18 @@ class ClientContractTO(models.Model):
         verbose_name = "Клієнтський контракт, ТО"
         verbose_name_plural = "Клієнтський контракт, ТО"
 
+
+    def __str__(self):
+        return ""
+
+class ClientContractTOToday(ClientContractTO):
+    """ Клієнтський контракт, ТО; Proxy-модель для вводу даних (для менеджера) """
+    class Meta:
+        proxy = True
+        verbose_name = "Клієнтський контракт, ТО; введення даних"
+        verbose_name_plural = "Клієнтський контракт, ТО; введення даних"
+        
+		
     def __str__(self):
         return ""
 		

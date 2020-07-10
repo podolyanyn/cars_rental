@@ -12,7 +12,7 @@ from django.utils.safestring import mark_safe
 
 # Register your models here.
 from .models import Client, Investor, Car, ClientContract, InvestorContract, Color, ClientContractTimetable, InvestorContractPercentagePayment, InvestorContractBodyTimetable
-from .models import InvestorContractBodyPayment, ClientContractTO, Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa, ClientContractWeeklyCarReport#, YourModel
+from .models import InvestorContractBodyPayment, ClientContractTO, ClientContractTOToday, Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa, ClientContractWeeklyCarReport#, YourModel
 from .forms import yourForm
 #from .models import ClientOdesa, InvestorOdesa, CarOdesa, ClientContractOdesa, InvestorContractOdesa
 
@@ -124,10 +124,7 @@ class ClientContractTimetableInlineEdit(admin.TabularInline):
         qs = super(ClientContractTimetableInlineEdit, self).get_queryset(request)
         #return qs.filter(birthday__gte=date(1980, 1, 1), birthday__lte=date(1989, 12, 31)).exists()
         #return qs.filter(planned_payment_date__gte=date.today(), planned_payment_date__lt=(date.today() + timedelta(days = 6)))
-        return qs.filter(planned_payment_date__lte=date.today() , planned_payment_date__gt=(date.today() - timedelta(days = 7)))
-        
-
-	
+        return qs.filter(planned_payment_date__lte=date.today() , planned_payment_date__gt=(date.today() - timedelta(days = 7)))	
 	
 class ClientContractTimetableInline(admin.TabularInline):
     model = ClientContractTimetable
@@ -135,11 +132,26 @@ class ClientContractTimetableInline(admin.TabularInline):
     fields = ['planned_payment_date', 'planned_amount_payment_usd', 'real_payment_date', 'amount_paid_usd', 'note']
     readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd', 'real_payment_date', 'amount_paid_usd', 'note']
 
-class ClientContractTOInline(admin.TabularInline):
-    model = ClientContractTO
+class ClientContractTOTodayInline(admin.TabularInline):
+    """Дані по ТО за сьогодні, менеджер може редагувати"""
+    model = ClientContractTOToday
     extra = 0
     fields = ['date', 'sum', 'note']
     readonly_fields = ['date']
+    
+    def get_queryset(self, request):
+        """ Вибрати лише дані за поточне число """
+        qs = super(ClientContractTOTodayInline, self).get_queryset(request)
+        return qs.filter(date = date.today() )	
+	
+class ClientContractTOInline(admin.TabularInline):
+    """ Дані по ТО """
+    model = ClientContractTO
+    extra = 0
+    fields = ['date', 'sum', 'note']    
+    ordering = ['date']
+    
+    #readonly_fields = ['date']
 	
     #def has_view_permission(self, request, obj=None):
         #""" без цього методу для менеджера невидимий весь блок ТО, якщо ще не має жодного запису """
@@ -156,12 +168,12 @@ class ClientContractTOInline(admin.TabularInline):
         #self.fields[2].initial = 'aaaa'
         #self.initial['sum'] = 222
 
-    def has_delete_permission(self, request, obj=None):
+    #def has_delete_permission(self, request, obj=None):
         #print('info =', request.user.groups.all())
         #print('self.fields =', self.fields) 
         #return True
         #return not request.user.groups.filter(name='Manager').exists() and 
-        print ("obj = ", obj)
+        #print ("obj = ", obj)
 		
 class ClientContractAdmin(admin.ModelAdmin):
     #fieldsets = [
@@ -169,7 +181,7 @@ class ClientContractAdmin(admin.ModelAdmin):
     #    ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
     #]
     fields = ['number', 'number_number', 'city', 'date', 'client', 'car', 'investor_full_name', 'director_full_name', 'initial_cost_car_usd', 'commercial_course_usd_test', 'initial_cost_car_uah', 'period_days', 'frequency_payment', 'amount_payment_usd', 'amount_payment_uah', 'amount_payment_TO_uah', 'balance_TO_uah', 'loan_amount_paid_usd', 'loan_amount_to_be_paid_usd', 'status_body_usd']
-    inlines = [ClientContractTOInline, ClientContractTimetableInlineEdit , ClientContractTimetableInline]	
+    inlines = [ClientContractTOTodayInline, ClientContractTOInline, ClientContractTimetableInlineEdit , ClientContractTimetableInline]	
     #inlines = [ClientInline]
 	# ...
     #fields = ['number', 'city', 'date', 'client', 'car']
