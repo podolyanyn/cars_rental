@@ -112,6 +112,7 @@ class ClientContractTimetableInlineEdit(admin.TabularInline):
     readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd']
     #verbose_name = "Клієнтський контракт, графік погашення; Введення даних"
     verbose_name_plural = "Клієнтський контракт, графік погашення; Введення даних"
+    classes = ['collapse']
     
     def get_queryset(self, request):
         """ Вибрати  запис з графіку погашень, якщо планова дата співпадає з сьогоднішнім днем """
@@ -127,7 +128,7 @@ class ClientContractTimetableInline(admin.TabularInline):
     fields = ['planned_payment_date', 'planned_amount_payment_usd', 'amount_paid_usd', 'note']
     #readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd', 'real_payment_date', 'amount_paid_usd', 'note']
     ordering = ['planned_payment_date']
-
+    classes = ['collapse']
 	
     def has_delete_permission(self, request, obj=None):
         return not request.user.groups.filter(name='Manager').exists()  
@@ -144,6 +145,7 @@ class ClientContractTOTodayInline(admin.TabularInline):
     extra = 0
     fields = ['date', 'sum', 'note']
     readonly_fields = ['date']
+    classes = ['collapse']
     
     def get_queryset(self, request):
         """ Вибрати лише дані за поточне число """
@@ -156,6 +158,7 @@ class ClientContractTOInline(admin.TabularInline):
     extra = 0
     fields = ['date', 'sum', 'note']    
     ordering = ['date']
+    classes = ['collapse']
     
     #readonly_fields = ['date']
 	

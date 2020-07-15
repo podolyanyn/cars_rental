@@ -34,12 +34,15 @@ INSTALLED_APPS = [
 	'polls.apps.PollsConfig',
 	'cars_rental.apps.CarsRentalConfig',
     'django.contrib.admin',
+    #'admin_reports', #  admin_reports
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'import_export',
+    'report_builder',
+	'rest_framework',
 ]
 
 MIDDLEWARE = [
@@ -54,6 +57,12 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'mysite.urls'
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
+    )
+}
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -65,6 +74,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'django.template.context_processors.static',
+                'django.template.context_processors.media',
+                
             ],
         },
     },
