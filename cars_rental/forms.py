@@ -14,4 +14,4 @@ class yourForm(forms.ModelForm):
         widgets = {
             'last_month_percentage': NumberInput(attrs={'value': 'floatformat:2' }), # помилку не видає, але і не працює
             #'last_month_percentage': NumberInput(attrs={'style':'width:270px', 'min':'0', 'max':'1000', 'step':"0.01",}),
-        }
+        }		

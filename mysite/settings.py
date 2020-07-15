@@ -34,7 +34,6 @@ INSTALLED_APPS = [
 	'polls.apps.PollsConfig',
 	'cars_rental.apps.CarsRentalConfig',
     'django.contrib.admin',
-    #'admin_reports', #  admin_reports
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
