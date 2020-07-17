@@ -44,15 +44,16 @@ INSTALLED_APPS = [
     'rest_framework',
     # django-ra-erp BEGIN
     'crequest',
-    'crispy_forms',
+    'crispy_forms', #  for slick_reporting also
     'reversion',
     'tabular_permissions',
-    'slick_reporting',
+    'slick_reporting',   #  for slick_reporting also
     'ra',
     'ra.admin',
     'ra.activity',
     'ra.reporting',
     # django-ra-erp END
+    
 ]
 
 MIDDLEWARE = [
@@ -161,6 +162,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static') # django-ra-erp
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # django-ra-erp
 MEDIA_URL = '/media/' # django-ra-erp
 
-CRISPY_TEMPLATE_PACK = 'bootstrap4' # django-ra-erp
+CRISPY_TEMPLATE_PACK = 'bootstrap4' # django-ra-erp  #  for slick_reporting also
 
 RA_SITE_TITLE = 'Ra dashboard' # django-ra-erp

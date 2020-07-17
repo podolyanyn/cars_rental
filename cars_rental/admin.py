@@ -96,7 +96,7 @@ class CarAdmin(admin.ModelAdmin):
     search_fields = ['license_plate']
     #date_hierarchy = 'pub_date'
 admin.site.register(Car, CarAdmin)
-ra_admin_site.register(Car, CarAdmin)
+ra_admin_site.register(Car, CarAdmin) # django-ra-erp
 
 #admin.site.register(CarOdesa)
 
