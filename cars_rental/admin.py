@@ -14,6 +14,7 @@ from .models import InvestorContractBodyPayment, ClientContractTO, ClientContrac
 from .forms import yourForm
 from import_export import resources
 from import_export.admin import  ExportMixin
+from ra.admin.admin import ra_admin_site, EntityAdmin, TransactionAdmin # django-ra-erp
 
 
 #------------- Блок експериментів з віджетами
@@ -95,6 +96,7 @@ class CarAdmin(admin.ModelAdmin):
     search_fields = ['license_plate']
     #date_hierarchy = 'pub_date'
 admin.site.register(Car, CarAdmin)
+ra_admin_site.register(Car, CarAdmin)
 
 #admin.site.register(CarOdesa)
 

@@ -41,7 +41,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'import_export',
     'report_builder',
-	'rest_framework',
+    'rest_framework',
+    # django-ra-erp BEGIN
+    'crequest',
+    'crispy_forms',
+    'reversion',
+    'tabular_permissions',
+    'slick_reporting',
+    'ra',
+    'ra.admin',
+    'ra.activity',
+    'ra.reporting',
+    # django-ra-erp END
 ]
 
 MIDDLEWARE = [
@@ -52,6 +63,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'crequest.middleware.CrequestMiddleware', # django-ra-erp
 ]
 
 ROOT_URLCONF = 'mysite.urls'
@@ -75,6 +87,8 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.static',
                 'django.template.context_processors.media',
+                'django.template.context_processors.i18n',   # django-ra-erp
+                'ra.base.context_processors.global_info',       # django-ra-erp
                 
             ],
         },
@@ -142,3 +156,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static') # django-ra-erp
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media') # django-ra-erp
+MEDIA_URL = '/media/' # django-ra-erp
+
+CRISPY_TEMPLATE_PACK = 'bootstrap4' # django-ra-erp
+
+RA_SITE_TITLE = 'Ra dashboard' # django-ra-erp

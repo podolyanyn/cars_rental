@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls import url
+from ra.admin.admin import ra_admin_site # django-ra-erp
 
 urlpatterns = [
     path('polls/', include('polls.urls')),
@@ -25,4 +26,5 @@ urlpatterns = [
     #path(r'^report_builder/', include('report_builder.urls')),
     url(r'^report_builder/', include('report_builder.urls')),
     #url(r'^admin/', include(admin_reports.site.urls)),
+    path('erp/', ra_admin_site.urls), # django-ra-erp
 ]
