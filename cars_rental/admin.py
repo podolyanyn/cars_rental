@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db import models
 from django.forms import NumberInput, TextInput, Textarea
-from django.db.models import Max
+from django.db.models import Max, Count, Sum
 from datetime import date, timedelta
 
 from django import forms
@@ -342,8 +342,32 @@ admin.site.register(ExchangeRateOdesa, ExchangeRateOdesaAdmin)
 
 class WeeklyCarReportAdmin(ExportMixin, admin.ModelAdmin):
     """ Тижневий звіт по авто """
-    list_display = ('client', 'car', 'amount_payment_usd', 'frequency_payment')
+    list_display = ('date', 'client', 'car', 'amount_payment_usd', 'frequency_payment')
     #list_filter = ['brand', 'model']    
+    #change_list_template = 'admin/weekly_car_report_admin_change_list.html'
+    date_hierarchy = 'date'
+"""	
+    def changelist_view(self, request, extra_context=None):
+        response = super().changelist_view(
+            request,
+            extra_context=extra_context,
+        )
+        try:
+            qs = response.context_data['cl'].queryset
+        except (AttributeError, KeyError):
+            return response
+        metrics = {
+            'total': Count('id'),
+            'total_sales': Sum('initial_cost_car_usd'),
+        }
+        response.context_data['summary'] = list(
+            qs
+            .values('sale__category__name')
+            .annotate(**metrics)
+            .order_by('-total_sales')
+        )
+        return response
+"""
 admin.site.register(ClientContractWeeklyCarReport, WeeklyCarReportAdmin)
 
 # Робота з модулем django-import-export

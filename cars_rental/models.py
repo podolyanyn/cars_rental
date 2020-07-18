@@ -242,7 +242,6 @@ class ClientContract(models.Model):
         self.loan_amount_paid_usd = self.clientcontracttimetable_set.all().filter(planned_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0
         self.loan_amount_to_be_paid_usd = self.initial_cost_car_usd - self.loan_amount_paid_usd
         self.save()
-	
 
 # Клієнтський контракт, графік погашення	(тіло + %)	
 class ClientContractTimetable(models.Model):
