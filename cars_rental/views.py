@@ -5,6 +5,9 @@ from django.http import HttpResponse
 from slick_reporting.views import SampleReportView  # slick_reporting
 from .models import ClientContract							# slick_reporting
 
+import csv
+from django.contrib.auth.models import User
+
 def index(request):
     return HttpResponse("Привіт. Це про аренду авто :) ")
 	
@@ -32,3 +35,16 @@ class TotalProductSales(SampleReportView): # slick_reporting
         'title_source': 'title',
      },
     ]
+	
+def export_users_csv(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="users.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['Username', 'First name', 'Last name', 'Email address'])
+
+    users = User.objects.all().values_list('username', 'first_name', 'last_name', 'email')
+    for user in users:
+        writer.writerow(user)
+
+    return response

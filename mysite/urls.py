@@ -18,6 +18,7 @@ from django.urls import include, path
 from django.conf.urls import url
 from ra.admin.admin import ra_admin_site # django-ra-erp
 from cars_rental.views import TotalProductSales # slick_reporting
+import cars_rental.views
 
 urlpatterns = [
     path('polls/', include('polls.urls')),
@@ -29,4 +30,5 @@ urlpatterns = [
     #url(r'^admin/', include(admin_reports.site.urls)),
     path('erp/', ra_admin_site.urls), # django-ra-erp
     path('url-to-report', TotalProductSales.as_view()), # slick_reporting
+    url(r'^export/csv/$', cars_rental.views.export_users_csv, name='export_users_csv'),
 ]
