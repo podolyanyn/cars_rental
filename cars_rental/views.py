@@ -1,17 +1,30 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
-from django.http import HttpResponse
+from django.http import HttpResponse, Http404
 from slick_reporting.views import SampleReportView  # slick_reporting
 from .models import ClientContract							# slick_reporting
 
 import csv
 from django.contrib.auth.models import User
 
+
+# https://djbook.ru/rel3.0/intro/tutorial03.html
 def index(request):
-    return HttpResponse("Привіт. Це про аренду авто :) ")
+    list = ClientContract.objects.all()
+    #output = output = ', '.join([q.number for q in list])
+    #return HttpResponse("Привіт. Це про аренду авто :) " + output)
 	
+    #latest_question_list = Question.objects.order_by('-pub_date')[:5]
+    context = {'list': list}
+    return render(request, 'cars_rental/index.html', context)
 	
+# https://djbook.ru/rel3.0/intro/tutorial03.html
+def detail(request, clientcontract_id):
+    clientcontract = get_object_or_404(ClientContract, pk=clientcontract_id)
+    return render(request, 'cars_rental/timetable_to.html', {'clientcontract': clientcontract})
+
+
 class TotalProductSales(SampleReportView): # slick_reporting
     # The model where you have the data
     report_model = ClientContract

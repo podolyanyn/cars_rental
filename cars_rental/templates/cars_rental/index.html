@@ -1,0 +1,9 @@
+﻿{% if list %}
+    <ul>
+    {% for li in list %}
+        <li><a href="/cars_rental/{{ li.id }}/">{{ li.number }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Контрактів не має. Сорі</p>
+{% endif %}

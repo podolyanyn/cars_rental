@@ -310,7 +310,7 @@ class ClientContractWeeklyCarReport(ClientContract):
     class Meta:
         proxy = True
         verbose_name = "Клієнтський контракт, Тижневий звіт по авто"
-        verbose_name_plural = "Клієнтський контракт, Тижневий звіт по авто"
+        verbose_name_plural = "Клієнтські контракти, Тижневий звіт по авто"
 		
 # Інвесторський контракт		
 class InvestorContract(models.Model):

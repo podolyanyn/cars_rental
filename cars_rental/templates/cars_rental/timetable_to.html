@@ -1,0 +1,8 @@
+<h1>{{ clientcontract.number }}</h1>
+<form>
+<ul>
+{% for to in clientcontract.clientcontractto_set.all %}
+    <li>{{ to.sum }}</li>
+{% endfor %}
+</ul>
+</form>

@@ -78,7 +78,7 @@ REST_FRAMEWORK = {
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['templates'], # каталог з шаблонами, які перевизначають оригінальні шаблони адмінки
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
