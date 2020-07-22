@@ -342,10 +342,23 @@ admin.site.register(ExchangeRateOdesa, ExchangeRateOdesaAdmin)
 
 class WeeklyCarReportAdmin(ExportMixin, admin.ModelAdmin):
     """ Тижневий звіт по авто """
-    list_display = ('date', 'client', 'car', 'amount_payment_usd', 'frequency_payment')
+    list_display = ('date', 'client', 'car', 'amount_payment_usd', 'paid_for_the_week',  'payments_difference', 'frequency_payment' )
     #list_filter = ['brand', 'model']    
     #change_list_template = 'admin/weekly_car_report_admin_change_list.html'
     date_hierarchy = 'date'
+
+    def paid_for_the_week(self, obj):
+        """ Розрахунок суми платежів по контракту за останній тиждень, або за період """
+        today=date.today()
+        result =  loan_amount_paid_usd = obj.clientcontracttimetable_set.all().filter(planned_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0
+        return result
+    paid_for_the_week.short_description = 'Оплачено за тиждень'
+	
+    def payments_difference(self, obj):
+        """ Різниця між оплаченими платежами та плановим """
+        return self.paid_for_the_week(obj) - obj.amount_payment_usd
+    payments_difference.short_description = 'Різниця'
+	
 """	
     def changelist_view(self, request, extra_context=None):
         response = super().changelist_view(
