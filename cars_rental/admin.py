@@ -15,7 +15,8 @@ from .forms import yourForm
 from import_export import resources
 from import_export.admin import  ExportMixin
 from ra.admin.admin import ra_admin_site, EntityAdmin, TransactionAdmin # django-ra-erp
-
+from admin_totals.admin import ModelAdminTotals  # for Django Admin Totals
+from django.db.models.functions import Coalesce  # for Django Admin Totals
 
 #------------- Блок експериментів з віджетами
 #class YourModelAdmin(admin.ModelAdmin):
@@ -340,9 +341,11 @@ admin.site.register(ExchangeRateOdesa, ExchangeRateOdesaAdmin)
 
 #admin.site.register(MyModel, MyModelAdmin)
 
-class WeeklyCarReportAdmin(ExportMixin, admin.ModelAdmin):
+#class WeeklyCarReportAdmin(ExportMixin, ModelAdminTotals):
+class WeeklyCarReportAdmin(ModelAdminTotals):
     """ Тижневий звіт по авто """
     list_display = ('date', 'client', 'car', 'amount_payment_usd', 'paid_for_the_week',  'payments_difference', 'frequency_payment' )
+    list_totals = [('amount_payment_usd',  Sum)]
     #list_filter = ['brand', 'model']    
     #change_list_template = 'admin/weekly_car_report_admin_change_list.html'
     date_hierarchy = 'date'

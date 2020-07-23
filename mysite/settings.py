@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'ra.activity',
     'ra.reporting',
     # django-ra-erp END
+    'admin_totals', # for Django Admin Totals
     
 ]
 
