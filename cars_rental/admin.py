@@ -371,9 +371,9 @@ class WeeklyCarReportAdmin(admin.ModelAdmin):
 
     #change_list_template = 'admin/cars_rental/extras/sometemplate_change_list.html'
     #change_list_results_template = 'admin/cars_rental/extras/change_list_results_.html'
-
+    """
     def changelist_view(self, request, extra_context=None):
-        """
+        
 		my_context = {
             'total': ' ',
             'total1': '2020.01.01',
@@ -384,34 +384,40 @@ class WeeklyCarReportAdmin(admin.ModelAdmin):
             'total6': 300,
             'total7': '',
         }
-		"""
+
         my_context = {}
         my_context['results'] = [['<td class="action-checkbox"><input type="checkbox" name="_selected_action" value="7" class="action-select"></td>', '<th class="field-date nowrap"><a href="/admin/cars_rental/clientcontractweeklycarreport/7/change/">22 липня 2020 р.</a></th>', '<td class="field-client nowrap">Каськів Петро Федорович</td>', '<td class="field-car nowrap">Renault Megane da1234sd</td>', '<td class="field-amount_payment_usd">111,0</td>', '<td class="field-paid_for_the_week">112,0</td>', '<td class="field-payments_difference">1,0</td>', '<td class="field-frequency_payment">понеділок</td>'], ['<td class="action-checkbox"><input type="checkbox" name="_selected_action" value="6" class="action-select"></td>', '<th class="field-date nowrap"><a href="/admin/cars_rental/clientcontractweeklycarreport/6/change/">01 травня 2020 р.</a></th>', '<td class="field-client nowrap">Каськів Петро Федорович</td>', '<td class="field-car nowrap">Opel Astra aa1234sd</td>', '<td class="field-amount_payment_usd">10,0</td>', '<td class="field-paid_for_the_week">372,0</td>', '<td class="field-payments_difference">362,0</td>', '<td class="field-frequency_payment">вівторок</td>'], ['<td class="action-checkbox"><input type="checkbox" name="_selected_action" value="4" class="action-select"></td>', '<th class="field-date nowrap"><a href="/admin/cars_rental/clientcontractweeklycarreport/4/change/">03 червня 2020 р.</a></th>', '<td class="field-client nowrap">Каськів Петро Федорович</td>', '<td class="field-car nowrap">Fiat Punto aa1234sd</td>', '<td class="field-amount_payment_usd">100,0</td>', '<td class="field-paid_for_the_week">0</td>', '<td class="field-payments_difference">-100,0</td>', '<td class="field-frequency_payment">вівторок</td>'], ['<td class="action-checkbox"><input type="checkbox" name="_selected_action" value="3" class="action-select"></td>', '<th class="field-date nowrap"><a href="/admin/cars_rental/clientcontractweeklycarreport/3/change/">12 травня 2020 р.</a></th>', '<td class="field-client nowrap">Каськів Петро Федорович</td>', '<td class="field-car nowrap">Renault Duster aa1234ds</td>', '<td class="field-amount_payment_usd">100,0</td>', '<td class="field-paid_for_the_week">300,0</td>', '<td class="field-payments_difference">200,0</td>', '<td class="field-frequency_payment">понеділок</td>']]     
         return super(WeeklyCarReportAdmin, self).changelist_view(request,
             extra_context=my_context)
+    """
 
-"""	
     def changelist_view(self, request, extra_context=None):
         response = super().changelist_view(
             request,
             extra_context=extra_context,
         )
+        response.context_data['cl']['1'] = '1'
+        """
         try:
             qs = response.context_data['cl'].queryset
         except (AttributeError, KeyError):
             return response
+        """
+        
+        """    
         metrics = {
             'total': Count('id'),
             'total_sales': Sum('initial_cost_car_usd'),
         }
         response.context_data['summary'] = list(
             qs
-            .values('sale__category__name')
+            .values('clientcontract__category__name')
             .annotate(**metrics)
             .order_by('-total_sales')
         )
+        """
         return response
-"""
+
 admin.site.register(ClientContractWeeklyCarReport, WeeklyCarReportAdmin)
 
 # Робота з модулем django-import-export
