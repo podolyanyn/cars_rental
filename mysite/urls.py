@@ -20,6 +20,7 @@ from ra.admin.admin import ra_admin_site # django-ra-erp
 from cars_rental.views import TotalProductSales # slick_reporting
 import cars_rental.views
 
+
 urlpatterns = [
     path('polls/', include('polls.urls')),
     path('cars_rental/', include('cars_rental.urls')),

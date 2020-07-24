@@ -32,16 +32,18 @@
 {% endif %}
 <tr class="{% cycle 'row1' 'row2' %}">{% for item in result %}{{ item }}{% endfor %}</tr>
 {% endfor %}
-        <tr>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td></td>
-			<td>Sum = 1000</td>
-		</tr>
+			<td>Cl 1</td>
+			<td>Cl 2</td>
+			<td>Cl 3</td>
+			<td>Cl 4</td>
+			<td>{{ cl }}</td>
+			<td>{{ clientcontract.clientcontracttimetable_set.all.count }}</td>
+			<td>Cl 700000000000</td>
+			<td>{{ results }}</td>
 </tbody>
 </table>
 </div>
+
 {% endif %}
 
 {# {% extends "admin/change_list_results.html" %} #}

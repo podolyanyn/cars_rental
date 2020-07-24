@@ -342,7 +342,8 @@ admin.site.register(ExchangeRateOdesa, ExchangeRateOdesaAdmin)
 #admin.site.register(MyModel, MyModelAdmin)
 
 #class WeeklyCarReportAdmin(ExportMixin, ModelAdminTotals):
-class WeeklyCarReportAdmin(ModelAdminTotals):
+#class WeeklyCarReportAdmin(ExportMixin, admin.ModelAdmin):
+class WeeklyCarReportAdmin(admin.ModelAdmin):
     """ Тижневий звіт по авто """
     list_display = ('date', 'client', 'car', 'amount_payment_usd', 'paid_for_the_week',  'payments_difference', 'frequency_payment' )
     list_totals = [('amount_payment_usd',  Sum)]
@@ -361,7 +362,34 @@ class WeeklyCarReportAdmin(ModelAdminTotals):
         """ Різниця між оплаченими платежами та плановим """
         return self.paid_for_the_week(obj) - obj.amount_payment_usd
     payments_difference.short_description = 'Різниця'
-	
+
+    def get_total_sum(self):
+        """ Розрахувати суму """
+        #functions to calculate whatever you want...
+        total_sum = ClientContractTimetable.objects.all().aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum']
+        return total_sum
+
+    #change_list_template = 'admin/cars_rental/extras/sometemplate_change_list.html'
+    #change_list_results_template = 'admin/cars_rental/extras/change_list_results_.html'
+
+    def changelist_view(self, request, extra_context=None):
+        """
+		my_context = {
+            'total': ' ',
+            'total1': '2020.01.01',
+            'total2': ' ',
+            'total3': ' ',
+            'total4': 100,
+            'total5': 200,
+            'total6': 300,
+            'total7': '',
+        }
+		"""
+        my_context = {}
+        my_context['results'] = [['<td class="action-checkbox"><input type="checkbox" name="_selected_action" value="7" class="action-select"></td>', '<th class="field-date nowrap"><a href="/admin/cars_rental/clientcontractweeklycarreport/7/change/">22 липня 2020 р.</a></th>', '<td class="field-client nowrap">Каськів Петро Федорович</td>', '<td class="field-car nowrap">Renault Megane da1234sd</td>', '<td class="field-amount_payment_usd">111,0</td>', '<td class="field-paid_for_the_week">112,0</td>', '<td class="field-payments_difference">1,0</td>', '<td class="field-frequency_payment">понеділок</td>'], ['<td class="action-checkbox"><input type="checkbox" name="_selected_action" value="6" class="action-select"></td>', '<th class="field-date nowrap"><a href="/admin/cars_rental/clientcontractweeklycarreport/6/change/">01 травня 2020 р.</a></th>', '<td class="field-client nowrap">Каськів Петро Федорович</td>', '<td class="field-car nowrap">Opel Astra aa1234sd</td>', '<td class="field-amount_payment_usd">10,0</td>', '<td class="field-paid_for_the_week">372,0</td>', '<td class="field-payments_difference">362,0</td>', '<td class="field-frequency_payment">вівторок</td>'], ['<td class="action-checkbox"><input type="checkbox" name="_selected_action" value="4" class="action-select"></td>', '<th class="field-date nowrap"><a href="/admin/cars_rental/clientcontractweeklycarreport/4/change/">03 червня 2020 р.</a></th>', '<td class="field-client nowrap">Каськів Петро Федорович</td>', '<td class="field-car nowrap">Fiat Punto aa1234sd</td>', '<td class="field-amount_payment_usd">100,0</td>', '<td class="field-paid_for_the_week">0</td>', '<td class="field-payments_difference">-100,0</td>', '<td class="field-frequency_payment">вівторок</td>'], ['<td class="action-checkbox"><input type="checkbox" name="_selected_action" value="3" class="action-select"></td>', '<th class="field-date nowrap"><a href="/admin/cars_rental/clientcontractweeklycarreport/3/change/">12 травня 2020 р.</a></th>', '<td class="field-client nowrap">Каськів Петро Федорович</td>', '<td class="field-car nowrap">Renault Duster aa1234ds</td>', '<td class="field-amount_payment_usd">100,0</td>', '<td class="field-paid_for_the_week">300,0</td>', '<td class="field-payments_difference">200,0</td>', '<td class="field-frequency_payment">понеділок</td>']]     
+        return super(WeeklyCarReportAdmin, self).changelist_view(request,
+            extra_context=my_context)
+
 """	
     def changelist_view(self, request, extra_context=None):
         response = super().changelist_view(
