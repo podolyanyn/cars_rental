@@ -9,7 +9,7 @@ from django.template import loader
 from django.utils.safestring import mark_safe
 
 # Register your models here.
-from .models import Client, Investor, Car, ClientContract, InvestorContract, Color, ClientContractTimetable, InvestorContractPercentagePayment, InvestorContractBodyTimetable
+from .models import Client, Investor, CarKyiv, ClientContract, InvestorContract, Color, ClientContractTimetable, InvestorContractPercentagePayment, InvestorContractBodyTimetable
 from .models import InvestorContractBodyPayment, ClientContractTO, ClientContractTOToday, Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa, ClientContractWeeklyCarReport#, YourModel
 from .forms import yourForm
 from import_export import resources
@@ -86,7 +86,7 @@ admin.site.register(Investor, InvestorAdmin)
 #admin.site.register(InvestorOdesa)
 
 
-class CarAdmin(admin.ModelAdmin):
+class CarAdminKyiv(admin.ModelAdmin):
     #fieldsets = [
     #   (None,               {'fields': ['question_text']}),
     #    ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
@@ -97,13 +97,13 @@ class CarAdmin(admin.ModelAdmin):
     #list_filter = ['brand', 'model']
     search_fields = ['license_plate']
     #date_hierarchy = 'pub_date'
-admin.site.register(Car, CarAdmin)
-ra_admin_site.register(Car, CarAdmin) # django-ra-erp
+admin.site.register(CarKyiv, CarAdminKyiv)
+#ra_admin_site.register(Car, CarAdmin) # django-ra-erp
 
 #admin.site.register(CarOdesa)
 
 class CarInline(admin.StackedInline):
-    model = Car
+    model = CarKyiv
     #extra = 1
 class ClientInline(admin.StackedInline):
     model = Client

@@ -134,9 +134,19 @@ class Car(models.Model):
     def __str__(self):
         return self.brand + " " + self.model + " " + self.license_plate
 
-    class Meta:        
+    class Meta:    
+        abstract = True	    
         verbose_name = "Автомобіль"
         verbose_name_plural = "Автомобілі"
+
+# Авто, Київ	
+class CarKyiv(Car):  
+    def __str__(self):
+        return self.brand + " " + self.model + " " + self.license_plate + "(Київ)"								
+    class Meta:        
+        verbose_name = "Автомобіль (Київ)"
+        verbose_name_plural = "Автомобілі (Київ)"
+
 		
 class CarOdesa(models.Model):
     brand = models.CharField('Марка', max_length=20) 									# марка
@@ -168,7 +178,7 @@ class ClientContract(models.Model):
     city = models.CharField('Місто, де заключений контракт', max_length=10)	# Назва міста, в якому заключений контракт !!! Доопрацювати вибір зі списку
     date = models.DateField('Дата контракту')									# Дата контракту
     client = models.ForeignKey(Client, on_delete=models.CASCADE, default=1)			# Клієнт    
-    car = models.OneToOneField(Car, on_delete=models.CASCADE, default=2)			# 	Авто
+    car = models.OneToOneField(CarKyiv, on_delete=models.CASCADE, default=2)			# 	Авто
     investor_full_name = models.CharField('ПІБ інвестора',max_length=50)				# ПІБ інвестора	
     director_full_name = models.CharField('ПІБ директора фірми/філіалу фірми',max_length=50)				# ПІБ директора фірми/філіалу фірми
     #client_full_name = models.CharField('ПІБ клієнта', max_length=50) 					# ПІБ клієнта
@@ -322,7 +332,7 @@ class InvestorContract(models.Model):
     #investor_full_name = models.CharField('ПІБ інвестора',max_length=50)				# ПІБ інвестора	
     director_full_name = models.CharField('ПІБ директора фірми/філіалу фірми',max_length=50)				# ПІБ директора фірми/філіалу фірми
     client_full_name = models.CharField('ПІБ клієнта', max_length=50) 					# ПІБ клієнта
-    car = models.OneToOneField(Car, on_delete=models.CASCADE, default=2)			# 	Авто
+    car = models.OneToOneField(CarKyiv, on_delete=models.CASCADE, default=2)			# 	Авто
     initial_cost_car_usd = models.FloatField('Вартість автомобіля в доларах, на момент складання контракту')# Вартість автомобіля в доларах, на момент складання контракту
     initial_cost_car_uah = models.FloatField('Вартість автомобіля в гривні, на момент складання контракту') # Вартість автомобіля в гривні, на момент складання контракту
     period_days = models.IntegerField('Строк контракту, в днях') 				# Строк контракту, в днях
