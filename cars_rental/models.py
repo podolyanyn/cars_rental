@@ -62,9 +62,18 @@ class Client(models.Model):
     def __str__(self):
         return self.full_name
 
-    class Meta:        
+    class Meta:
+        abstract = True		
         verbose_name = "Клієнт"
         verbose_name_plural = "Клієнти"
+		
+# Клієнт, Київ	
+class ClientKyiv(Client):  
+    def __str__(self):
+        return self.full_name + "(Київ)"								
+    class Meta:        
+        verbose_name = "Клієнт (Київ)"
+        verbose_name_plural = "Клієнти (Київ)"
 
 class ClientOdesa(models.Model):
     full_name = models.CharField('ПІБ', max_length=50) 									# ПІБ
@@ -177,7 +186,7 @@ class ClientContract(models.Model):
     number_number = models.IntegerField('Номер номеру контракту', null = True)	# номер номеру контракту ), власне сам порядковий номер 1, 2, .. від початку року
     city = models.CharField('Місто, де заключений контракт', max_length=10)	# Назва міста, в якому заключений контракт !!! Доопрацювати вибір зі списку
     date = models.DateField('Дата контракту')									# Дата контракту
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, default=1)			# Клієнт    
+    client = models.ForeignKey(ClientKyiv, on_delete=models.CASCADE, default=1)			# Клієнт    
     car = models.OneToOneField(CarKyiv, on_delete=models.CASCADE, default=2)			# 	Авто
     investor_full_name = models.CharField('ПІБ інвестора',max_length=50)				# ПІБ інвестора	
     director_full_name = models.CharField('ПІБ директора фірми/філіалу фірми',max_length=50)				# ПІБ директора фірми/філіалу фірми

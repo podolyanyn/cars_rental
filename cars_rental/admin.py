@@ -9,7 +9,7 @@ from django.template import loader
 from django.utils.safestring import mark_safe
 
 # Register your models here.
-from .models import Client, Investor, CarKyiv, ClientContract, InvestorContract, Color, ClientContractTimetable, InvestorContractPercentagePayment, InvestorContractBodyTimetable
+from .models import ClientKyiv, Investor, CarKyiv, ClientContract, InvestorContract, Color, ClientContractTimetable, InvestorContractPercentagePayment, InvestorContractBodyTimetable
 from .models import InvestorContractBodyPayment, ClientContractTO, ClientContractTOToday, Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa, ClientContractWeeklyCarReport#, YourModel
 from .forms import yourForm
 from import_export import resources
@@ -67,14 +67,14 @@ admin.site.register(InvestorContract, InvestorContractAdmin)
 
 #@admin.register(Client)
 #class ClientAdmin(ImportExportModelAdmin):
-class ClientAdmin(admin.ModelAdmin):
+class ClientAdminKyiv(admin.ModelAdmin):
 #class ClientAdmin(admin.ModelAdmin):
     # 24.04 Зміна шаблону. Правда, чомусь для всіх об'єктів цей шаблон підтягнувся, не лише для клієнта.
     # 30.05 Хоча шаблон був закритий він чомусь підтягувався для клієнта. Закешувався ? Все стало ок, лише після того, як змінив ім'я шаблону на change_form_.html
     # change_form_template = 'admin/change_form.html'     	
     list_display = ('full_name', 'phone_number', 'phone_number_2', 'phone_number_3')
     search_fields = ['full_name', 'phone_number', 'phone_number_2', 'phone_number_3']
-admin.site.register(Client, ClientAdmin)
+admin.site.register(ClientKyiv, ClientAdminKyiv)
 
 
 #admin.site.register(Investor)
@@ -106,7 +106,7 @@ class CarInline(admin.StackedInline):
     model = CarKyiv
     #extra = 1
 class ClientInline(admin.StackedInline):
-    model = Client
+    model = ClientKyiv
     #extra = 1
 class ClientContractTimetableInlineEdit(admin.TabularInline):
     """ Оплата за сьогодні, менеджер може редагувати"""
