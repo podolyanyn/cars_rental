@@ -159,7 +159,7 @@ class ClientContract(models.Model):
     city = models.CharField('Місто, де заключений контракт', max_length=10)	# Назва міста, в якому заключений контракт !!! Доопрацювати вибір зі списку
     date = models.DateField('Дата контракту')									# Дата контракту
     client = models.ForeignKey(ClientKyiv, on_delete=models.CASCADE, default=1)			# Клієнт    
-    car = models.OneToOneField(CarKyiv, on_delete=models.CASCADE, default=2)			# 	Авто
+    car = models.OneToOneField(CarKyiv, on_delete=models.CASCADE, default=1)			# 	Авто
     investor_full_name = models.CharField('ПІБ інвестора',max_length=50)				# ПІБ інвестора	
     director_full_name = models.CharField('ПІБ директора фірми/філіалу фірми',max_length=50)				# ПІБ директора фірми/філіалу фірми
     #client_full_name = models.CharField('ПІБ клієнта', max_length=50) 					# ПІБ клієнта
