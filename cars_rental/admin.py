@@ -9,8 +9,8 @@ from django.template import loader
 from django.utils.safestring import mark_safe
 
 # Register your models here.
-from .models import ClientKyiv, ClientLviv, Investor, CarKyiv, CarLviv, ClientContract, InvestorContract, Color, ClientContractTimetable, InvestorContractPercentagePayment, InvestorContractBodyTimetable
-from .models import InvestorContractBodyPayment, ClientContractTO, ClientContractTOToday, Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa #, ClientContractWeeklyCarReport#, YourModel
+from .models import ClientKyiv, ClientLviv, Investor, CarKyiv, CarLviv, ClientContractKyiv, InvestorContract, Color, ClientContractTimetableKyiv, InvestorContractPercentagePayment, InvestorContractBodyTimetable
+from .models import InvestorContractBodyPayment, ClientContractTOKyiv,  Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa #, ClientContractWeeklyCarReport#, YourModel ClientContractTOToday,
 from .forms import yourForm
 from import_export import resources
 from import_export.admin import  ExportMixin, ExportActionMixin
@@ -116,9 +116,9 @@ class CarInline(admin.StackedInline):
 class ClientInline(admin.StackedInline):
     model = ClientKyiv
     #extra = 1
-class ClientContractTimetableInlineEdit(admin.TabularInline):
+class ClientContractTimetableInlineEditKyiv(admin.TabularInline):
     """ Оплата за сьогодні, менеджер може редагувати"""
-    model = ClientContractTimetable
+    model = ClientContractTimetableKyiv
     extra = 0
     fields = ['planned_payment_date', 'planned_amount_payment_usd', 'amount_paid_usd', 'note']
     readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd']
@@ -128,14 +128,14 @@ class ClientContractTimetableInlineEdit(admin.TabularInline):
     
     def get_queryset(self, request):
         """ Вибрати  запис з графіку погашень, якщо планова дата співпадає з сьогоднішнім днем """
-        qs = super(ClientContractTimetableInlineEdit, self).get_queryset(request)
+        qs = super(ClientContractTimetableInlineEditKyiv, self).get_queryset(request)
         return qs.filter(planned_payment_date = date.today() )
 
     def has_change_permission(self, request, obj=None):
        return not request.user.groups.filter(name='Manager').exists()
 	
-class ClientContractTimetableInline(admin.TabularInline):
-    model = ClientContractTimetable
+class ClientContractTimetableInlineKyiv(admin.TabularInline):
+    model = ClientContractTimetableKyiv
     extra = 0
     fields = ['planned_payment_date', 'planned_amount_payment_usd', 'amount_paid_usd', 'note']
     #readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd', 'real_payment_date', 'amount_paid_usd', 'note']
@@ -151,22 +151,22 @@ class ClientContractTimetableInline(admin.TabularInline):
     def has_change_permission(self, request, obj=None):
        return not request.user.groups.filter(name='Manager').exists()
 		
-class ClientContractTOTodayInline(admin.TabularInline):
-    """Дані по ТО за сьогодні, менеджер може редагувати"""
-    model = ClientContractTOToday
-    extra = 0
-    fields = ['date', 'sum', 'note']
-    readonly_fields = ['date']
-    classes = ['collapse']
-    
-    def get_queryset(self, request):
-        """ Вибрати лише дані за поточне число """
-        qs = super(ClientContractTOTodayInline, self).get_queryset(request)
-        return qs.filter(date = date.today() )	
+#class ClientContractTOTodayInline(admin.TabularInline):
+#    """Дані по ТО за сьогодні, менеджер може редагувати"""
+#    model = ClientContractTOToday
+#    extra = 0
+#    fields = ['date', 'sum', 'note']
+#    readonly_fields = ['date']
+#    classes = ['collapse']
+#    
+#    def get_queryset(self, request):
+#        """ Вибрати лише дані за поточне число """
+#        qs = super(ClientContractTOTodayInline, self).get_queryset(request)
+#        return qs.filter(date = date.today() )	
 	
-class ClientContractTOInline(admin.TabularInline):
+class ClientContractTOInlineKyiv(admin.TabularInline):
     """ Дані по ТО """
-    model = ClientContractTO
+    model = ClientContractTOKyiv
     extra = 0
     fields = ['date', 'sum', 'note']    
     ordering = ['date']
@@ -196,13 +196,13 @@ class ClientContractTOInline(admin.TabularInline):
         #return not request.user.groups.filter(name='Manager').exists() and 
         #print ("obj = ", obj)
 		
-class ClientContractAdmin(admin.ModelAdmin):
+class ClientContractAdminKyiv(admin.ModelAdmin):
     #fieldsets = [
     #   (None,               {'fields': ['question_text']}),
     #    ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
     #]
     fields = ['number', 'number_number', 'city', 'date', 'client', 'car', 'investor_full_name', 'director_full_name', 'initial_cost_car_usd', 'commercial_course_usd_test', 'initial_cost_car_uah', 'period_days', 'frequency_payment', 'amount_payment_usd', 'amount_payment_uah', 'amount_payment_TO_uah', 'balance_TO_uah', 'loan_amount_paid_usd', 'loan_amount_to_be_paid_usd', 'status_body_usd']
-    inlines = [ClientContractTOTodayInline, ClientContractTOInline, ClientContractTimetableInlineEdit , ClientContractTimetableInline]	
+    inlines = [ ClientContractTOInlineKyiv, ClientContractTimetableInlineEditKyiv , ClientContractTimetableInlineKyiv]	 #ClientContractTOTodayInline,
     #inlines = [ClientInline]
 	# ...
     #fields = ['number', 'city', 'date', 'client', 'car']
@@ -233,7 +233,7 @@ class ClientContractAdmin(admin.ModelAdmin):
         #self.status_body = self.investorcontractbodypayment_set.all().filter(date__lte=timetable[i].payment_date).aggregate(Sum('sum'))['sum__sum']
         #sss = self.all().aggregate(Max('number_number'))
         # Розрахунок максимального номеру в поточному році. Використав скорочену форму терн. оператора. Якщо отримую None, то присвоюю 0
-        max_number = ClientContract.objects.all().filter(date__year = date.today().year).aggregate(Max('number_number'))['number_number__max'] or 0
+        max_number = ClientContractKyiv.objects.all().filter(date__year = date.today().year).aggregate(Max('number_number'))['number_number__max'] or 0
         #print ('max_number = ', max_number)		
         
         #04.06.2020  закоментовую для commercial_course_usd_test, не знаю, як дістатись до значень об'єкту obj,  тобто ClientContract (зробив через default в моделі)
@@ -241,7 +241,7 @@ class ClientContractAdmin(admin.ModelAdmin):
         #print ('self = ', self.fields)		
         return {'number': str(date.today().year) + '-' + str(max_number+1) + '/К', 'number_number':max_number+1} #, 'commercial_course_usd_test':commercial_c_u}
         
-admin.site.register(ClientContract, ClientContractAdmin)
+admin.site.register(ClientContractKyiv, ClientContractAdminKyiv)
     
 
 class InvestorContractPercentagePaymentInline(admin.TabularInline):
@@ -365,7 +365,7 @@ admin.site.register(ExchangeRateOdesa, ExchangeRateOdesaAdmin)
 #    def paid_for_the_week(self, obj):
 #        """ Розрахунок суми платежів по контракту за останній тиждень, або за період """
 #        today=date.today()
-#        result =  loan_amount_paid_usd = obj.clientcontracttimetable_set.all().filter(planned_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0
+#        result =  loan_amount_paid_usd = obj.clientcontracttimetablekyiv_set.all().filter(planned_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0
 #        return result
 #    paid_for_the_week.short_description = 'Оплачено за тиждень'
 #
@@ -377,7 +377,7 @@ admin.site.register(ExchangeRateOdesa, ExchangeRateOdesaAdmin)
 #    def get_total_sum(self):
 #        """ Розрахувати суму """
 #        #functions to calculate whatever you want...
-#        total_sum = ClientContractTimetable.objects.all().aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum']
+#        total_sum = ClientContractTimetableKyiv.objects.all().aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum']
 #        return total_sum
 #
     #change_list_template = 'admin/cars_rental/extras/sometemplate_change_list.html'
