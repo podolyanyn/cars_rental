@@ -324,12 +324,12 @@ class ClientContractOdesa(models.Model):
     def __str__(self):
         return self.number
 
-class ClientContractWeeklyCarReport(ClientContract):
-    """ Проксі-Клас для звіту -Тижневий звіт по авто- """
-    class Meta:
-        proxy = True
-        verbose_name = "Клієнтський контракт, Тижневий звіт по авто"
-        verbose_name_plural = "Клієнтські контракти, Тижневий звіт по авто"
+#class ClientContractWeeklyCarReport(ClientContract):
+#    """ Проксі-Клас для звіту -Тижневий звіт по авто- """
+#    class Meta:
+#        proxy = True
+#        verbose_name = "Клієнтський контракт, Тижневий звіт по авто"
+#        verbose_name_plural = "Клієнтські контракти, Тижневий звіт по авто"
 		
 # Інвесторський контракт		
 class InvestorContract(models.Model):
