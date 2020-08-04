@@ -10,7 +10,7 @@ from django.utils.safestring import mark_safe
 
 # Register your models here.
 from .models import ClientKyiv, ClientLviv, Investor, CarKyiv, CarLviv, ClientContractKyiv, InvestorContract, Color, ClientContractTimetableKyiv, InvestorContractPercentagePayment, InvestorContractBodyTimetable
-from .models import InvestorContractBodyPayment, ClientContractTOKyiv,  Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa #, ClientContractWeeklyCarReport#, YourModel ClientContractTOToday,
+from .models import InvestorContractBodyPayment, ClientContractTOKyiv,  Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa, ClientContractTOTodayKyiv #, ClientContractWeeklyCarReport#, YourModel 
 from .forms import yourForm
 from import_export import resources
 from import_export.admin import  ExportMixin, ExportActionMixin
@@ -151,18 +151,18 @@ class ClientContractTimetableInlineKyiv(admin.TabularInline):
     def has_change_permission(self, request, obj=None):
        return not request.user.groups.filter(name='Manager').exists()
 		
-#class ClientContractTOTodayInline(admin.TabularInline):
-#    """Дані по ТО за сьогодні, менеджер може редагувати"""
-#    model = ClientContractTOToday
-#    extra = 0
-#    fields = ['date', 'sum', 'note']
-#    readonly_fields = ['date']
-#    classes = ['collapse']
-#    
-#    def get_queryset(self, request):
-#        """ Вибрати лише дані за поточне число """
-#        qs = super(ClientContractTOTodayInline, self).get_queryset(request)
-#        return qs.filter(date = date.today() )	
+class ClientContractTOTodayInlineKyiv(admin.TabularInline):
+    """Дані по ТО за сьогодні, менеджер може редагувати"""
+    model = ClientContractTOTodayKyiv
+    extra = 0
+    fields = ['date', 'sum', 'note']
+    readonly_fields = ['date']
+    classes = ['collapse']
+    
+    def get_queryset(self, request):
+        """ Вибрати лише дані за поточне число """
+        qs = super(ClientContractTOTodayInlineKyiv, self).get_queryset(request)
+        return qs.filter(date = date.today() )	
 	
 class ClientContractTOInlineKyiv(admin.TabularInline):
     """ Дані по ТО """
@@ -202,7 +202,7 @@ class ClientContractAdminKyiv(admin.ModelAdmin):
     #    ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
     #]
     fields = ['number', 'number_number', 'city', 'date', 'client', 'car', 'investor_full_name', 'director_full_name', 'initial_cost_car_usd', 'commercial_course_usd_test', 'initial_cost_car_uah', 'period_days', 'frequency_payment', 'amount_payment_usd', 'amount_payment_uah', 'amount_payment_TO_uah', 'balance_TO_uah', 'loan_amount_paid_usd', 'loan_amount_to_be_paid_usd', 'status_body_usd']
-    inlines = [ ClientContractTOInlineKyiv, ClientContractTimetableInlineEditKyiv , ClientContractTimetableInlineKyiv]	 #ClientContractTOTodayInline,
+    inlines = [ClientContractTOTodayInlineKyiv, ClientContractTOInlineKyiv, ClientContractTimetableInlineEditKyiv , ClientContractTimetableInlineKyiv]	 #
     #inlines = [ClientInline]
 	# ...
     #fields = ['number', 'city', 'date', 'client', 'car']

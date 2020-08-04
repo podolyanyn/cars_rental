@@ -343,16 +343,15 @@ class ClientContractTOKyiv(ClientContractTO):
     def __str__(self):
         return ""
 		
-#class ClientContractTOToday(ClientContractTO):
-#    """ Клієнтський контракт, ТО; Proxy-модель для вводу даних (для менеджера) """
-#    class Meta:
-#        proxy = True
-#        verbose_name = "Клієнтський контракт, ТО; введення даних"
-#        verbose_name_plural = "Клієнтський контракт, ТО; введення даних"
-#        
-#
-#    def __str__(self):
-#        return ""
+class ClientContractTOTodayKyiv(ClientContractTOKyiv):
+    """ Клієнтський контракт, ТО; Proxy-модель для вводу даних (для менеджера) (Київ) """
+    class Meta:
+        proxy = True
+        verbose_name = "Клієнтський контракт, ТО; введення даних (Київ)"
+        verbose_name_plural = "Клієнтський контракт, ТО; введення даних (Київ)"        
+
+    def __str__(self):
+        return ""
 		
 class ClientContractOdesa(models.Model):
     number = models.CharField('Номер контракту', max_length=10) 				# номер контракту
