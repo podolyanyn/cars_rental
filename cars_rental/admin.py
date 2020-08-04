@@ -9,7 +9,7 @@ from django.template import loader
 from django.utils.safestring import mark_safe
 
 # Register your models here.
-from .models import ClientKyiv, ClientLviv, Investor, CarKyiv, CarLviv, ClientContractKyiv, InvestorContract, Color, ClientContractTimetableKyiv, InvestorContractPercentagePayment, InvestorContractBodyTimetable
+from .models import ClientKyiv, ClientLviv, Investor, CarKyiv, CarLviv, ClientContractKyiv, ClientContractLviv, InvestorContract, Color, ClientContractTimetableKyiv, InvestorContractPercentagePayment, InvestorContractBodyTimetable
 from .models import InvestorContractBodyPayment, ClientContractTOKyiv,  Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa, ClientContractTOTodayKyiv, ClientContractWeeklyCarReportKyiv #, #, YourModel 
 from .forms import yourForm
 from import_export import resources
@@ -242,7 +242,14 @@ class ClientContractAdminKyiv(admin.ModelAdmin):
         return {'number': str(date.today().year) + '-' + str(max_number+1) + '/К', 'number_number':max_number+1} #, 'commercial_course_usd_test':commercial_c_u}
         
 admin.site.register(ClientContractKyiv, ClientContractAdminKyiv)
+
+class ClientContractAdminLviv(ClientContractAdminKyiv):
+    inlines = []	 #
     
+    def get_changeform_initial_data(self, request):
+        max_number = ClientContractLviv.objects.all().filter(date__year = date.today().year).aggregate(Max('number_number'))['number_number__max'] or 0
+        return {'number': str(date.today().year) + '-' + str(max_number+1) + '/Л', 'number_number':max_number+1} #, 'commercial_course_usd_test':commercial_c_u}
+admin.site.register(ClientContractLviv, ClientContractAdminLviv)    
 
 class InvestorContractPercentagePaymentInline(admin.TabularInline):
     model = InvestorContractPercentagePayment
