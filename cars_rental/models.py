@@ -75,6 +75,14 @@ class ClientKyiv(Client):
         verbose_name = "Клієнт (Київ)"
         verbose_name_plural = "Клієнти (Київ)"
 
+# Клієнт, Львів	
+class ClientLviv(Client):  
+    def __str__(self):
+        return self.full_name + "(Львів)"								
+    class Meta:        
+        verbose_name = "Клієнт (Львів)"
+        verbose_name_plural = "Клієнти (Львів)"
+		
 class ClientOdesa(models.Model):
     full_name = models.CharField('ПІБ', max_length=50) 									# ПІБ
     residence_address = models.CharField('адреса проживання', max_length=100)			# адреса проживання 
@@ -156,6 +164,13 @@ class CarKyiv(Car):
         verbose_name = "Автомобіль (Київ)"
         verbose_name_plural = "Автомобілі (Київ)"
 
+# Авто, Львів	
+class CarLviv(Car):  
+    def __str__(self):
+        return self.brand + " " + self.model + " " + self.license_plate + "(Львів)"								
+    class Meta:        
+        verbose_name = "Автомобіль (Львів)"
+        verbose_name_plural = "Автомобілі (Львів)"
 		
 class CarOdesa(models.Model):
     brand = models.CharField('Марка', max_length=20) 									# марка

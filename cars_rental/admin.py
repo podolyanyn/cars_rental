@@ -9,7 +9,7 @@ from django.template import loader
 from django.utils.safestring import mark_safe
 
 # Register your models here.
-from .models import ClientKyiv, Investor, CarKyiv, ClientContract, InvestorContract, Color, ClientContractTimetable, InvestorContractPercentagePayment, InvestorContractBodyTimetable
+from .models import ClientKyiv, ClientLviv, Investor, CarKyiv, CarLviv, ClientContract, InvestorContract, Color, ClientContractTimetable, InvestorContractPercentagePayment, InvestorContractBodyTimetable
 from .models import InvestorContractBodyPayment, ClientContractTO, ClientContractTOToday, Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa #, ClientContractWeeklyCarReport#, YourModel
 from .forms import yourForm
 from import_export import resources
@@ -76,6 +76,9 @@ class ClientAdminKyiv(admin.ModelAdmin):
     search_fields = ['full_name', 'phone_number', 'phone_number_2', 'phone_number_3']
 admin.site.register(ClientKyiv, ClientAdminKyiv)
 
+class ClientAdminLviv(ClientAdminKyiv):
+    pass
+admin.site.register(ClientLviv, ClientAdminLviv)
 
 #admin.site.register(Investor)
 class InvestorAdmin(admin.ModelAdmin):
@@ -98,7 +101,12 @@ class CarAdminKyiv(admin.ModelAdmin):
     search_fields = ['license_plate']
     #date_hierarchy = 'pub_date'
 admin.site.register(CarKyiv, CarAdminKyiv)
+
 #ra_admin_site.register(Car, CarAdmin) # django-ra-erp
+
+class CarAdminLviv(CarAdminKyiv):
+    pass
+admin.site.register(CarLviv, CarAdminLviv)
 
 #admin.site.register(CarOdesa)
 
