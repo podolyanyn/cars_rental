@@ -96,19 +96,6 @@ class Investor(models.Model):
         verbose_name = "Інвестор"
         verbose_name_plural = "Інвестори"
 		
-# Інвестор
-class InvestorOdesa(models.Model):
-    full_name = models.CharField('ПІБ', max_length=50) 									# ПІБ
-    phone_number = models.CharField('номер телефону', max_length=15)					# номер телефону
-    # ...
-    def __str__(self):
-        return self.full_name
-
-    class Meta:        
-        verbose_name = "Інвестор (Одеса)"
-        verbose_name_plural = "Інвестори (Одеса)"
-
-		
 # Колір авто		
 class Color(models.Model):    
     name = models.CharField('Колір', max_length=20,  unique=True) 									# назва кольору
@@ -155,19 +142,6 @@ class CarLviv(Car):
         verbose_name = "Автомобіль (Львів)"
         verbose_name_plural = "Автомобілі (Львів)"
 		
-class CarOdesa(models.Model):
-    brand = models.CharField('Марка', max_length=20) 									# марка
-    model = models.CharField('Модель', max_length=20)									# модель
-    production_year = models.IntegerField('Рік випуску')								# рік  випуску
-    body_number = models.CharField('Номер кузова', max_length=30)					# номер кузова
-    license_plate = models.CharField('Номерний знак', max_length=30)					# номерний знак
-    # ...
-    def __str__(self):
-        return self.body_number
-
-    class Meta:        
-        verbose_name = "Автомобіль (Одеса)"
-        verbose_name_plural = "Автомобілі (Одеса)"
 		
 # Клієнтський контракт		
 class ClientContract(models.Model):
@@ -336,22 +310,6 @@ class ClientContractTOTodayKyiv(ClientContractTOKyiv):
     def __str__(self):
         return ""
 		
-class ClientContractOdesa(models.Model):
-    number = models.CharField('Номер контракту', max_length=10) 				# номер контракту
-    city = models.CharField('Місто, де заключений контракт', max_length=10)	# Назва міста, в якому заключений контракт !!! Доопрацювати вибір зі списку
-    date = models.DateField('Дата контракту')									# Дата контракту
-    investor_full_name = models.CharField('ПІБ інвестора',max_length=50)				# ПІБ інвестора	
-    director_full_name = models.CharField('ПІБ директора фірми/філіалу фірми',max_length=50)				# ПІБ директора фірми/філіалу фірми
-    client_full_name = models.CharField('ПІБ клієнта', max_length=50) 					# ПІБ клієнта
-    initial_cost_car_usd = models.FloatField('Вартість автомобіля в доларах, на момент складання контракту')# Вартість автомобіля в доларах, на момент складання контракту
-    initial_cost_car_uah = models.FloatField('Вартість автомобіля в гривні, на момент складання контракту') # Вартість автомобіля в гривні, на момент складання контракту
-    period_days = models.IntegerField('Строк контракту, в днях') 				# Строк контракту, в днях
-    period_years = models.IntegerField('Строк контракту, в роках') 			# Строк контракту, в роках
-    frequency_payment = models.CharField('Періодичність оплати', max_length=10)			# Періодичність оплати
-    amount_payment_usd = models.FloatField('Сума платежу в доларах') 					# Сума платежу в доларах
-    # ...
-    def __str__(self):
-        return self.number
 
 class ClientContractWeeklyCarReportKyiv(ClientContractKyiv):
     """ Проксі-Клас для звіту -Тижневий звіт по авто- """
