@@ -10,7 +10,7 @@ from django.utils.safestring import mark_safe
 
 # Register your models here.
 from .models import ClientKyiv, ClientLviv, Investor, CarKyiv, CarLviv, ClientContractKyiv, InvestorContract, Color, ClientContractTimetableKyiv, InvestorContractPercentagePayment, InvestorContractBodyTimetable
-from .models import InvestorContractBodyPayment, ClientContractTOKyiv,  Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa, ClientContractTOTodayKyiv #, ClientContractWeeklyCarReport#, YourModel 
+from .models import InvestorContractBodyPayment, ClientContractTOKyiv,  Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa, ClientContractTOTodayKyiv, ClientContractWeeklyCarReportKyiv #, #, YourModel 
 from .forms import yourForm
 from import_export import resources
 from import_export.admin import  ExportMixin, ExportActionMixin
@@ -354,42 +354,42 @@ admin.site.register(ExchangeRateOdesa, ExchangeRateOdesaAdmin)
 #class WeeklyCarReportAdmin(ExportMixin, admin.ModelAdmin):
 
 
-#class WeeklyCarReportAdmin(ExportActionMixin, admin.ModelAdmin):
-#    """ Тижневий звіт по авто """
-#    list_display = ('date', 'client', 'car', 'amount_payment_usd', 'paid_for_the_week',  'payments_difference', 'frequency_payment' )
-#    list_totals = [('amount_payment_usd',  Sum)]
-#    #list_filter = ['brand', 'model']    
-#    #change_list_template = 'admin/weekly_car_report_admin_change_list.html'
-#    date_hierarchy = 'date'
-#
-#    def paid_for_the_week(self, obj):
-#        """ Розрахунок суми платежів по контракту за останній тиждень, або за період """
-#        today=date.today()
-#        result =  loan_amount_paid_usd = obj.clientcontracttimetablekyiv_set.all().filter(planned_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0
-#        return result
-#    paid_for_the_week.short_description = 'Оплачено за тиждень'
-#
-#    def payments_difference(self, obj):
-#        """ Різниця між оплаченими платежами та плановим """
-#        return self.paid_for_the_week(obj) - obj.amount_payment_usd
-#    payments_difference.short_description = 'Різниця'
-#
-#    def get_total_sum(self):
-#        """ Розрахувати суму """
-#        #functions to calculate whatever you want...
-#        total_sum = ClientContractTimetableKyiv.objects.all().aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum']
-#        return total_sum
-#
+class WeeklyCarReportAdminKyiv(ExportActionMixin, admin.ModelAdmin):
+    """ Тижневий звіт по авто """
+    list_display = ('date', 'client', 'car', 'amount_payment_usd', 'paid_for_the_week',  'payments_difference', 'frequency_payment' )
+    list_totals = [('amount_payment_usd',  Sum)]
+    #list_filter = ['brand', 'model']    
+    #change_list_template = 'admin/weekly_car_report_admin_change_list.html'
+    date_hierarchy = 'date'
+
+    def paid_for_the_week(self, obj):
+        """ Розрахунок суми платежів по контракту за останній тиждень, або за період """
+        today=date.today()
+        result =  loan_amount_paid_usd = obj.clientcontracttimetablekyiv_set.all().filter(planned_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0
+        return result
+    paid_for_the_week.short_description = 'Оплачено за тиждень'
+
+    def payments_difference(self, obj):
+        """ Різниця між оплаченими платежами та плановим """
+        return self.paid_for_the_week(obj) - obj.amount_payment_usd
+    payments_difference.short_description = 'Різниця'
+
+    def get_total_sum(self):
+        """ Розрахувати суму """
+        #functions to calculate whatever you want...
+        total_sum = ClientContractTimetableKyiv.objects.all().aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum']
+        return total_sum
+
     #change_list_template = 'admin/cars_rental/extras/sometemplate_change_list.html'
     #change_list_results_template = 'admin/cars_rental/extras/change_list_results_.html'
     
-#    def changelist_view(self, request, extra_context=None):
-#    
-#        my_context = {
-#            'total': self.get_total_sum(),
-#        }
-#        return super(WeeklyCarReportAdmin, self).changelist_view(request,
-#            extra_context=my_context)
+    def changelist_view(self, request, extra_context=None):
+    
+        my_context = {
+            'total': self.get_total_sum(),
+        }
+        return super(WeeklyCarReportAdminKyiv, self).changelist_view(request,
+            extra_context=my_context)
 
 #    """
 #    def changelist_view(self, request, extra_context=None):
@@ -421,7 +421,7 @@ admin.site.register(ExchangeRateOdesa, ExchangeRateOdesaAdmin)
 #    """
 
     
-#admin.site.register(ClientContractWeeklyCarReport, WeeklyCarReportAdmin)
+admin.site.register(ClientContractWeeklyCarReportKyiv, WeeklyCarReportAdminKyiv)
 
 # Робота з модулем django-import-export
 #class ClientResource(resources.ModelResource):
