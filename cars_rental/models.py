@@ -83,23 +83,6 @@ class ClientLviv(Client):
         verbose_name = "Клієнт (Львів)"
         verbose_name_plural = "Клієнти (Львів)"
 		
-class ClientOdesa(models.Model):
-    full_name = models.CharField('ПІБ', max_length=50) 									# ПІБ
-    residence_address = models.CharField('адреса проживання', max_length=100)			# адреса проживання 
-    registration_address = models.CharField('адреса реєстрації', max_length=100)		# адреса реєстрації
-    passport_series = models.CharField('серія паспорту',max_length=2)					# серія паспорту
-    passport_number = models.CharField('номер паспорту', max_length=6)					# номер паспорту
-    who_issued_passport = models.CharField('ким виданий паспорт', max_length=100)		# ким виданий паспорт
-    when_passport_is_issued = models.DateField('коли виданий паспорт')					# коли виданий паспорт
-    rnokpp = models.CharField('реєстраційний номер облікової картки платника податків', max_length=10)		# реєстраційний номер облікової картки платника податків
-    phone_number = models.CharField('номер телефону', max_length=15)										# номер телефону
-    # ...
-    def __str__(self):
-        return self.full_name
-
-    class Meta:        
-        verbose_name = "Клієнт (Одеса)"
-        verbose_name_plural = "Клієнти (Одеса)"
 	
 # Інвестор
 class Investor(models.Model):
