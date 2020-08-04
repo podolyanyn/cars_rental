@@ -247,6 +247,17 @@ class ClientContractKyiv(ClientContract):
     class Meta:        
         verbose_name = "Клієнтський контракт (Київ)"
         verbose_name_plural = "Клієнтські контракти (Київ)"
+
+# Клієнтський контракт	, Львів	
+class ClientContractLviv(ClientContract):
+    client = models.ForeignKey(ClientLviv, on_delete=models.CASCADE, default=1)			# Клієнт    
+    car = models.OneToOneField(CarLviv, on_delete=models.CASCADE, default=1)			# 	Авто
+
+    def __str__(self):
+        return self.number + "(Львів)"							
+    class Meta:        
+        verbose_name = "Клієнтський контракт (Львів)"
+        verbose_name_plural = "Клієнтські контракти (Львів)"
 		
 # Клієнтський контракт, графік погашення	(тіло + %)	
 class ClientContractTimetable(models.Model):
