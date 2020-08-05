@@ -376,13 +376,21 @@ class Investor(models.Model):
         verbose_name = "Інвестор"
         verbose_name_plural = "Інвестори"
 		
-# Клієнт, Київ	
+# Інвестор, Київ	
 class InvestorKyiv(Investor):  
     def __str__(self):
         return self.full_name								
     class Meta:        
         verbose_name = "Інвестор (Київ)"
         verbose_name_plural = "Інвестори (Київ)"
+		
+# Інвестор, Львів	
+class InvestorLviv(Investor):  
+    def __str__(self):
+        return self.full_name								
+    class Meta:        
+        verbose_name = "Інвестор (Львів)"
+        verbose_name_plural = "Інвестори (Львів)"
 		
 # Інвесторський контракт		
 class InvestorContract(models.Model):
@@ -425,24 +433,24 @@ class InvestorContract(models.Model):
 		
     def bodytimetable_calc(self): 
         #self.investorcontractbodytimetable_set.create(payment_date = self.period_1, payment_percentage = self.period_1_percentage, payment_usd = self.period_1_percentage / 100 * self.initial_cost_car_usd)		
-        self.investorcontractbodytimetable_set.update(payment_usd = payment_percentage / 100 * self.initial_cost_car_usd)		
+        self.investorcontractbodytimetablekyiv_set.update(payment_usd = payment_percentage / 100 * self.initial_cost_car_usd)		
         #
     #  розрахунок status_body
     def status_body_calc(self):
         today=date.today()
-        timetable=self.investorcontractbodytimetable_set.all()
+        timetable=self.investorcontractbodytimetablekyiv_set.all()
         #print('timetable.aggregate  = ', timetable.all().aggregate(Sum('payment_usd')) )
         #timetable=self.investorcontractbodytimetable_set.objects.all()
         #kkk = self.investorcontractbodytimetable_set.count()
         #kkk=self.investorcontractbodytimetable_set.count()
         if today <= timetable[0].payment_date:
-            self.status_body = self.investorcontractbodypayment_set.all().aggregate(Sum('sum'))['sum__sum']            
+            self.status_body = self.investorcontractbodypaymentkyiv_set.all().aggregate(Sum('sum'))['sum__sum']            
 			#self.refresh_from_db()
 			#self.status_body.update(self.investorcontractbodypayment_set.all().aggregate(Sum('sum')))
             #print("self.status_body = ", self.status_body)
         else:
             if today > timetable[self.number_periods-1].payment_date:
-                self.status_body = self.investorcontractbodypayment_set.all().aggregate(Sum('sum'))['sum__sum'] -  timetable.aggregate(Sum('payment_usd'))['payment_usd__sum']
+                self.status_body = self.investorcontractbodypaymentkyiv_set.all().aggregate(Sum('sum'))['sum__sum'] -  timetable.aggregate(Sum('payment_usd'))['payment_usd__sum']
             else:
                 for i in 	range(self.number_periods-1):
                     if timetable[i].payment_date<today<=timetable[i+1].payment_date :
@@ -452,13 +460,13 @@ class InvestorContract(models.Model):
                 #print('timetable[i].payment_date = ', timetable[i].payment_date, "type = ", type(timetable[i].payment_date))
                 #
 				#print ('self.investorcontractbodypayment_set.date = ', self.investorcontractbodypayment_set.date)
-                self.status_body = self.investorcontractbodypayment_set.all().filter(date__lte=timetable[i].payment_date).aggregate(Sum('sum'))['sum__sum'] -  timetable.filter(payment_date__lte=timetable[i].payment_date).aggregate(Sum('payment_usd'))['payment_usd__sum']
+                self.status_body = self.investorcontractbodypaymentkyiv_set.all().filter(date__lte=timetable[i].payment_date).aggregate(Sum('sum'))['sum__sum'] -  timetable.filter(payment_date__lte=timetable[i].payment_date).aggregate(Sum('payment_usd'))['payment_usd__sum']
                 #self.status_body = self.investorcontractbodypayment_set.all().filter(date<=timetable[i].payment_date).aggregate(Sum('sum'))['sum__sum'] -  timetable.aggregate(Sum('payment_usd'))['payment_usd__sum']
         self.save()
         #
     def control_number_periods(self):
-        timetable=self.investorcontractbodytimetable_set.all()
-        if self.investorcontractbodytimetable_set.count() > self.number_periods:
+        timetable=self.investorcontractbodytimetablekyiv_set.all()
+        if self.investorcontractbodytimetablekyiv_set.count() > self.number_periods:
             #print ('karaul')
             #self.message_user(request, "tttr")
             return False
@@ -472,7 +480,7 @@ class InvestorContract(models.Model):
         else:
             last_month_last_day = today.replace(day=1) - timedelta(days=1) #останній день останнього місяця
             print('last_month_last_day = ', last_month_last_day, ' number = ', last_month_last_day.day)
-            last_month_last_day_body_payments = self.investorcontractbodypayment_set.all().filter(date__lte=last_month_last_day)  # платежі по тілу до останнього дня останнього місяця
+            last_month_last_day_body_payments = self.investorcontractbodypaymentkyiv_set.all().filter(date__lte=last_month_last_day)  # платежі по тілу до останнього дня останнього місяця
             last_month_last_day_body_payments_count = last_month_last_day_body_payments.count() # кількість платежів по тілу до останнього дня останнього місяця
             print('last_month_last_day_body_payments_count = ', last_month_last_day_body_payments_count)
             
@@ -529,7 +537,7 @@ class InvestorContract(models.Model):
                     self.last_month_percentage += credit_body * coef * (last_month_last_day - last_payment_date_body).days
                 else:
                     self.last_month_percentage = credit_body * coef * last_month_days_number # % за останній місяць
-            total_paid_percentage = self.investorcontractpercentagepayment_set.all().filter(date__lte=today).aggregate(Sum('sum'))['sum__sum'] # сплачені % за весь час ;
+            total_paid_percentage = self.investorcontractpercentagepaymentkyiv_set.all().filter(date__lte=today).aggregate(Sum('sum'))['sum__sum'] # сплачені % за весь час ;
             if total_paid_percentage == None:
                 total_paid_percentage = 0
             print('last_month_percentage = ', self.last_month_percentage, ' ; total_calc_percentage = ', total_calc_percentage, ' ; total_paid_percentage = ', total_paid_percentage)
