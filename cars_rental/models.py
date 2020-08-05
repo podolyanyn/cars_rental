@@ -184,7 +184,7 @@ class ClientContract(models.Model):
     
     # Розрахунок графіку погашення
     def timetable_calc(self): 
-        if self.clientcontracttimetable_set.count() > 0:
+        if self.clientcontracttimetablekyiv_set.count() > 0:
             return
         else:
             #today = date.today()
@@ -197,12 +197,12 @@ class ClientContract(models.Model):
             day_end = self.date + timedelta(days=self.period_days)
             while i <= day_end:
                 #self.clientcontracttimetable_set.create(planned_payment_date = i, planned_amount_payment_usd=self.amount_payment_usd, real_payment_date=i, amount_paid_usd=self.amount_payment_usd)
-                self.clientcontracttimetable_set.create(planned_payment_date = i, planned_amount_payment_usd=self.amount_payment_usd, amount_paid_usd=None)
+                self.clientcontracttimetablekyiv_set.create(planned_payment_date = i, planned_amount_payment_usd=self.amount_payment_usd, amount_paid_usd=None)
                 i = i + timedelta(days=7)
                 
     # Розрахунок залишку ТО
     def to_calc(self):
-        self.balance_TO_uah = self.clientcontractto_set.all().aggregate(Sum('sum'))['sum__sum']
+        self.balance_TO_uah = self.clientcontracttokyiv_set.all().aggregate(Sum('sum'))['sum__sum']
         self.save()
     
     # Розрахунок номера контракту
@@ -214,7 +214,7 @@ class ClientContract(models.Model):
     
         today=date.today()
         #self.loan_amount_paid_usd = self.clientcontracttimetable_set.all().filter(real_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum']
-        self.loan_amount_paid_usd = self.clientcontracttimetable_set.all().filter(planned_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0
+        self.loan_amount_paid_usd = self.clientcontracttimetablekyiv_set.all().filter(planned_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0
         self.loan_amount_to_be_paid_usd = self.initial_cost_car_usd - self.loan_amount_paid_usd
         self.save()
 
@@ -237,6 +237,50 @@ class ClientContractLviv(ClientContract):
     class Meta:        
         verbose_name = "Клієнтський контракт (Львів)"
         verbose_name_plural = "Клієнтські контракти (Львів)"
+		
+    # отримання курсу долара та перерахунок вартості авто на грн.
+    def get_commercial_course_usd_test(self):
+        #ExchangeRateKyiv.objects.all().filter(date = self.date): # Queryset повертає True, якщо у результаті вибірки є хоча б один елемент
+        self.commercial_course_usd_test = ExchangeRateLviv.objects.all().filter(date = self.date)[0].sum if ExchangeRateLviv.objects.all().filter(date = self.date) else 0
+        self.initial_cost_car_uah = self.initial_cost_car_usd * self.commercial_course_usd_test
+        self.amount_payment_uah = self.amount_payment_usd * self.commercial_course_usd_test
+        self.save()
+    
+    # Розрахунок графіку погашення
+    def timetable_calc(self): 
+        if self.clientcontracttimetablelviv_set.count() > 0:
+            return
+        else:
+            #today = date.today()
+            for i in range(7) :
+                day0 = self.date + timedelta(days=i)
+                if day0.weekday() == self.frequency_payment:
+                    day_1 = day0 if day0 != self.date else  self.date + timedelta(days=7)
+                    break
+            i = day_1
+            day_end = self.date + timedelta(days=self.period_days)
+            while i <= day_end:
+                #self.clientcontracttimetable_set.create(planned_payment_date = i, planned_amount_payment_usd=self.amount_payment_usd, real_payment_date=i, amount_paid_usd=self.amount_payment_usd)
+                self.clientcontracttimetablelviv_set.create(planned_payment_date = i, planned_amount_payment_usd=self.amount_payment_usd, amount_paid_usd=None)
+                i = i + timedelta(days=7)
+                
+    # Розрахунок залишку ТО
+    def to_calc(self):
+        self.balance_TO_uah = self.clientcontracttolviv_set.all().aggregate(Sum('sum'))['sum__sum']
+        self.save()
+    
+    # Розрахунок номера контракту
+    #def number_calc():
+    #    return {'number': '200'}
+	
+    def calc_loan_amount_paid(self):
+        """ Розрахунок виплаченої суми кредиту та залишку по кредиту """
+    
+        today=date.today()
+        #self.loan_amount_paid_usd = self.clientcontracttimetable_set.all().filter(real_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum']
+        self.loan_amount_paid_usd = self.clientcontracttimetablelviv_set.all().filter(planned_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0
+        self.loan_amount_to_be_paid_usd = self.initial_cost_car_usd - self.loan_amount_paid_usd
+        self.save()
 		
 # Клієнтський контракт, графік погашення	(тіло + %)	
 class ClientContractTimetable(models.Model):
