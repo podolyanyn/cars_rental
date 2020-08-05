@@ -9,8 +9,15 @@ from django.template import loader
 from django.utils.safestring import mark_safe
 
 # Register your models here.
-from .models import ClientKyiv, ClientLviv, InvestorKyiv, CarKyiv, CarLviv, ClientContractKyiv, ClientContractLviv, InvestorContractKyiv, Color, ClientContractTimetableKyiv, ClientContractTimetableLviv, InvestorContractPercentagePaymentKyiv, InvestorContractBodyTimetableKyiv
-from .models import InvestorContractBodyPaymentKyiv, ClientContractTOKyiv, ClientContractTOLviv, Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa, ClientContractTOTodayKyiv, ClientContractTOTodayLviv, ClientContractWeeklyCarReportKyiv #, #, YourModel 
+from .models import Color, Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa
+# Київ
+from .models import ClientKyiv, CarKyiv, ClientContractKyiv, ClientContractTimetableKyiv, ClientContractTOKyiv, ClientContractTOTodayKyiv
+from .models import InvestorKyiv, InvestorContractKyiv, InvestorContractBodyTimetableKyiv, InvestorContractBodyPaymentKyiv, InvestorContractPercentagePaymentKyiv
+from .models import ClientContractWeeklyCarReportKyiv 
+#Львів
+from .models import ClientLviv, CarLviv,  ClientContractLviv,  ClientContractTimetableLviv, ClientContractTOLviv,  ClientContractTOTodayLviv
+#from .models import #,     , #, #, YourModel 
+# Одеса
 from .forms import yourForm
 from import_export import resources
 from import_export.admin import  ExportMixin, ExportActionMixin
