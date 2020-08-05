@@ -323,9 +323,18 @@ class Investor(models.Model):
     def __str__(self):
         return self.full_name
 
-    class Meta:        
+    class Meta:
+        abstract = True			
         verbose_name = "Інвестор"
         verbose_name_plural = "Інвестори"
+		
+# Клієнт, Київ	
+class InvestorKyiv(Investor):  
+    def __str__(self):
+        return self.full_name								
+    class Meta:        
+        verbose_name = "Інвестор (Київ)"
+        verbose_name_plural = "Інвестор (Київ)"
 		
 # Інвесторський контракт		
 class InvestorContract(models.Model):
