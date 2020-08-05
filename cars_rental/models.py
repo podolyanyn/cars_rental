@@ -528,22 +528,6 @@ class InvestorContractPercentagePayment(models.Model):
         verbose_name = "Інвесторський контракт, платежі по % на тіло кредиту"
         verbose_name_plural = "Інвесторський контракт, платежі по % на тіло кредиту"
 		
-class InvestorContractOdesa(models.Model):
-    number = models.CharField('Номер контракту', max_length=10) 				# номер контракту
-    city = models.CharField('Місто, де заключений контракт', max_length=10)	# Назва міста, в якому заключений контракт !!! Доопрацювати вибір зі списку
-    date = models.DateField('Дата контракту')									# Дата контракту
-    investor_full_name = models.CharField('ПІБ інвестора',max_length=50)				# ПІБ інвестора	
-    director_full_name = models.CharField('ПІБ директора фірми/філіалу фірми',max_length=50)				# ПІБ директора фірми/філіалу фірми
-    client_full_name = models.CharField('ПІБ клієнта', max_length=50) 					# ПІБ клієнта
-    initial_cost_car_usd = models.FloatField('Вартість автомобіля в доларах, на момент складання контракту')# Вартість автомобіля в доларах, на момент складання контракту
-    initial_cost_car_uah = models.FloatField('Вартість автомобіля в гривні, на момент складання контракту') # Вартість автомобіля в гривні, на момент складання контракту
-    period_days = models.IntegerField('Строк контракту, в днях') 				# Строк контракту, в днях
-    period_years = models.IntegerField('Строк контракту, в роках') 			# Строк контракту, в роках
-    frequency_payment = models.CharField('Періодичність оплати', max_length=10)			# Періодичність оплати
-    amount_payment_usd = models.FloatField('Сума платежу в доларах') 					# Сума платежу в доларах
-    # ...
-    def __str__(self):
-        return self.number
 
 #class YourModel(models.Model):
 #    pass
