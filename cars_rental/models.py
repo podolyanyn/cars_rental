@@ -510,9 +510,13 @@ class InvestorContractBodyPayment(models.Model):
     date = models.DateField('Дата платежу', null=True)																# Дата платежу
     sum = models.FloatField('Сума платежу (погашення тіла боргу)', default=0) 							# Сума платежу (погашення тіла боргу)
 	
-    class Meta:        
+    class Meta:
+        abstract = True	
         verbose_name = "Інвесторський контракт, платежі по тілу кредиту"
         verbose_name_plural = "Інвесторський контракт, платежі по тілу кредиту"
+		
+class InvestorContractBodyPaymentKyiv(InvestorContractBodyPayment):
+    pass
 		
 # Інвесторський контракт, платежі по % на тіло кредиту !!! змінити назву полів
 class InvestorContractPercentagePayment(models.Model):

@@ -10,7 +10,7 @@ from django.utils.safestring import mark_safe
 
 # Register your models here.
 from .models import ClientKyiv, ClientLviv, InvestorKyiv, CarKyiv, CarLviv, ClientContractKyiv, ClientContractLviv, InvestorContractKyiv, Color, ClientContractTimetableKyiv, InvestorContractPercentagePayment, InvestorContractBodyTimetableKyiv
-from .models import InvestorContractBodyPayment, ClientContractTOKyiv,  Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa, ClientContractTOTodayKyiv, ClientContractWeeklyCarReportKyiv #, #, YourModel 
+from .models import InvestorContractBodyPaymentKyiv, ClientContractTOKyiv,  Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa, ClientContractTOTodayKyiv, ClientContractWeeklyCarReportKyiv #, #, YourModel 
 from .forms import yourForm
 from import_export import resources
 from import_export.admin import  ExportMixin, ExportActionMixin
@@ -265,8 +265,8 @@ class InvestorContractBodyTimetableInlineKyiv(admin.TabularInline):
     #readonly_fields = ['payment_usd']
 
 
-class InvestorContractBodyPaymentInline(admin.TabularInline):
-    model = InvestorContractBodyPayment
+class InvestorContractBodyPaymentInlineKyiv(admin.TabularInline):
+    model = InvestorContractBodyPaymentKyiv
     extra = 0
     #can_delete = False
     fields = ['date', 'sum']
@@ -281,7 +281,7 @@ class InvestorContractAdminKyiv(admin.ModelAdmin):
     fields = ('number', 'specification_number', 'city', 'date', 'investor',  'director_full_name', 'client_full_name', 'car', 'initial_cost_car_usd', 'initial_cost_car_uah', 'period_days', 'number_periods', 'status_body', 'іnterest_rate', 'last_month_percentage', 'status_percentage' )
     readonly_fields = ['number', 'specification_number']
     
-    inlines = [InvestorContractBodyTimetableInlineKyiv] #, InvestorContractBodyPaymentInline, InvestorContractPercentagePaymentInline]
+    inlines = [InvestorContractBodyTimetableInlineKyiv, InvestorContractBodyPaymentInlineKyiv] #, InvestorContractPercentagePaymentInline]
 
     list_display = ('number', 'specification_number', 'city', 'date', 'investor', 'car')
     #list_editable = ('city', 'date', 'client', 'initial_cost_car_usd', 'commercial_course_usd', 'initial_cost_car_uah', 'period_days')
