@@ -528,11 +528,13 @@ class InvestorContractPercentagePayment(models.Model):
     # ...
     #def __str__(self):
     #   return self.number
-    class Meta:        
+    class Meta:
+        abstract = True
         verbose_name = "Інвесторський контракт, платежі по % на тіло кредиту"
         verbose_name_plural = "Інвесторський контракт, платежі по % на тіло кредиту"
 		
-
+class InvestorContractPercentagePaymentKyiv(InvestorContractPercentagePayment):
+    pass
 #class YourModel(models.Model):
 #    pass
     
