@@ -76,16 +76,14 @@ class Car(models.Model):
 
 # Авто, Київ	
 class CarKyiv(Car):  
-    def __str__(self):
-        return self.brand + " " + self.model + " " + self.license_plate + "(Київ)"								
+							
     class Meta:        
         verbose_name = "Автомобіль (Київ)"
         verbose_name_plural = "Автомобілі (Київ)"
 
 # Авто, Львів	
 class CarLviv(Car):  
-    def __str__(self):
-        return self.brand + " " + self.model + " " + self.license_plate + "(Львів)"								
+							
     class Meta:        
         verbose_name = "Автомобіль (Львів)"
         verbose_name_plural = "Автомобілі (Львів)"
@@ -115,16 +113,14 @@ class Client(models.Model):
 		
 # Клієнт, Київ	
 class ClientKyiv(Client):  
-    def __str__(self):
-        return self.full_name + "(Київ)"								
+
     class Meta:        
         verbose_name = "Клієнт (Київ)"
         verbose_name_plural = "Клієнти (Київ)"
 
 # Клієнт, Львів	
 class ClientLviv(Client):  
-    def __str__(self):
-        return self.full_name + "(Львів)"								
+
     class Meta:        
         verbose_name = "Клієнт (Львів)"
         verbose_name_plural = "Клієнти (Львів)"
@@ -228,8 +224,6 @@ class ClientContractKyiv(ClientContract):
     #client = models.ForeignKey(ClientKyiv, on_delete=models.CASCADE, default=1)			# Клієнт    
     #car = models.OneToOneField(CarKyiv, on_delete=models.CASCADE, default=1)			# 	Авто
 
-    def __str__(self):
-        return self.number + "(Київ)"							
     class Meta:        
         verbose_name = "Клієнтський контракт (Київ)"
         verbose_name_plural = "Клієнтські контракти (Київ)"
@@ -239,8 +233,6 @@ class ClientContractLviv(ClientContract):
     client = models.ForeignKey(ClientLviv, on_delete=models.CASCADE, default=1)			# Клієнт    
     car = models.OneToOneField(CarLviv, on_delete=models.CASCADE, default=1)			# 	Авто
 
-    def __str__(self):
-        return self.number + "(Львів)"							
     class Meta:        
         verbose_name = "Клієнтський контракт (Львів)"
         verbose_name_plural = "Клієнтські контракти (Львів)"
@@ -267,11 +259,7 @@ class ClientContractTimetable(models.Model):
 class ClientContractTimetableKyiv(ClientContractTimetable):
     """ # Клієнтський контракт (Київ), графік погашення	(тіло + %) """
     client_contract = models.ForeignKey(ClientContractKyiv, on_delete=models.CASCADE, default=1)								# клієнтський контракт
-    class Meta:         
-        verbose_name = "Клієнтський контракт (Київ), графік погашення"
-        verbose_name_plural = "Клієнтський контракт (Київ), графік погашення"
-    def __str__(self):
-        return ""
+
 
 class ClientContractTO(models.Model):
     """ Клієнтський контракт, ТО (кошти на ТехОбслуговування) """
@@ -291,18 +279,14 @@ class ClientContractTO(models.Model):
 class ClientContractTOKyiv(ClientContractTO):
     """ Клієнтський контракт, ТО, Київ (кошти на ТехОбслуговування) """
     client_contract = models.ForeignKey(ClientContractKyiv, on_delete=models.CASCADE, default=1)		# клієнтський контракт	
-    class Meta:        
-        verbose_name = "Клієнтський контракт (Київ), ТО"
-        verbose_name_plural = "Клієнтський контракт (Київ), ТО"
-    def __str__(self):
-        return ""
+
 		
 class ClientContractTOTodayKyiv(ClientContractTOKyiv):
     """ Клієнтський контракт, ТО; Proxy-модель для вводу даних (для менеджера) (Київ) """
     class Meta:
         proxy = True
-        verbose_name = "Клієнтський контракт, ТО; введення даних (Київ)"
-        verbose_name_plural = "Клієнтський контракт, ТО; введення даних (Київ)"        
+        verbose_name = "Клієнтський контракт, ТО; введення даних"
+        verbose_name_plural = "Клієнтський контракт, ТО; введення даних"        
 
     def __str__(self):
         return ""
@@ -334,7 +318,7 @@ class InvestorKyiv(Investor):
         return self.full_name								
     class Meta:        
         verbose_name = "Інвестор (Київ)"
-        verbose_name_plural = "Інвестор (Київ)"
+        verbose_name_plural = "Інвестори (Київ)"
 		
 # Інвесторський контракт		
 class InvestorContract(models.Model):
