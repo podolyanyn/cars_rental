@@ -16,7 +16,7 @@ from .models import InvestorKyiv, InvestorContractKyiv, InvestorContractBodyTime
 from .models import ClientContractWeeklyCarReportKyiv 
 #Львів
 from .models import ClientLviv, CarLviv,  ClientContractLviv,  ClientContractTimetableLviv, ClientContractTOLviv,  ClientContractTOTodayLviv
-#from .models import #,     , #, #, YourModel 
+from .models import InvestorLviv, InvestorContractLviv,  InvestorContractBodyTimetableLviv #, YourModel 
 # Одеса
 from .forms import yourForm
 from import_export import resources
@@ -67,9 +67,21 @@ class InvestorContractAdmin(admin.ModelAdmin):
     #form = yourForm  # цей варіант працює, в тому розумінні що відображає поле, але не форматує фого (2 знаки після точки)
 admin.site.register(InvestorContract, InvestorContractAdmin)
 """
+admin.site.register(Color)
+admin.site.register(Branch)
 
 
+class ExchangeRateKyivAdmin(admin.ModelAdmin):
+    list_display = ('date', 'sum')    
+admin.site.register(ExchangeRateKyiv, ExchangeRateKyivAdmin)
 
+class ExchangeRateLvivAdmin(admin.ModelAdmin):
+    list_display = ('date', 'sum')    
+admin.site.register(ExchangeRateLviv, ExchangeRateLvivAdmin)
+
+class ExchangeRateOdesaAdmin(admin.ModelAdmin):
+    list_display = ('date', 'sum')    
+admin.site.register(ExchangeRateOdesa, ExchangeRateOdesaAdmin)
 
 
 #@admin.register(Client)
@@ -86,14 +98,6 @@ admin.site.register(ClientKyiv, ClientAdminKyiv)
 class ClientAdminLviv(ClientAdminKyiv):
     pass
 admin.site.register(ClientLviv, ClientAdminLviv)
-
-#admin.site.register(Investor)
-class InvestorAdminKyiv(admin.ModelAdmin):
-    list_display = ('full_name', 'phone_number')
-    search_fields = ['full_name', 'phone_number']
-admin.site.register(InvestorKyiv, InvestorAdminKyiv)
-
-#admin.site.register(InvestorOdesa)
 
 
 class CarAdminKyiv(admin.ModelAdmin):
@@ -123,6 +127,9 @@ class CarInline(admin.StackedInline):
 class ClientInline(admin.StackedInline):
     model = ClientKyiv
     #extra = 1
+	
+	
+	
 class ClientContractTimetableInlineEditKyiv(admin.TabularInline):
     """ Оплата за сьогодні, менеджер може редагувати"""
     model = ClientContractTimetableKyiv
@@ -298,13 +305,15 @@ class ClientContractAdminLviv(ClientContractAdminKyiv):
 admin.site.register(ClientContractLviv, ClientContractAdminLviv)    
 
 
+class InvestorAdminKyiv(admin.ModelAdmin):
+    list_display = ('full_name', 'phone_number')
+    search_fields = ['full_name', 'phone_number']
+admin.site.register(InvestorKyiv, InvestorAdminKyiv)
 
+class InvestorAdminLviv(InvestorAdminKyiv):
+    pass
+admin.site.register(InvestorLviv, InvestorAdminLviv)
 
-class InvestorContractPercentagePaymentInlineKyiv(admin.TabularInline):
-    model = InvestorContractPercentagePaymentKyiv
-    extra = 0
-    fields = ['date', 'sum']
-    #readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd']
 
 class InvestorContractBodyTimetableInlineKyiv(admin.TabularInline):
     model = InvestorContractBodyTimetableKyiv
@@ -312,6 +321,11 @@ class InvestorContractBodyTimetableInlineKyiv(admin.TabularInline):
     #can_delete = False
     fields = ['payment_date', 'payment_percentage', 'payment_usd']
     #readonly_fields = ['payment_usd']
+
+class InvestorContractBodyTimetableInlineLviv(InvestorContractBodyTimetableInlineKyiv):
+    model = InvestorContractBodyTimetableLviv
+
+	
 
 
 class InvestorContractBodyPaymentInlineKyiv(admin.TabularInline):
@@ -321,7 +335,12 @@ class InvestorContractBodyPaymentInlineKyiv(admin.TabularInline):
     fields = ['date', 'sum']
     #readonly_fields = ['payment_usd']
 
-
+class InvestorContractPercentagePaymentInlineKyiv(admin.TabularInline):
+    model = InvestorContractPercentagePaymentKyiv
+    extra = 0
+    fields = ['date', 'sum']
+    #readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd']
+	
 class InvestorContractAdminKyiv(admin.ModelAdmin):
     #fieldsets = [
     #   (None,               {'fields': ['question_text']}),
@@ -355,7 +374,8 @@ class InvestorContractAdminKyiv(admin.ModelAdmin):
         contracts_set = InvestorContractKyiv.objects.all().filter(investor = obj.investor)
         print ('contracts_set = ', contracts_set )
         if not contracts_set.exists():
-            obj.number = InvestorContractKyiv.objects.all().aggregate(Max('number'))['number__max'] + 1    
+            obj.number = InvestorContractKyiv.objects.all().aggregate(Max('number'))['number__max'] or 0
+            obj.number += 1    
             # Не враховуємо номер контракту даного об'єкту, інакше при зберіганні він його постійно збільшуватиме +1 (??? порібно подумати)
             #contract_max_number = InvestorContract.objects.all().exclude(number = obj.number).aggregate(Max('number'))['number__max'] or 0    
         else: # якщо в інвестора вже є контракт
@@ -376,27 +396,41 @@ class InvestorContractAdminKyiv(admin.ModelAdmin):
        #
 admin.site.register(InvestorContractKyiv, InvestorContractAdminKyiv)
 
-#admin.site.register(ClientContractOdesa)
 
+class InvestorContractAdminLviv(InvestorContractAdminKyiv):
 
-#admin.site.register(InvestorContractOdesa)
-admin.site.register(Color)
-admin.site.register(Branch)
-#admin.site.register(ExchangeRateKyiv)
+    inlines = [InvestorContractBodyTimetableInlineLviv] #[, InvestorContractBodyPaymentInlineKyiv, InvestorContractPercentagePaymentInlineKyiv]
 
-class ExchangeRateKyivAdmin(admin.ModelAdmin):
-    list_display = ('date', 'sum')    
-admin.site.register(ExchangeRateKyiv, ExchangeRateKyivAdmin)
+    def save_model(self, request, obj, form, change):
+        # (ПЕРЕВІРИТИ ВЕСЬ РОЗРАХУНОК !!!) Розрахунок номеру контракту та номеру специфікації для даного клієнта
+        # Визначаємо, чи в даного інвестора взагалі є контракти 
+        contracts_set = InvestorContractLviv.objects.all().filter(investor = obj.investor)
+        print ('contracts_set = ', contracts_set )
+        if not contracts_set.exists():
+            obj.number = InvestorContractLviv.objects.all().aggregate(Max('number'))['number__max'] or 0
+            obj.number += 1  
+            # Не враховуємо номер контракту даного об'єкту, інакше при зберіганні він його постійно збільшуватиме +1 (??? порібно подумати)
+            #contract_max_number = InvestorContract.objects.all().exclude(number = obj.number).aggregate(Max('number'))['number__max'] or 0    
+        else: # якщо в інвестора вже є контракт
+            obj.number = contracts_set[0].number #номер контракту
+        # !!! тут перевірити, оскільки при повторному зберіганні збільшується на 1
+        result = InvestorContractLviv.objects.all().filter(investor = obj.investor).aggregate(Max('specification_number'))['specification_number__max']
+        obj.specification_number =  result + 1 if result else 1
+        #print ('max_number = ', max_number )
+        #obj.number = max_number+1
+        
+        #
+        obj.save()
+        #obj.bodytimetable_calc()
+        #obj.status_body_calc() # видала система помилку при відсутності платежів по тілу: unsupported operand type(s) for -: 'NoneType' and 'float'
+        obj.percentage_calc()
+        if obj.control_number_periods() == False:
+            self.message_user(request, "tttr")		
 
-class ExchangeRateLvivAdmin(admin.ModelAdmin):
-    list_display = ('date', 'sum')    
-admin.site.register(ExchangeRateLviv, ExchangeRateLvivAdmin)
-
-class ExchangeRateOdesaAdmin(admin.ModelAdmin):
-    list_display = ('date', 'sum')    
-admin.site.register(ExchangeRateOdesa, ExchangeRateOdesaAdmin)
- 
-
+admin.site.register(InvestorContractLviv, InvestorContractAdminLviv)
+			
+			
+			
 #class MyModelAdmin(admin.ModelAdmin):
 #   formfield_overrides = {
 #        models.FloatField: {'widget': 'NumberInput', 'attrs': {'step':'.3'}},        
