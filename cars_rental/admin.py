@@ -9,7 +9,7 @@ from django.template import loader
 from django.utils.safestring import mark_safe
 
 # Register your models here.
-from .models import ClientKyiv, ClientLviv, InvestorKyiv, CarKyiv, CarLviv, ClientContractKyiv, ClientContractLviv, InvestorContract, Color, ClientContractTimetableKyiv, InvestorContractPercentagePayment, InvestorContractBodyTimetable
+from .models import ClientKyiv, ClientLviv, InvestorKyiv, CarKyiv, CarLviv, ClientContractKyiv, ClientContractLviv, InvestorContractKyiv, Color, ClientContractTimetableKyiv, InvestorContractPercentagePayment, InvestorContractBodyTimetable
 from .models import InvestorContractBodyPayment, ClientContractTOKyiv,  Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa, ClientContractTOTodayKyiv, ClientContractWeeklyCarReportKyiv #, #, YourModel 
 from .forms import yourForm
 from import_export import resources
@@ -273,17 +273,16 @@ class InvestorContractBodyPaymentInline(admin.TabularInline):
     #readonly_fields = ['payment_usd']
 
 
-class InvestorContractAdmin(admin.ModelAdmin):
+class InvestorContractAdminKyiv(admin.ModelAdmin):
     #fieldsets = [
     #   (None,               {'fields': ['question_text']}),
     #    ('Date information', {'fields': ['pub_date'], 'classes': ['collapse']}),
     #]
     fields = ('number', 'specification_number', 'city', 'date', 'investor',  'director_full_name', 'client_full_name', 'car', 'initial_cost_car_usd', 'initial_cost_car_uah', 'period_days', 'number_periods', 'status_body', 'іnterest_rate', 'last_month_percentage', 'status_percentage' )
     readonly_fields = ['number', 'specification_number']
-    inlines = [InvestorContractBodyTimetableInline, InvestorContractBodyPaymentInline, InvestorContractPercentagePaymentInline]
-    #inlines = [InvestorContractPercentagePaymentInline]
-    #inlines = [ClientInline]
-	# ...
+    
+	# inlines = [InvestorContractBodyTimetableInline, InvestorContractBodyPaymentInline, InvestorContractPercentagePaymentInline]
+
     list_display = ('number', 'specification_number', 'city', 'date', 'investor', 'car')
     #list_editable = ('city', 'date', 'client', 'initial_cost_car_usd', 'commercial_course_usd', 'initial_cost_car_uah', 'period_days')
     #list_filter = ['brand', 'model']
@@ -304,16 +303,16 @@ class InvestorContractAdmin(admin.ModelAdmin):
     def save_model(self, request, obj, form, change):
         # (ПЕРЕВІРИТИ ВЕСЬ РОЗРАХУНОК !!!) Розрахунок номеру контракту та номеру специфікації для даного клієнта
         # Визначаємо, чи в даного інвестора взагалі є контракти 
-        contracts_set = InvestorContract.objects.all().filter(investor = obj.investor)
+        contracts_set = InvestorContractKyiv.objects.all().filter(investor = obj.investor)
         print ('contracts_set = ', contracts_set )
         if not contracts_set.exists():
-            obj.number = InvestorContract.objects.all().aggregate(Max('number'))['number__max'] + 1    
+            obj.number = InvestorContractKyiv.objects.all().aggregate(Max('number'))['number__max'] + 1    
             # Не враховуємо номер контракту даного об'єкту, інакше при зберіганні він його постійно збільшуватиме +1 (??? порібно подумати)
             #contract_max_number = InvestorContract.objects.all().exclude(number = obj.number).aggregate(Max('number'))['number__max'] or 0    
         else: # якщо в інвестора вже є контракт
             obj.number = contracts_set[0].number #номер контракту
         # !!! тут перевірити, оскільки при повторному зберіганні збільшується на 1
-        result = InvestorContract.objects.all().filter(investor = obj.investor).aggregate(Max('specification_number'))['specification_number__max']
+        result = InvestorContractKyiv.objects.all().filter(investor = obj.investor).aggregate(Max('specification_number'))['specification_number__max']
         obj.specification_number =  result + 1 if result else 1
         #print ('max_number = ', max_number )
         #obj.number = max_number+1
@@ -326,7 +325,7 @@ class InvestorContractAdmin(admin.ModelAdmin):
         if obj.control_number_periods() == False:
             self.message_user(request, "tttr")		
        #
-admin.site.register(InvestorContract, InvestorContractAdmin)
+admin.site.register(InvestorContractKyiv, InvestorContractAdminKyiv)
 
 #admin.site.register(ClientContractOdesa)
 

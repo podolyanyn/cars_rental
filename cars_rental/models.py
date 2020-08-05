@@ -354,7 +354,8 @@ class InvestorContract(models.Model):
     def __str__(self):
         return str(self.number)
 		
-    class Meta:        
+    class Meta:
+        abstract = True
         verbose_name = "Інвесторський контракт"
         verbose_name_plural = "Інвесторські контракти"
 		
@@ -476,10 +477,16 @@ class InvestorContract(models.Model):
                 #total_calc_percentage +=                     
         self.save()
 
+class InvestorContractKyiv(InvestorContract):
+
+    class Meta:        
+        verbose_name = "Інвесторський контракт (Київ)"
+        verbose_name_plural = "Інвесторські контракти (Київ)"
+		
 # Інвесторський контракт, графік погашення	тіла кредиту		
 # Це саме графік погашення тіла, платежі будуть винесені в окрему таблицю
 class InvestorContractBodyTimetable(models.Model):
-    investor_contract = models.ForeignKey(InvestorContract, on_delete=models.CASCADE, default=1)		# інвесторський контракт
+    investor_contract = models.ForeignKey(InvestorContractKyiv, on_delete=models.CASCADE, default=1)		# інвесторський контракт
     payment_date = models.DateField('Планова кінцева дата погашення', null=True)																# Період 1, тобто перших пів-року
     payment_percentage = models.FloatField('Частина основного боргу, у відсотках', default=0) 	
     payment_usd = models.FloatField('Частина основного боргу, у доларах', default = 0) 	    
@@ -495,7 +502,7 @@ class InvestorContractBodyTimetable(models.Model):
 
 # Інвесторський контракт, платежі по тілу кредиту
 class InvestorContractBodyPayment(models.Model):
-    investor_contract = models.ForeignKey(InvestorContract, on_delete=models.CASCADE, default=1)		# інвесторський контракт
+    investor_contract = models.ForeignKey(InvestorContractKyiv, on_delete=models.CASCADE, default=1)		# інвесторський контракт
     date = models.DateField('Дата платежу', null=True)																# Дата платежу
     sum = models.FloatField('Сума платежу (погашення тіла боргу)', default=0) 							# Сума платежу (погашення тіла боргу)
 	
@@ -505,7 +512,7 @@ class InvestorContractBodyPayment(models.Model):
 		
 # Інвесторський контракт, платежі по % на тіло кредиту !!! змінити назву полів
 class InvestorContractPercentagePayment(models.Model):
-    investor_contract = models.ForeignKey(InvestorContract, on_delete=models.CASCADE, default=1)		# інвесторський контракт
+    investor_contract = models.ForeignKey(InvestorContractKyiv, on_delete=models.CASCADE, default=1)		# інвесторський контракт
     #planned_payment_date = models.DateField('Планова дата платежу', null=True)							# Планова дата платежу
     #planned_amount_payment_usd = models.FloatField('Планова сума платежу, в доларах', null=True)							# Планова сума платежу, в доларах
     date = models.DateField('Дійсна дата платежу', null=True)									# Дійсна дата платежу
