@@ -261,6 +261,9 @@ class ClientContractTimetableKyiv(ClientContractTimetable):
     """ # Клієнтський контракт (Київ), графік погашення	(тіло + %) """
     client_contract = models.ForeignKey(ClientContractKyiv, on_delete=models.CASCADE, default=1)								# клієнтський контракт
 
+class ClientContractTimetableLviv(ClientContractTimetable):
+    """ # Клієнтський контракт (Львів), графік погашення	(тіло + %) """
+    client_contract = models.ForeignKey(ClientContractLviv, on_delete=models.CASCADE, default=1)								# клієнтський контракт
 
 class ClientContractTO(models.Model):
     """ Клієнтський контракт, ТО (кошти на ТехОбслуговування) """
@@ -281,7 +284,10 @@ class ClientContractTOKyiv(ClientContractTO):
     """ Клієнтський контракт, ТО, Київ (кошти на ТехОбслуговування) """
     client_contract = models.ForeignKey(ClientContractKyiv, on_delete=models.CASCADE, default=1)		# клієнтський контракт	
 
-		
+class ClientContractTOLviv(ClientContractTO):
+    """ Клієнтський контракт, ТО, Львів (кошти на ТехОбслуговування) """
+    client_contract = models.ForeignKey(ClientContractLviv, on_delete=models.CASCADE, default=1)		# клієнтський контракт	
+	
 class ClientContractTOTodayKyiv(ClientContractTOKyiv):
     """ Клієнтський контракт, ТО; Proxy-модель для вводу даних (для менеджера) (Київ) """
     class Meta:
@@ -291,7 +297,16 @@ class ClientContractTOTodayKyiv(ClientContractTOKyiv):
 
     def __str__(self):
         return ""
-		
+
+class ClientContractTOTodayLviv(ClientContractTOLviv):
+    """ Клієнтський контракт, ТО; Proxy-модель для вводу даних (для менеджера) (Львів) """
+    class Meta:
+        proxy = True
+        verbose_name = "Клієнтський контракт, ТО; введення даних"
+        verbose_name_plural = "Клієнтський контракт, ТО; введення даних"        
+
+    def __str__(self):
+        return ""		
 
 class ClientContractWeeklyCarReportKyiv(ClientContractKyiv):
     """ Проксі-Клас для звіту -Тижневий звіт по авто- """
@@ -300,6 +315,10 @@ class ClientContractWeeklyCarReportKyiv(ClientContractKyiv):
         verbose_name = "Клієнтський контракт, Тижневий звіт по авто"
         verbose_name_plural = "Клієнтські контракти, Тижневий звіт по авто"
 
+
+		
+		
+		
 # Інвестор
 class Investor(models.Model):
     full_name = models.CharField('ПІБ', max_length=50) 									# ПІБ

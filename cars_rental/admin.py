@@ -9,8 +9,8 @@ from django.template import loader
 from django.utils.safestring import mark_safe
 
 # Register your models here.
-from .models import ClientKyiv, ClientLviv, InvestorKyiv, CarKyiv, CarLviv, ClientContractKyiv, ClientContractLviv, InvestorContractKyiv, Color, ClientContractTimetableKyiv, InvestorContractPercentagePaymentKyiv, InvestorContractBodyTimetableKyiv
-from .models import InvestorContractBodyPaymentKyiv, ClientContractTOKyiv,  Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa, ClientContractTOTodayKyiv, ClientContractWeeklyCarReportKyiv #, #, YourModel 
+from .models import ClientKyiv, ClientLviv, InvestorKyiv, CarKyiv, CarLviv, ClientContractKyiv, ClientContractLviv, InvestorContractKyiv, Color, ClientContractTimetableKyiv, ClientContractTimetableLviv, InvestorContractPercentagePaymentKyiv, InvestorContractBodyTimetableKyiv
+from .models import InvestorContractBodyPaymentKyiv, ClientContractTOKyiv, ClientContractTOLviv, Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa, ClientContractTOTodayKyiv, ClientContractTOTodayLviv, ClientContractWeeklyCarReportKyiv #, #, YourModel 
 from .forms import yourForm
 from import_export import resources
 from import_export.admin import  ExportMixin, ExportActionMixin
@@ -132,8 +132,20 @@ class ClientContractTimetableInlineEditKyiv(admin.TabularInline):
         return qs.filter(planned_payment_date = date.today() )
 
     def has_change_permission(self, request, obj=None):
-       return not request.user.groups.filter(name='Manager').exists()
-	
+       return not request.user.groups.filter(name='ManagerKyiv').exists()
+
+class ClientContractTimetableInlineEditLviv(ClientContractTimetableInlineEditKyiv):
+    """ Оплата за сьогодні, менеджер може редагувати"""
+    model = ClientContractTimetableLviv
+
+    def get_queryset(self, request):
+        """ Вибрати  запис з графіку погашень, якщо планова дата співпадає з сьогоднішнім днем """
+        qs = super(ClientContractTimetableInlineEditLviv, self).get_queryset(request)
+        return qs.filter(planned_payment_date = date.today() )
+
+    def has_change_permission(self, request, obj=None):
+       return not request.user.groups.filter(name='ManagerLviv').exists()
+	   
 class ClientContractTimetableInlineKyiv(admin.TabularInline):
     model = ClientContractTimetableKyiv
     extra = 0
@@ -143,14 +155,27 @@ class ClientContractTimetableInlineKyiv(admin.TabularInline):
     classes = ['collapse']
 	
     def has_delete_permission(self, request, obj=None):
-        return not request.user.groups.filter(name='Manager').exists()  
+        return not request.user.groups.filter(name='ManagerKyiv').exists()  
     
     def has_add_permission(self, request, obj=None):
-        return not request.user.groups.filter(name='Manager').exists()
+        return not request.user.groups.filter(name='ManagerKyiv').exists()
 		
     def has_change_permission(self, request, obj=None):
-       return not request.user.groups.filter(name='Manager').exists()
+       return not request.user.groups.filter(name='ManagerKyiv').exists()
+
+class ClientContractTimetableInlineLviv(ClientContractTimetableInlineKyiv):
+    model = ClientContractTimetableLviv
+	
+    def has_delete_permission(self, request, obj=None):
+        return not request.user.groups.filter(name='ManagerLviv').exists()  
+    
+    def has_add_permission(self, request, obj=None):
+        return not request.user.groups.filter(name='ManagerLviv').exists()
 		
+    def has_change_permission(self, request, obj=None):
+       return not request.user.groups.filter(name='ManagerLviv').exists()
+
+	   
 class ClientContractTOTodayInlineKyiv(admin.TabularInline):
     """Дані по ТО за сьогодні, менеджер може редагувати"""
     model = ClientContractTOTodayKyiv
@@ -163,6 +188,15 @@ class ClientContractTOTodayInlineKyiv(admin.TabularInline):
         """ Вибрати лише дані за поточне число """
         qs = super(ClientContractTOTodayInlineKyiv, self).get_queryset(request)
         return qs.filter(date = date.today() )	
+		
+class ClientContractTOTodayInlineLviv(ClientContractTOTodayInlineKyiv):
+    """Дані по ТО за сьогодні, менеджер може редагувати"""
+    model = ClientContractTOTodayLviv
+    
+    def get_queryset(self, request):
+        """ Вибрати лише дані за поточне число """
+        qs = super(ClientContractTOTodayInlineLviv, self).get_queryset(request)
+        return qs.filter(date = date.today() )	
 	
 class ClientContractTOInlineKyiv(admin.TabularInline):
     """ Дані по ТО """
@@ -171,7 +205,12 @@ class ClientContractTOInlineKyiv(admin.TabularInline):
     fields = ['date', 'sum', 'note']    
     ordering = ['date']
     classes = ['collapse']
-    
+   
+class ClientContractTOInlineLviv(ClientContractTOInlineKyiv):
+    """ Дані по ТО """
+    model = ClientContractTOLviv
+
+   
     #readonly_fields = ['date']
 	
     #def has_view_permission(self, request, obj=None):
@@ -244,12 +283,15 @@ class ClientContractAdminKyiv(admin.ModelAdmin):
 admin.site.register(ClientContractKyiv, ClientContractAdminKyiv)
 
 class ClientContractAdminLviv(ClientContractAdminKyiv):
-    inlines = []	 #
+    inlines = [ClientContractTOTodayInlineLviv, ClientContractTOInlineLviv, ClientContractTimetableInlineEditLviv , ClientContractTimetableInlineLviv]
     
     def get_changeform_initial_data(self, request):
         max_number = ClientContractLviv.objects.all().filter(date__year = date.today().year).aggregate(Max('number_number'))['number_number__max'] or 0
         return {'number': str(date.today().year) + '-' + str(max_number+1) + '/Л', 'number_number':max_number+1} #, 'commercial_course_usd_test':commercial_c_u}
 admin.site.register(ClientContractLviv, ClientContractAdminLviv)    
+
+
+
 
 class InvestorContractPercentagePaymentInlineKyiv(admin.TabularInline):
     model = InvestorContractPercentagePaymentKyiv
