@@ -342,7 +342,7 @@ class InvestorContract(models.Model):
     specification_number = models.IntegerField('Номер специфікації контракту', null = True, default = None) 				# Номер специфікації контракту
     city = models.CharField('Місто, де заключений контракт', max_length=10)	# Назва міста, в якому заключений контракт !!! Доопрацювати вибір зі списку
     date = models.DateField('Дата контракту')									# Дата контракту
-    investor = models.ForeignKey(Investor, on_delete=models.CASCADE, default=1)			# Інвестор    
+    investor = models.ForeignKey(InvestorKyiv, on_delete=models.CASCADE, default=1)			# Інвестор    
     #investor_full_name = models.CharField('ПІБ інвестора',max_length=50)				# ПІБ інвестора	
     director_full_name = models.CharField('ПІБ директора фірми/філіалу фірми',max_length=50)				# ПІБ директора фірми/філіалу фірми
     client_full_name = models.CharField('ПІБ клієнта', max_length=50) 					# ПІБ клієнта

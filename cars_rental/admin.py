@@ -9,7 +9,7 @@ from django.template import loader
 from django.utils.safestring import mark_safe
 
 # Register your models here.
-from .models import ClientKyiv, ClientLviv, Investor, CarKyiv, CarLviv, ClientContractKyiv, ClientContractLviv, InvestorContract, Color, ClientContractTimetableKyiv, InvestorContractPercentagePayment, InvestorContractBodyTimetable
+from .models import ClientKyiv, ClientLviv, InvestorKyiv, CarKyiv, CarLviv, ClientContractKyiv, ClientContractLviv, InvestorContract, Color, ClientContractTimetableKyiv, InvestorContractPercentagePayment, InvestorContractBodyTimetable
 from .models import InvestorContractBodyPayment, ClientContractTOKyiv,  Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa, ClientContractTOTodayKyiv, ClientContractWeeklyCarReportKyiv #, #, YourModel 
 from .forms import yourForm
 from import_export import resources
@@ -81,10 +81,10 @@ class ClientAdminLviv(ClientAdminKyiv):
 admin.site.register(ClientLviv, ClientAdminLviv)
 
 #admin.site.register(Investor)
-class InvestorAdmin(admin.ModelAdmin):
+class InvestorAdminKyiv(admin.ModelAdmin):
     list_display = ('full_name', 'phone_number')
     search_fields = ['full_name', 'phone_number']
-admin.site.register(Investor, InvestorAdmin)
+admin.site.register(InvestorKyiv, InvestorAdminKyiv)
 
 #admin.site.register(InvestorOdesa)
 
