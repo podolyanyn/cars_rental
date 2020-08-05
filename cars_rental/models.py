@@ -402,7 +402,7 @@ class InvestorContract(models.Model):
     #investor_full_name = models.CharField('ПІБ інвестора',max_length=50)				# ПІБ інвестора	
     director_full_name = models.CharField('ПІБ директора фірми/філіалу фірми',max_length=50)				# ПІБ директора фірми/філіалу фірми
     client_full_name = models.CharField('ПІБ клієнта', max_length=50) 					# ПІБ клієнта
-    car = models.OneToOneField(CarKyiv, on_delete=models.CASCADE, default=2)			# 	Авто
+    car = models.OneToOneField(CarKyiv, on_delete=models.CASCADE, default=1)			# 	Авто
     initial_cost_car_usd = models.FloatField('Вартість автомобіля в доларах, на момент складання контракту')# Вартість автомобіля в доларах, на момент складання контракту
     initial_cost_car_uah = models.FloatField('Вартість автомобіля в гривні, на момент складання контракту') # Вартість автомобіля в гривні, на момент складання контракту
     period_days = models.IntegerField('Строк контракту, в днях') 				# Строк контракту, в днях
@@ -554,6 +554,8 @@ class InvestorContractKyiv(InvestorContract):
     class Meta:        
         verbose_name = "Інвесторський контракт (Київ)"
         verbose_name_plural = "Інвесторські контракти (Київ)"
+		
+
 		
 # Інвесторський контракт, графік погашення	тіла кредиту		
 # Це саме графік погашення тіла, платежі будуть винесені в окрему таблицю
