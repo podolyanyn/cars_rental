@@ -9,7 +9,7 @@ from django.template import loader
 from django.utils.safestring import mark_safe
 
 # Register your models here.
-from .models import ClientKyiv, ClientLviv, InvestorKyiv, CarKyiv, CarLviv, ClientContractKyiv, ClientContractLviv, InvestorContractKyiv, Color, ClientContractTimetableKyiv, InvestorContractPercentagePayment, InvestorContractBodyTimetable
+from .models import ClientKyiv, ClientLviv, InvestorKyiv, CarKyiv, CarLviv, ClientContractKyiv, ClientContractLviv, InvestorContractKyiv, Color, ClientContractTimetableKyiv, InvestorContractPercentagePayment, InvestorContractBodyTimetableKyiv
 from .models import InvestorContractBodyPayment, ClientContractTOKyiv,  Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa, ClientContractTOTodayKyiv, ClientContractWeeklyCarReportKyiv #, #, YourModel 
 from .forms import yourForm
 from import_export import resources
@@ -257,8 +257,8 @@ class InvestorContractPercentagePaymentInline(admin.TabularInline):
     fields = ['date', 'sum']
     #readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd']
 
-class InvestorContractBodyTimetableInline(admin.TabularInline):
-    model = InvestorContractBodyTimetable
+class InvestorContractBodyTimetableInlineKyiv(admin.TabularInline):
+    model = InvestorContractBodyTimetableKyiv
     extra = 0
     #can_delete = False
     fields = ['payment_date', 'payment_percentage', 'payment_usd']
@@ -281,7 +281,7 @@ class InvestorContractAdminKyiv(admin.ModelAdmin):
     fields = ('number', 'specification_number', 'city', 'date', 'investor',  'director_full_name', 'client_full_name', 'car', 'initial_cost_car_usd', 'initial_cost_car_uah', 'period_days', 'number_periods', 'status_body', 'іnterest_rate', 'last_month_percentage', 'status_percentage' )
     readonly_fields = ['number', 'specification_number']
     
-	# inlines = [InvestorContractBodyTimetableInline, InvestorContractBodyPaymentInline, InvestorContractPercentagePaymentInline]
+    inlines = [InvestorContractBodyTimetableInlineKyiv] #, InvestorContractBodyPaymentInline, InvestorContractPercentagePaymentInline]
 
     list_display = ('number', 'specification_number', 'city', 'date', 'investor', 'car')
     #list_editable = ('city', 'date', 'client', 'initial_cost_car_usd', 'commercial_course_usd', 'initial_cost_car_uah', 'period_days')

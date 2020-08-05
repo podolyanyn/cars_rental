@@ -496,9 +496,13 @@ class InvestorContractBodyTimetable(models.Model):
     #def __str__(self):
     #   return self.number
     class Meta:
+        abstract = True
         ordering = ['payment_date']
         verbose_name = "Інвесторський контракт, графік погашення	тіла кредиту"
         verbose_name_plural = "Інвесторський контракт, графік погашення тіла кредиту"
+		
+class InvestorContractBodyTimetableKyiv(InvestorContractBodyTimetable):
+    pass
 
 # Інвесторський контракт, платежі по тілу кредиту
 class InvestorContractBodyPayment(models.Model):
