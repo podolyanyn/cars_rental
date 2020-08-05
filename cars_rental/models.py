@@ -14,12 +14,18 @@ class Branch(models.Model):
         verbose_name = "Відділення"
         verbose_name_plural = "Відділення"
 
-class ExchangeRateKyiv(models.Model):
+# Валютний курс
+class ExchangeRate(models.Model):
     date = models.DateField('Дата', null=True, unique = True)							# Дата 
     sum = models.FloatField('Курс, 1$ = (грн) ', null=True) 		# Курс 
 	
     def __str__(self):
         return str(self.sum)
+    class Meta:
+        abstract = True	
+
+		
+class ExchangeRateKyiv(ExchangeRate):
 	# Отримати курс на сьогодні
     #def today_exchange_rate():
      #   return {'date': date.today()}
@@ -28,17 +34,12 @@ class ExchangeRateKyiv(models.Model):
         verbose_name = "Валютний курс (Київ)"
         verbose_name_plural = "Валютний курс (Київ)"
 		
-class ExchangeRateLviv(models.Model):
-    date = models.DateField('Дата', null=True, unique = True)							# Дата 
-    sum = models.FloatField('Курс, 1$ = (грн) ', null=True) 		# Курс 
-
+class ExchangeRateLviv(ExchangeRate):
     class Meta:        
         verbose_name = "Валютний курс (Львів)"
         verbose_name_plural = "Валютний курс (Львів)"
 	
-class ExchangeRateOdesa(models.Model):
-    date = models.DateField('Дата', null=True, unique = True)							# Дата 
-    sum = models.FloatField('Курс, 1$ = (грн) ', null=True) 		# Курс 
+class ExchangeRateOdesa(ExchangeRate):
 
     class Meta:        
         verbose_name = "Валютний курс (Одеса)"
