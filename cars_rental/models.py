@@ -705,8 +705,7 @@ class InvestorContractBodyTimetableKyiv(InvestorContractBodyTimetable):
     pass
 
 
-class InvestorContractBodyTimetableLviv(InvestorContractBodyTimetable):
-    
+class InvestorContractBodyTimetableLviv(InvestorContractBodyTimetable):    
     investor_contract = models.ForeignKey(InvestorContractLviv, on_delete=models.CASCADE, default=1)		# інвесторський контракт
 	
 	
@@ -723,7 +722,10 @@ class InvestorContractBodyPayment(models.Model):
 		
 class InvestorContractBodyPaymentKyiv(InvestorContractBodyPayment):
     pass
-		
+
+class InvestorContractBodyPaymentLviv(InvestorContractBodyPayment):
+    investor_contract = models.ForeignKey(InvestorContractLviv, on_delete=models.CASCADE, default=1)		# інвесторський контракт
+	
 # Інвесторський контракт, платежі по % на тіло кредиту !!! змінити назву полів
 class InvestorContractPercentagePayment(models.Model):
     investor_contract = models.ForeignKey(InvestorContractKyiv, on_delete=models.CASCADE, default=1)		# інвесторський контракт
@@ -741,6 +743,12 @@ class InvestorContractPercentagePayment(models.Model):
 		
 class InvestorContractPercentagePaymentKyiv(InvestorContractPercentagePayment):
     pass
+	
+class InvestorContractPercentagePaymentLviv(InvestorContractPercentagePayment):
+    investor_contract = models.ForeignKey(InvestorContractLviv, on_delete=models.CASCADE, default=1)		# інвесторський контракт
+	
+	
+	
 #class YourModel(models.Model):
 #    pass
     

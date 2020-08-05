@@ -16,7 +16,8 @@ from .models import InvestorKyiv, InvestorContractKyiv, InvestorContractBodyTime
 from .models import ClientContractWeeklyCarReportKyiv 
 #Львів
 from .models import ClientLviv, CarLviv,  ClientContractLviv,  ClientContractTimetableLviv, ClientContractTOLviv,  ClientContractTOTodayLviv
-from .models import InvestorLviv, InvestorContractLviv,  InvestorContractBodyTimetableLviv #, YourModel 
+from .models import InvestorLviv, InvestorContractLviv,  InvestorContractBodyTimetableLviv, InvestorContractBodyPaymentLviv, InvestorContractPercentagePaymentLviv 
+#, YourModel 
 # Одеса
 from .forms import yourForm
 from import_export import resources
@@ -305,6 +306,8 @@ class ClientContractAdminLviv(ClientContractAdminKyiv):
 admin.site.register(ClientContractLviv, ClientContractAdminLviv)    
 
 
+
+
 class InvestorAdminKyiv(admin.ModelAdmin):
     list_display = ('full_name', 'phone_number')
     search_fields = ['full_name', 'phone_number']
@@ -325,8 +328,8 @@ class InvestorContractBodyTimetableInlineKyiv(admin.TabularInline):
 class InvestorContractBodyTimetableInlineLviv(InvestorContractBodyTimetableInlineKyiv):
     model = InvestorContractBodyTimetableLviv
 
-	
 
+	
 
 class InvestorContractBodyPaymentInlineKyiv(admin.TabularInline):
     model = InvestorContractBodyPaymentKyiv
@@ -334,12 +337,23 @@ class InvestorContractBodyPaymentInlineKyiv(admin.TabularInline):
     #can_delete = False
     fields = ['date', 'sum']
     #readonly_fields = ['payment_usd']
+	
+class InvestorContractBodyPaymentInlineLviv(InvestorContractBodyPaymentInlineKyiv):
+    model = InvestorContractBodyPaymentLviv
 
+	
+	
+	
 class InvestorContractPercentagePaymentInlineKyiv(admin.TabularInline):
     model = InvestorContractPercentagePaymentKyiv
     extra = 0
     fields = ['date', 'sum']
     #readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd']
+	
+class InvestorContractPercentagePaymentInlineLviv(InvestorContractPercentagePaymentInlineKyiv):
+    model = InvestorContractPercentagePaymentLviv
+
+	
 	
 class InvestorContractAdminKyiv(admin.ModelAdmin):
     #fieldsets = [
@@ -399,7 +413,7 @@ admin.site.register(InvestorContractKyiv, InvestorContractAdminKyiv)
 
 class InvestorContractAdminLviv(InvestorContractAdminKyiv):
 
-    inlines = [InvestorContractBodyTimetableInlineLviv] #[, InvestorContractBodyPaymentInlineKyiv, InvestorContractPercentagePaymentInlineKyiv]
+    inlines = [InvestorContractBodyTimetableInlineLviv, InvestorContractBodyPaymentInlineLviv, InvestorContractPercentagePaymentInlineLviv]
 
     def save_model(self, request, obj, form, change):
         # (ПЕРЕВІРИТИ ВЕСЬ РОЗРАХУНОК !!!) Розрахунок номеру контракту та номеру специфікації для даного клієнта
