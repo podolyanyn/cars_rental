@@ -31,6 +31,7 @@ urlpatterns = [
     #url(r'^admin/', include(admin_reports.site.urls)),
     path('erp/', ra_admin_site.urls), # django-ra-erp
     path('url-to-report', TotalProductSales.as_view()), # slick_reporting
-    url(r'^export/csv/$', cars_rental.views.export_users_csv, name='export_users_csv'),
-    url(r'^export/xls/$', cars_rental.views.export_users_xls, name='export_users_xls'),
+    #url(r'^export/csv/$', cars_rental.views.export_users_csv, name='export_users_csv'),
+    #url(r'^export/xls/$', cars_rental.admin.WeeklyCarReportAdminKyiv.export_users_xls, name='export_users_xls'),
+    #url(r'^export/xls/$', cars_rental.views.export_users_xls, name='export_users_xls'),
 ]

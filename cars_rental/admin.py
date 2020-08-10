@@ -26,6 +26,8 @@ from ra.admin.admin import ra_admin_site, EntityAdmin, TransactionAdmin # django
 from admin_totals.admin import ModelAdminTotals  # for Django Admin Totals
 from django.db.models.functions import Coalesce  # for Django Admin Totals
 from django.contrib.admin.views.main import ChangeList
+from django.http import HttpResponse, Http404
+import xlwt
 
 #------------- Блок експериментів з віджетами
 #class YourModelAdmin(admin.ModelAdmin):
@@ -457,13 +459,75 @@ admin.site.register(InvestorContractLviv, InvestorContractAdminLviv)
 #class WeeklyCarReportAdmin(ExportMixin, admin.ModelAdmin):
 
 
-class WeeklyCarReportAdminKyiv(ExportActionMixin, admin.ModelAdmin):
+class WeeklyCarReportAdminKyiv(ExportMixin, admin.ModelAdmin):
     """ Тижневий звіт по авто """
     list_display = ('date', 'client', 'car', 'amount_payment_usd', 'paid_for_the_week',  'payments_difference', 'frequency_payment' )
     list_totals = [('amount_payment_usd',  Sum)]
     #list_filter = ['brand', 'model']    
     #change_list_template = 'admin/weekly_car_report_admin_change_list.html'
+    #change_list_template= 'admin/cars_rental/clientcontractweeklycarreportkyiv/change_list.html'
     date_hierarchy = 'date'
+	
+	
+    actions=["export_excel_test",]
+	
+    
+	
+    #def export_excel_test (self, request, queryset):
+    def export_excel_test (self, request, queryset):
+        #def export_users_xls(request):
+        response = HttpResponse(content_type='application/ms-excel')
+        response['Content-Disposition'] = 'attachment; filename="WeeklyCarReportAdminKyiv.xls"'
+        
+        wb = xlwt.Workbook(encoding='utf-8')
+        ws = wb.add_sheet('Тижневий звіт по авто')
+        
+        # Sheet header, first row
+        row_num = 0
+
+        font_style = xlwt.XFStyle()
+        font_style.font.bold = True
+
+        columns = ['Дата контракту', 'Клієнт', 'Авто', 'Сума платежу, $', 'Оплачено за тиждень', 'Різниця', 'Періодичність оплати']
+
+        for col_num in range(len(columns)):
+            ws.write(row_num, col_num, columns[col_num], font_style)
+
+        # Sheet body, remaining rows
+        font_style = xlwt.XFStyle()
+
+        #rows = User.objects.all().values_list('username', 'first_name', 'last_name', 'email')
+        #rows = WeeklyCarReportAdminKyiv.list_display
+        
+        #print('TEST =', self.get_queryset(request))
+        #print('TEST =', self.paid_for_the_week(queryset[1]))
+        #rows = "test"
+        #ws.write(row_num+1, col_num, rows, font_style)
+        
+        for obj in queryset:
+            row_num += 1
+            #for col_num in range(4):
+            client = str(obj.client)
+            car = str(obj.car)
+            frequency_payment = str(obj.frequency_payment)
+            ws.write(row_num, 0, obj.date, font_style)            
+            ws.write(row_num, 1, client, font_style)
+            ws.write(row_num, 2, car, font_style)
+            ws.write(row_num, 3, obj.amount_payment_usd, font_style)
+            ws.write(row_num, 4, self.paid_for_the_week(obj), font_style)
+            ws.write(row_num, 5, self.payments_difference(obj), font_style)
+            ws.write(row_num, 6, frequency_payment, font_style)			
+            #print('TEST =', obj.client)            
+
+			
+        wb.save(response)
+        return response
+    export_excel_test.short_description="Export excel file"
+
+
+
+
+
 
     def paid_for_the_week(self, obj):
         """ Розрахунок суми платежів по контракту за останній тиждень, або за період """
@@ -523,8 +587,9 @@ class WeeklyCarReportAdminKyiv(ExportActionMixin, admin.ModelAdmin):
 #        return response
 #    """
 
-    
 admin.site.register(ClientContractWeeklyCarReportKyiv, WeeklyCarReportAdminKyiv)
+
+
 
 # Робота з модулем django-import-export
 #class ClientResource(resources.ModelResource):
