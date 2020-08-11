@@ -28,6 +28,7 @@ from django.db.models.functions import Coalesce  # for Django Admin Totals
 from django.contrib.admin.views.main import ChangeList
 from django.http import HttpResponse, Http404
 import xlwt
+from daterange_filter.filter import DateRangeFilter  # django-daterange-filter
 
 #------------- Блок експериментів з віджетами
 #class YourModelAdmin(admin.ModelAdmin):
@@ -463,10 +464,12 @@ class WeeklyCarReportAdminKyiv(ExportMixin, admin.ModelAdmin):
     """ Тижневий звіт по авто """
     list_display = ('date', 'client', 'car', 'amount_payment_usd', 'paid_for_the_week',  'payments_difference', 'frequency_payment' )
     list_totals = [('amount_payment_usd',  Sum)]
-    #list_filter = ['brand', 'model']    
+    list_filter = (
+    ('date', DateRangeFilter), # this is a tuple
+    )    
     #change_list_template = 'admin/weekly_car_report_admin_change_list.html'
     #change_list_template= 'admin/cars_rental/clientcontractweeklycarreportkyiv/change_list.html'
-    date_hierarchy = 'date'
+    #date_hierarchy = 'date'
 	
 	
     actions=["export_excel_test",]
