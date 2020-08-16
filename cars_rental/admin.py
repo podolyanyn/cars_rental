@@ -28,7 +28,9 @@ from django.db.models.functions import Coalesce  # for Django Admin Totals
 from django.contrib.admin.views.main import ChangeList
 from django.http import HttpResponse, Http404
 import xlwt
-from daterange_filter.filter import DateRangeFilter  # django-daterange-filter
+#from daterange_filter.filter import DateRangeFilter  # django-daterange-filter
+from rangefilter.filter import DateRangeFilter    # django-admin-rangefilter
+from ppretty import ppretty
 
 #------------- Блок експериментів з віджетами
 #class YourModelAdmin(admin.ModelAdmin):
@@ -460,21 +462,31 @@ admin.site.register(InvestorContractLviv, InvestorContractAdminLviv)
 #class WeeklyCarReportAdmin(ExportMixin, admin.ModelAdmin):
 
 
-class WeeklyCarReportAdminKyiv(ExportMixin, admin.ModelAdmin):
+class WeeklyCarReportAdminKyiv(admin.ModelAdmin):
     """ Тижневий звіт по авто """
     list_display = ('date', 'client', 'car', 'amount_payment_usd', 'paid_for_the_week',  'payments_difference', 'frequency_payment' )
     list_totals = [('amount_payment_usd',  Sum)]
+    #list_filter = (
+    #('clientcontracttimetablekyiv__planned_payment_date', DateRangeFilter), # this is a tuple
+    #)
+    
     list_filter = (
-    ('date', DateRangeFilter), # this is a tuple
-    )    
+        ('clientcontracttimetablekyiv__planned_payment_date', DateRangeFilter), 
+    )
+	
+    # print('DateRangeFilter = ', )
+
+    #list_filter = ('clientcontracttimetablekyiv__planned_payment_date',)   # Вибір пов'язаної дати 
+	 
     #change_list_template = 'admin/weekly_car_report_admin_change_list.html'
     #change_list_template= 'admin/cars_rental/clientcontractweeklycarreportkyiv/change_list.html'
     #date_hierarchy = 'date'
-	
-	
+		
     actions=["export_excel_test",]
 	
-    
+    #def get_list_filter(self, request):
+       #print('request = ', request)
+       #return request
 	
     #def export_excel_test (self, request, queryset):
     def export_excel_test (self, request, queryset):
@@ -534,6 +546,11 @@ class WeeklyCarReportAdminKyiv(ExportMixin, admin.ModelAdmin):
 
     def paid_for_the_week(self, obj):
         """ Розрахунок суми платежів по контракту за останній тиждень, або за період """
+
+        #print('request101 = ', self.request)
+
+		
+		
         today=date.today()
         result =  loan_amount_paid_usd = obj.clientcontracttimetablekyiv_set.all().filter(planned_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0
         return result
@@ -554,7 +571,9 @@ class WeeklyCarReportAdminKyiv(ExportMixin, admin.ModelAdmin):
     #change_list_results_template = 'admin/cars_rental/extras/change_list_results_.html'
     
     def changelist_view(self, request, extra_context=None):
-    
+        
+        self.request = request # присвоюю змінній класу значення request, щоб потім використати в функціях підрахунку paid_for_the_week, payments_difference
+
         my_context = {
             'total': self.get_total_sum(),
         }
