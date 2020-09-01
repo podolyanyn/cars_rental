@@ -9,6 +9,8 @@ import csv
 from django.contrib.auth.models import User
 from .admin import  WeeklyCarReportAdminKyiv
 import xlwt
+#from .forms import MyForm
+#from django.views.generic.edit import FormView
 
 
 # https://djbook.ru/rel3.0/intro/tutorial03.html
@@ -66,3 +68,12 @@ def export_users_csv(request):
     writer.writerow(['Сума 1', 'Сума 2', 'Сума 3', 'Сума 4'])
 
     return response
+	
+
+	
+#def get_myform(request):
+#    form = MyForm(request.GET)
+#
+#    return render(request, 'admin/cars_rental/clientcontractweeklycarreportkyiv/change_list.html', {'form': form})
+	
+

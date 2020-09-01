@@ -1,17 +1,35 @@
 {% extends 'admin/change_list.html' %}
 
-{% block content_title %}
-    <h1> Тижневий звіт по авто </h1>
-{% endblock %}
 
 {% block result_list %} 
 {{ block.super }}
+	
+	<p>Сума платежу в доларах, сума: </p> 
+	<p>Оплачено за тиждень, сума: {{ total }}</p> 
+	<p>Різниця, сума: </p>
+	
+	
+	{% load static %} 
 
-<p>Сума платежу в доларах, сума: </p> 
-<p>Оплачено за тиждень, сума: {{ total }}</p> 
-<p>Різниця, сума: </p> 
+	<form action="http://localhost:8000/admin/cars_rental/clientcontractweeklycarreportkyiv/" method="post">
+	  <input type="date" name="start_date" value={{ start_date }}>
+	  <input type="date" name="end_date" value={{ end_date }}>
+	  <input type="submit" value="Розрахувати">
+	</form>
 
+	<link href="{% static 'admin/css/forms.css' %}" type="text/css" media="all" rel="stylesheet" />
+	<link href="{% static 'admin/css/base.css' %}" type="text/css" media="all" rel="stylesheet" />
+	<link href="{% static 'admin/css/widgets.css' %}" type="text/css" media="all" rel="stylesheet" />
+	<script type="text/javascript" src="/admin/jsi18n/"></script>
+	<script type="text/javascript" src="{% static 'admin/js/core.js' %}"></script>
+	<script type="text/javascript" src="{% static 'admin/js/calendar.js' %}"></script>
+	<script type="text/javascript" src="{% static 'admin/js/admin/DateTimeShortcuts.js' %}"></script>
+
+	{{ form.media }}
+	
 {% endblock %}
+
+
 
 
 

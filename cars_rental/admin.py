@@ -19,7 +19,7 @@ from .models import ClientLviv, CarLviv,  ClientContractLviv,  ClientContractTim
 from .models import InvestorLviv, InvestorContractLviv,  InvestorContractBodyTimetableLviv, InvestorContractBodyPaymentLviv, InvestorContractPercentagePaymentLviv 
 #, YourModel 
 # Одеса
-from .forms import yourForm
+#from .forms import yourForm
 from import_export import resources
 from import_export.admin import  ExportMixin, ExportActionMixin
 from ra.admin.admin import ra_admin_site, EntityAdmin, TransactionAdmin # django-ra-erp
@@ -31,6 +31,7 @@ import xlwt
 #from daterange_filter.filter import DateRangeFilter  # django-daterange-filter
 from rangefilter.filter import DateRangeFilter    # django-admin-rangefilter
 from ppretty import ppretty
+
 
 #------------- Блок експериментів з віджетами
 #class YourModelAdmin(admin.ModelAdmin):
@@ -470,11 +471,7 @@ class WeeklyCarReportAdminKyiv(admin.ModelAdmin):
     #('clientcontracttimetablekyiv__planned_payment_date', DateRangeFilter), # this is a tuple
     #)
     
-    list_filter = (
-        ('clientcontracttimetablekyiv__planned_payment_date', DateRangeFilter), 
-    )
-	
-    # print('DateRangeFilter = ', )
+
 
     #list_filter = ('clientcontracttimetablekyiv__planned_payment_date',)   # Вибір пов'язаної дати 
 	 
@@ -487,7 +484,8 @@ class WeeklyCarReportAdminKyiv(admin.ModelAdmin):
     #def get_list_filter(self, request):
        #print('request = ', request)
        #return request
-	
+
+
     #def export_excel_test (self, request, queryset):
     def export_excel_test (self, request, queryset):
         #def export_users_xls(request):
@@ -540,10 +538,6 @@ class WeeklyCarReportAdminKyiv(admin.ModelAdmin):
     export_excel_test.short_description="Export excel file"
 
 
-
-
-
-
     def paid_for_the_week(self, obj):
         """ Розрахунок суми платежів по контракту за останній тиждень, або за період """
 
@@ -573,9 +567,12 @@ class WeeklyCarReportAdminKyiv(admin.ModelAdmin):
     def changelist_view(self, request, extra_context=None):
         
         self.request = request # присвоюю змінній класу значення request, щоб потім використати в функціях підрахунку paid_for_the_week, payments_difference
+        print('request changelist_view = ', request.POST) #request.POST
 
         my_context = {
             'total': self.get_total_sum(),
+            'start_date': request.POST['start_date'] if request.POST else  str(date.today() + timedelta( days=-date.today().weekday() ) ), 
+            'end_date': request.POST['end_date'] if request.POST else  str(date.today()),
         }
         return super(WeeklyCarReportAdminKyiv, self).changelist_view(request,
             extra_context=my_context)
