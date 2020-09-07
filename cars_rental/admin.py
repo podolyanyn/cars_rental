@@ -465,8 +465,8 @@ admin.site.register(InvestorContractLviv, InvestorContractAdminLviv)
 
 class WeeklyCarReportAdminKyiv(admin.ModelAdmin):
     """ Тижневий звіт по авто """
-    list_display = ('date', 'client', 'car', 'amount_payment_usd', 'paid_for_the_week',  'payments_difference', 'frequency_payment' )
-    list_totals = [('amount_payment_usd',  Sum)]
+    list_display = ('date', 'client', 'car', 'amount_payment_week', 'frequency_payment', 'amount_payment_period', 'paid_for_the_period',  'payments_difference' )
+    #list_totals = [('amount_payment_usd',  Sum)]
     #list_filter = (
     #('clientcontracttimetablekyiv__planned_payment_date', DateRangeFilter), # this is a tuple
     #)
@@ -495,13 +495,26 @@ class WeeklyCarReportAdminKyiv(admin.ModelAdmin):
         wb = xlwt.Workbook(encoding='utf-8')
         ws = wb.add_sheet('Тижневий звіт по авто')
         
+        def days_week(day):
+            DAYS_WEEK = {
+            0: "понеділок",
+            1: "вівторок",
+            2: "середа",
+            3: "четвер",
+            4: "п'ятниця",
+            5: "субота"
+            }
+            return DAYS_WEEK[day]
+			
         # Sheet header, first row
         row_num = 0
 
         font_style = xlwt.XFStyle()
         font_style.font.bold = True
+		
+		
 
-        columns = ['Дата контракту', 'Клієнт', 'Авто', 'Сума платежу, $', 'Оплачено за тиждень', 'Різниця', 'Періодичність оплати']
+        columns = ['Дата контракту', 'Клієнт', 'Авто', 'Плановий тижневий платіж', 'Періодичність оплати', 'Плановий платіж за період', 'Оплачено за період', 'Різниця', ]
 
         for col_num in range(len(columns)):
             ws.write(row_num, col_num, columns[col_num], font_style)
@@ -513,7 +526,7 @@ class WeeklyCarReportAdminKyiv(admin.ModelAdmin):
         #rows = WeeklyCarReportAdminKyiv.list_display
         
         #print('TEST =', self.get_queryset(request))
-        #print('TEST =', self.paid_for_the_week(queryset[1]))
+        #print('TEST =', self.paid_for_the_period(queryset[1]))
         #rows = "test"
         #ws.write(row_num+1, col_num, rows, font_style)
         
@@ -522,43 +535,64 @@ class WeeklyCarReportAdminKyiv(admin.ModelAdmin):
             #for col_num in range(4):
             client = str(obj.client)
             car = str(obj.car)
-            frequency_payment = str(obj.frequency_payment)
-            ws.write(row_num, 0, obj.date, font_style)            
+            #print('frequency_payment = ', obj.frequency_payment)
+            ws.write(row_num, 0, str(obj.date), font_style)            
             ws.write(row_num, 1, client, font_style)
             ws.write(row_num, 2, car, font_style)
-            ws.write(row_num, 3, obj.amount_payment_usd, font_style)
-            ws.write(row_num, 4, self.paid_for_the_week(obj), font_style)
-            ws.write(row_num, 5, self.payments_difference(obj), font_style)
-            ws.write(row_num, 6, frequency_payment, font_style)			
-            #print('TEST =', obj.client)            
-
+            ws.write(row_num, 3, self.amount_payment_week(obj), font_style)
+            ws.write(row_num, 4, str(days_week(obj.frequency_payment)), font_style)
+            ws.write(row_num, 5, self.amount_payment_period(obj), font_style)
+            ws.write(row_num, 6, self.paid_for_the_period(obj), font_style)
+            ws.write(row_num, 7, self.payments_difference(obj), font_style)
+		
+            #print('TEST =', obj.client)     
+        row_num += 1			
+        ws.write(row_num, 1, 'СУМА', font_style)
+        ws.write(row_num, 5, self.amount_payment_period_total(), font_style)
+        ws.write(row_num, 6, self.paid_for_the_period_total(), font_style)
+        ws.write(row_num, 7, self.paid_for_the_period_total() - self.amount_payment_period_total(), font_style)
 			
         wb.save(response)
         return response
     export_excel_test.short_description="Export excel file"
 
 
-    def paid_for_the_week(self, obj):
-        """ Розрахунок суми платежів по контракту за останній тиждень, або за період """
+    def amount_payment_week(self, obj):
+        """ Плановий тижневий платіж """
+        return obj.amount_payment_usd
+    amount_payment_week.short_description = 'Плановий тижневий платіж'
+	
+    def amount_payment_period(self, obj):
+        """ Плановий платіж за період """
+        result = obj.clientcontracttimetablekyiv_set.all().filter(planned_payment_date__range=(self.start_date, self.end_date)).aggregate(Sum('planned_amount_payment_usd'))['planned_amount_payment_usd__sum'] or 0
 
-        #print('request101 = ', self.request)
-
-		
-		
-        today=date.today()
-        result =  loan_amount_paid_usd = obj.clientcontracttimetablekyiv_set.all().filter(planned_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0
         return result
-    paid_for_the_week.short_description = 'Оплачено за тиждень'
+    amount_payment_period.short_description = 'Плановий платіж за період'
+	
+    def paid_for_the_period(self, obj):
+        """ Розрахунок суми платежів по контракту за останній тиждень, або за період """
+        #print('request101 = ', self.request)		
+        #today=date.today()
+        result = obj.clientcontracttimetablekyiv_set.all().filter(planned_payment_date__range=(self.start_date, self.end_date)).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0
+        return result
+    paid_for_the_period.short_description = 'Оплачено за період'
 
     def payments_difference(self, obj):
         """ Різниця між оплаченими платежами та плановим """
-        return self.paid_for_the_week(obj) - obj.amount_payment_usd
+        return self.paid_for_the_period(obj) - self.amount_payment_period(obj)
     payments_difference.short_description = 'Різниця'
 
-    def get_total_sum(self):
-        """ Розрахувати суму """
+    def amount_payment_period_total(self):
+        """ Розрахувати суму всіх планових платежів за період """
+        #total_sum = ClientContractTimetableKyiv.objects.all().filter(planned_payment_date__range=(self.start_date, self.end_date)).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum']
+        total_sum = ClientContractTimetableKyiv.objects.all().filter(planned_payment_date__range=(self.start_date, self.end_date)).aggregate(Sum('planned_amount_payment_usd'))['planned_amount_payment_usd__sum'] or 0
+        return total_sum
+	
+    def paid_for_the_period_total(self):
+        """ Розрахувати суму всіх платежів за період """
         #functions to calculate whatever you want...
-        total_sum = ClientContractTimetableKyiv.objects.all().aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum']
+        #print("self.start_date = ", self.start_date, "; self.end_date ", self.end_date) 
+        total_sum = ClientContractTimetableKyiv.objects.all().filter(planned_payment_date__range=(self.start_date, self.end_date)).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0
         return total_sum
 
     #change_list_template = 'admin/cars_rental/extras/sometemplate_change_list.html'
@@ -566,13 +600,17 @@ class WeeklyCarReportAdminKyiv(admin.ModelAdmin):
     
     def changelist_view(self, request, extra_context=None):
         
-        self.request = request # присвоюю змінній класу значення request, щоб потім використати в функціях підрахунку paid_for_the_week, payments_difference
+        self.request = request # присвоюю змінній класу значення request, щоб потім використати в функціях підрахунку paid_for_the_period, payments_difference
         print('request changelist_view = ', request.POST) #request.POST
-
+        
+        self.start_date = request.POST['start_date'] if request.POST else  str(date.today() + timedelta( days=-date.today().weekday() ) )
+        self.end_date = request.POST['end_date'] if request.POST else  str(date.today() + timedelta(days = 1))
         my_context = {
-            'total': self.get_total_sum(),
-            'start_date': request.POST['start_date'] if request.POST else  str(date.today() + timedelta( days=-date.today().weekday() ) ), 
-            'end_date': request.POST['end_date'] if request.POST else  str(date.today()),
+            'start_date': self.start_date, 
+            'end_date':  self.end_date,
+            'amount_payment_period_total': self.amount_payment_period_total(),
+            'paid_for_the_period_total': self.paid_for_the_period_total(),
+            'payments_difference_total': self.paid_for_the_period_total() - self.amount_payment_period_total()
         }
         return super(WeeklyCarReportAdminKyiv, self).changelist_view(request,
             extra_context=my_context)

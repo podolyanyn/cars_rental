@@ -4,9 +4,9 @@
 {% block result_list %} 
 {{ block.super }}
 	
-	<p>Сума платежу в доларах, сума: </p> 
-	<p>Оплачено за тиждень, сума: {{ total }}</p> 
-	<p>Різниця, сума: </p>
+	<p>Плановий платіж за період, сума: {{ amount_payment_period_total }}</p> 
+	<p>Оплачено за період, сума: {{ paid_for_the_period_total }}</p> 
+	<p>Різниця, сума: {{ payments_difference_total }}</p>
 	
 	
 	{% load static %} 
