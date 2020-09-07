@@ -529,7 +529,8 @@ class WeeklyCarReportAdminKyiv(admin.ModelAdmin):
         #print('TEST =', self.paid_for_the_period(queryset[1]))
         #rows = "test"
         #ws.write(row_num+1, col_num, rows, font_style)
-        
+         
+		 
         for obj in queryset:
             row_num += 1
             #for col_num in range(4):
