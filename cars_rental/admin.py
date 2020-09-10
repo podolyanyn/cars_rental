@@ -514,7 +514,7 @@ class WeeklyCarReportAdminKyiv(admin.ModelAdmin):
 		
 		
 
-        columns = ['Дата контракту', 'Клієнт', 'Авто', 'Плановий тижневий платіж', 'Періодичність оплати', 'Плановий платіж за період', 'Оплачено за період', 'Різниця', ]
+        columns = ['Номер контракту', 'Клієнт', 'Авто', 'Плановий тижневий платіж', 'Періодичність оплати', 'Фактична дата ост. платежу', 'Плановий платіж за період', 'Оплачено за період', 'Різниця', ]
 
         for col_num in range(len(columns)):
             ws.write(row_num, col_num, columns[col_num], font_style)
@@ -537,21 +537,22 @@ class WeeklyCarReportAdminKyiv(admin.ModelAdmin):
             client = str(obj.client)
             car = str(obj.car)
             #print('frequency_payment = ', obj.frequency_payment)
-            ws.write(row_num, 0, str(obj.date), font_style)            
+            ws.write(row_num, 0, obj.number, font_style)            
             ws.write(row_num, 1, client, font_style)
             ws.write(row_num, 2, car, font_style)
             ws.write(row_num, 3, self.amount_payment_week(obj), font_style)
             ws.write(row_num, 4, str(days_week(obj.frequency_payment)), font_style)
-            ws.write(row_num, 5, self.amount_payment_period(obj), font_style)
-            ws.write(row_num, 6, self.paid_for_the_period(obj), font_style)
-            ws.write(row_num, 7, self.payments_difference(obj), font_style)
+            ws.write(row_num, 5, str(self.fact_payment_date(obj)), font_style)
+            ws.write(row_num, 6, self.amount_payment_period(obj), font_style)
+            ws.write(row_num, 7, self.paid_for_the_period(obj), font_style)
+            ws.write(row_num, 8, self.payments_difference(obj), font_style)
 		
             #print('TEST =', obj.client)     
         row_num += 1			
         ws.write(row_num, 1, 'СУМА', font_style)
-        ws.write(row_num, 5, self.amount_payment_period_total(), font_style)
-        ws.write(row_num, 6, self.paid_for_the_period_total(), font_style)
-        ws.write(row_num, 7, self.paid_for_the_period_total() - self.amount_payment_period_total(), font_style)
+        ws.write(row_num, 6, self.amount_payment_period_total(), font_style)
+        ws.write(row_num, 7, self.paid_for_the_period_total(), font_style)
+        ws.write(row_num, 8, self.paid_for_the_period_total() - self.amount_payment_period_total(), font_style)
 			
         wb.save(response)
         return response
@@ -566,7 +567,7 @@ class WeeklyCarReportAdminKyiv(admin.ModelAdmin):
     def fact_payment_date(self, obj):
         """Фактична дата платежу, останнього"""
         #result = obj.clientcontracttimetablekyiv_set.all().filter(planned_payment_date__range=(self.start_date, self.end_date)).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0   amount_paid_usd__isnull=False,
-        result = obj.clientcontracttimetablekyiv_set.all().filter(planned_payment_date__range=(self.start_date, self.end_date),  amount_paid_usd__gt = 0).dates('planned_payment_date', 'day').last() # дата вибирається правильно, відображається попереднім днем    (при умові що в неї час = 00.00.00); для наших даних не актуально, оскільки менеджер вносить платіж вдень
+        result = obj.clientcontracttimetablekyiv_set.all().filter(planned_payment_date__range=(self.start_date, self.end_date),  amount_paid_usd__gt = 0).dates('planned_payment_date', 'day').last() or '-' # дата вибирається правильно, відображається попереднім днем    (при умові що в неї час = 00.00.00); для наших даних не актуально, оскільки менеджер вносить платіж вдень
         print('result_fact = ', result)
         return result
     fact_payment_date.short_description = 'Фактична дата ост. платежу'
