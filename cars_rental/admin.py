@@ -13,7 +13,7 @@ from .models import Color, Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeR
 # Київ
 from .models import ClientKyiv, CarKyiv, ClientContractKyiv, ClientContractTimetableKyiv, ClientContractTOKyiv, ClientContractTOTodayKyiv
 from .models import InvestorKyiv, InvestorContractKyiv, InvestorContractBodyTimetableKyiv, InvestorContractBodyPaymentKyiv, InvestorContractPercentagePaymentKyiv
-from .models import ClientContractWeeklyCarReportKyiv 
+from .models import ClientContractWeeklyCarReportKyiv, ClientContractPeriodCarReportKyiv 
 #Львів
 from .models import ClientLviv, CarLviv,  ClientContractLviv,  ClientContractTimetableLviv, ClientContractTOLviv,  ClientContractTOTodayLviv
 from .models import InvestorLviv, InvestorContractLviv,  InvestorContractBodyTimetableLviv, InvestorContractBodyPaymentLviv, InvestorContractPercentagePaymentLviv 
@@ -556,7 +556,7 @@ class WeeklyCarReportAdminKyiv(admin.ModelAdmin):
 			
         wb.save(response)
         return response
-    export_excel_test.short_description="Export excel file"
+    export_excel_test.short_description="Експорт в .xls"
 
 
     def amount_payment_week(self, obj):
@@ -656,8 +656,81 @@ class WeeklyCarReportAdminKyiv(admin.ModelAdmin):
 
 admin.site.register(ClientContractWeeklyCarReportKyiv, WeeklyCarReportAdminKyiv)
 
+class PeriodCarReportAdminKyiv(WeeklyCarReportAdminKyiv):
+    """ Звіт по авто за період """
+    list_display = ('number', 'client', 'car', 'amount_payment_period', 'paid_for_the_period',  'payments_difference' )   
+        
+    def export_excel_test (self, request, queryset):
+        #def export_users_xls(request):
+        response = HttpResponse(content_type='application/ms-excel')
+        response['Content-Disposition'] = 'attachment; filename="PeriodCarReportAdminKyiv.xls"'
+        
+        wb = xlwt.Workbook(encoding='utf-8')
+        ws = wb.add_sheet('Звіт по авто за період')
+        
+        def days_week(day):
+            DAYS_WEEK = {
+            0: "понеділок",
+            1: "вівторок",
+            2: "середа",
+            3: "четвер",
+            4: "п'ятниця",
+            5: "субота"
+            }
+            return DAYS_WEEK[day]
+			
+        # Sheet header, first row
+        row_num = 0
 
+        font_style = xlwt.XFStyle()
+        font_style.font.bold = True
+		
+		
 
+        columns = ['Номер контракту', 'Клієнт', 'Авто', 'Плановий платіж за період', 'Оплачено за період', 'Різниця', ]
+
+        for col_num in range(len(columns)):
+            ws.write(row_num, col_num, columns[col_num], font_style)
+
+        # Sheet body, remaining rows
+        font_style = xlwt.XFStyle()
+
+        #rows = User.objects.all().values_list('username', 'first_name', 'last_name', 'email')
+        #rows = WeeklyCarReportAdminKyiv.list_display
+        
+        #print('TEST =', self.get_queryset(request))
+        #print('TEST =', self.paid_for_the_period(queryset[1]))
+        #rows = "test"
+        #ws.write(row_num+1, col_num, rows, font_style)
+         
+		 
+        for obj in queryset:
+            row_num += 1
+            #for col_num in range(4):
+            client = str(obj.client)
+            car = str(obj.car)
+            #print('frequency_payment = ', obj.frequency_payment)
+            ws.write(row_num, 0, obj.number, font_style)            
+            ws.write(row_num, 1, client, font_style)
+            ws.write(row_num, 2, car, font_style)
+            ws.write(row_num, 3, self.amount_payment_period(obj), font_style)
+            ws.write(row_num, 4, self.paid_for_the_period(obj), font_style)
+            ws.write(row_num, 5, self.payments_difference(obj), font_style)
+		
+            #print('TEST =', obj.client)     
+        row_num += 1			
+        ws.write(row_num, 1, 'СУМА', font_style)
+        ws.write(row_num, 3, self.amount_payment_period_total(), font_style)
+        ws.write(row_num, 4, self.paid_for_the_period_total(), font_style)
+        ws.write(row_num, 5, self.paid_for_the_period_total() - self.amount_payment_period_total(), font_style)
+			
+        wb.save(response)
+        return response
+    export_excel_test.short_description="Експорт в .xls"
+
+admin.site.register(ClientContractPeriodCarReportKyiv, PeriodCarReportAdminKyiv)
+	
+	
 # Робота з модулем django-import-export
 #class ClientResource(resources.ModelResource):
 #    class Meta:

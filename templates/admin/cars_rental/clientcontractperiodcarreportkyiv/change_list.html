@@ -1,0 +1,21 @@
+{% extends 'admin/change_list.html' %}
+
+
+{% block result_list %} 
+{{ block.super }}
+	
+	<p>Плановий платіж за період, сума: {{ amount_payment_period_total }}</p> 
+	<p>Оплачено за період, сума: {{ paid_for_the_period_total }}</p> 
+	<p>Різниця, сума: {{ payments_difference_total }}</p>
+	
+	<form action="http://localhost:8000/admin/cars_rental/clientcontractperiodcarreportkyiv/" method="post">
+	  <input type="date" name="start_date" value={{ start_date }}>
+	  <input type="date" name="end_date" value={{ end_date }}>
+	  <input type="submit" value="Розрахувати">
+	</form>
+{% endblock %}
+
+
+
+
+

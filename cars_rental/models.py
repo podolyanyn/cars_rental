@@ -353,13 +353,18 @@ class ClientContractTOTodayLviv(ClientContractTOLviv):
         return ""		
 
 class ClientContractWeeklyCarReportKyiv(ClientContractKyiv):
-    """ Проксі-Клас для звіту -Тижневий звіт по авто- """
+    """ Проксі-Клас для звіту -Тижневий звіт по авто-, Київ """
     class Meta:
         proxy = True
         verbose_name = "Клієнтський контракт (Київ), Тижневий звіт по авто"
         verbose_name_plural = "Клієнтські контракти (Київ), Тижневий звіт по авто"
 
-
+class ClientContractPeriodCarReportKyiv(ClientContractKyiv):
+    """ Проксі-Клас для звіту - звіт по авто за період-, Київ """
+    class Meta:
+        proxy = True
+        verbose_name = "Клієнтський контракт (Київ), звіт по авто за період"
+        verbose_name_plural = "Клієнтські контракти (Київ), звіт по авто за період"
 		
 		
 		
