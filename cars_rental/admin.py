@@ -465,7 +465,7 @@ admin.site.register(InvestorContractLviv, InvestorContractAdminLviv)
 
 class WeeklyCarReportAdminKyiv(admin.ModelAdmin):
     """ Тижневий звіт по авто """
-    list_display = ('date', 'client', 'car', 'amount_payment_week', 'frequency_payment', 'amount_payment_period', 'paid_for_the_period',  'payments_difference' )
+    list_display = ('number', 'client', 'car', 'amount_payment_week', 'frequency_payment',  'fact_payment_date', 'amount_payment_period', 'paid_for_the_period',  'payments_difference' )   
     #list_totals = [('amount_payment_usd',  Sum)]
     #list_filter = (
     #('clientcontracttimetablekyiv__planned_payment_date', DateRangeFilter), # this is a tuple
@@ -562,7 +562,15 @@ class WeeklyCarReportAdminKyiv(admin.ModelAdmin):
         """ Плановий тижневий платіж """
         return obj.amount_payment_usd
     amount_payment_week.short_description = 'Плановий тижневий платіж'
-	
+
+    def fact_payment_date(self, obj):
+        """Фактична дата платежу, останнього"""
+        #result = obj.clientcontracttimetablekyiv_set.all().filter(planned_payment_date__range=(self.start_date, self.end_date)).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0   amount_paid_usd__isnull=False,
+        result = obj.clientcontracttimetablekyiv_set.all().filter(planned_payment_date__range=(self.start_date, self.end_date),  amount_paid_usd__gt = 0).dates('planned_payment_date', 'day').last() # дата вибирається правильно, відображається попереднім днем    (при умові що в неї час = 00.00.00); для наших даних не актуально, оскільки менеджер вносить платіж вдень
+        print('result_fact = ', result)
+        return result
+    fact_payment_date.short_description = 'Фактична дата ост. платежу'
+		
     def amount_payment_period(self, obj):
         """ Плановий платіж за період """
         result = obj.clientcontracttimetablekyiv_set.all().filter(planned_payment_date__range=(self.start_date, self.end_date)).aggregate(Sum('planned_amount_payment_usd'))['planned_amount_payment_usd__sum'] or 0
