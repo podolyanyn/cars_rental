@@ -356,8 +356,8 @@ class ClientContractWeeklyCarReportKyiv(ClientContractKyiv):
     """ Проксі-Клас для звіту -Тижневий звіт по авто- """
     class Meta:
         proxy = True
-        verbose_name = "Клієнтський контракт, Тижневий звіт по авто"
-        verbose_name_plural = "Клієнтські контракти, Тижневий звіт по авто"
+        verbose_name = "Клієнтський контракт (Київ), Тижневий звіт по авто"
+        verbose_name_plural = "Клієнтські контракти (Київ), Тижневий звіт по авто"
 
 
 		

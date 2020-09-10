@@ -20,17 +20,17 @@ from .models import InvestorLviv, InvestorContractLviv,  InvestorContractBodyTim
 #, YourModel 
 # Одеса
 #from .forms import yourForm
-from import_export import resources
-from import_export.admin import  ExportMixin, ExportActionMixin
-from ra.admin.admin import ra_admin_site, EntityAdmin, TransactionAdmin # django-ra-erp
-from admin_totals.admin import ModelAdminTotals  # for Django Admin Totals
-from django.db.models.functions import Coalesce  # for Django Admin Totals
+#from import_export import resources
+#from import_export.admin import  ExportMixin, ExportActionMixin
+#from ra.admin.admin import ra_admin_site, EntityAdmin, TransactionAdmin # django-ra-erp
+#from admin_totals.admin import ModelAdminTotals  # for Django Admin Totals
+#from django.db.models.functions import Coalesce  # for Django Admin Totals
 from django.contrib.admin.views.main import ChangeList
 from django.http import HttpResponse, Http404
 import xlwt
 #from daterange_filter.filter import DateRangeFilter  # django-daterange-filter
-from rangefilter.filter import DateRangeFilter    # django-admin-rangefilter
-from ppretty import ppretty
+#from rangefilter.filter import DateRangeFilter    # django-admin-rangefilter
+#from ppretty import ppretty
 
 
 #------------- Блок експериментів з віджетами
