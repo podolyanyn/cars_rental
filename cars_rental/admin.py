@@ -13,7 +13,7 @@ from .models import Color, Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeR
 # Київ
 from .models import ClientKyiv, CarKyiv, ClientContractKyiv, ClientContractTimetableKyiv, ClientContractTOKyiv, ClientContractTOTodayKyiv
 from .models import InvestorKyiv, InvestorContractKyiv, InvestorContractBodyTimetableKyiv, InvestorContractBodyPaymentKyiv, InvestorContractPercentagePaymentKyiv
-from .models import ClientContractWeeklyCarReportKyiv, ClientContractPeriodCarReportKyiv 
+from .models import ClientContractWeeklyCarReportKyiv, ClientContractPeriodCarReportKyiv, ClientContractWeeklyCarTOReportKyiv 
 #Львів
 from .models import ClientLviv, CarLviv,  ClientContractLviv,  ClientContractTimetableLviv, ClientContractTOLviv,  ClientContractTOTodayLviv
 from .models import InvestorLviv, InvestorContractLviv,  InvestorContractBodyTimetableLviv, InvestorContractBodyPaymentLviv, InvestorContractPercentagePaymentLviv 
@@ -730,7 +730,14 @@ class PeriodCarReportAdminKyiv(WeeklyCarReportAdminKyiv):
 
 admin.site.register(ClientContractPeriodCarReportKyiv, PeriodCarReportAdminKyiv)
 	
-	
+class WeeklyCarTOReportAdminKyiv(admin.ModelAdmin):
+    """ Звіт по авто по ТО за період-, Київ """
+    #list_display = ('number', 'client', 'car', 'amount_payment_week', 'frequency_payment',  'fact_payment_date', 'amount_payment_period', 'paid_for_the_period',  'payments_difference' )
+    list_display = ('number', 'client', 'car')
+
+admin.site.register(ClientContractWeeklyCarTOReportKyiv, WeeklyCarTOReportAdminKyiv)
+
+
 # Робота з модулем django-import-export
 #class ClientResource(resources.ModelResource):
 #    class Meta:
