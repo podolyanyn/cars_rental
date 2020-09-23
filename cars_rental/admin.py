@@ -731,10 +731,126 @@ class PeriodCarReportAdminKyiv(WeeklyCarReportAdminKyiv):
 admin.site.register(ClientContractPeriodCarReportKyiv, PeriodCarReportAdminKyiv)
 	
 class WeeklyCarTOReportAdminKyiv(admin.ModelAdmin):
-    """ Звіт по авто по ТО за період-, Київ """
+    """ Звіт по авто по ТО за період, Київ """
     #list_display = ('number', 'client', 'car', 'amount_payment_week', 'frequency_payment',  'fact_payment_date', 'amount_payment_period', 'paid_for_the_period',  'payments_difference' )
-    list_display = ('number', 'client', 'car')
+    list_display = ('number', 'client', 'car', 'paid_for_the_period', 'taken_for_the_period', 'payments_difference')
 
+    actions=["export_excel_test",]
+
+    def export_excel_test (self, request, queryset):
+        #def export_users_xls(request):
+        response = HttpResponse(content_type='application/ms-excel')
+        response['Content-Disposition'] = 'attachment; filename="WeeklyCarTOReportAdminKyiv.xls"'
+        
+        wb = xlwt.Workbook(encoding='utf-8')
+        ws = wb.add_sheet('Тижневий звіт по авто по ТО')
+        
+        def days_week(day):
+            DAYS_WEEK = {
+            0: "понеділок",
+            1: "вівторок",
+            2: "середа",
+            3: "четвер",
+            4: "п'ятниця",
+            5: "субота"
+            }
+            return DAYS_WEEK[day]
+			
+        # Sheet header, first row
+        row_num = 0
+
+        font_style = xlwt.XFStyle()
+        font_style.font.bold = True
+		
+		
+
+        columns = ['Номер контракту', 'Клієнт', 'Авто', 'Оплачено ТО, грн', 'Взято на ТО, грн',  'Різниця', ]
+
+        for col_num in range(len(columns)):
+            ws.write(row_num, col_num, columns[col_num], font_style)
+
+        # Sheet body, remaining rows
+        font_style = xlwt.XFStyle()
+
+        #rows = User.objects.all().values_list('username', 'first_name', 'last_name', 'email')
+        #rows = WeeklyCarReportAdminKyiv.list_display
+        
+        #print('TEST =', self.get_queryset(request))
+        #print('TEST =', self.paid_for_the_period(queryset[1]))
+        #rows = "test"
+        #ws.write(row_num+1, col_num, rows, font_style)
+         
+		 
+        for obj in queryset:
+            row_num += 1
+            #for col_num in range(4):
+            client = str(obj.client)
+            car = str(obj.car)
+            #print('frequency_payment = ', obj.frequency_payment)
+            ws.write(row_num, 0, obj.number, font_style)            
+            ws.write(row_num, 1, client, font_style)
+            ws.write(row_num, 2, car, font_style)
+            ws.write(row_num, 3, self.paid_for_the_period(obj), font_style)
+            ws.write(row_num, 4, self.taken_for_the_period(obj), font_style)
+            ws.write(row_num, 5, self.payments_difference(obj), font_style)
+		
+            #print('TEST =', obj.client)     
+        row_num += 1			
+        ws.write(row_num, 1, 'СУМА', font_style)
+        ws.write(row_num, 3, self.paid_for_the_period_total(), font_style)
+        ws.write(row_num, 4, self.taken_for_the_period_total(), font_style)
+        ws.write(row_num, 5, self.paid_for_the_period_total() - self.taken_for_the_period_total(), font_style)
+			
+        wb.save(response)
+        return response
+    export_excel_test.short_description="Експорт в .xls"
+	
+	
+    def paid_for_the_period(self, obj):
+        """ Розрахунок суми платежів по TO за останній тиждень, або за період """
+        result = obj.clientcontracttokyiv_set.all().filter(date__range=(self.start_date, self.end_date), sum__gt = 0).aggregate(Sum('sum'))['sum__sum'] or 0
+        return result
+    paid_for_the_period.short_description = 'Оплачено ТО, грн'
+
+    def taken_for_the_period(self, obj):
+        """ Розрахунок суми, взятої на TO за останній тиждень, або за період """
+        result = obj.clientcontracttokyiv_set.all().filter(date__range=(self.start_date, self.end_date), sum__lt = 0).aggregate(Sum('sum'))['sum__sum'] or 0
+        return abs(result)
+    taken_for_the_period.short_description = 'Взято на ТО, грн'
+	
+    def payments_difference(self, obj):
+        """ Різниця між оплаченими та взятими на ТО платежами"""
+        return self.paid_for_the_period(obj) - self.taken_for_the_period(obj)
+    payments_difference.short_description = 'Різниця'
+	
+
+    def paid_for_the_period_total(self):
+        """ Розрахувати суму всіх платежів по ТО за період """
+        total_sum = ClientContractTOKyiv.objects.all().filter(date__range=(self.start_date, self.end_date), sum__gt = 0).aggregate(Sum('sum'))['sum__sum'] or 0
+        return total_sum
+		
+    def taken_for_the_period_total(self):
+        """ Розрахунок суми по всіх контрактах, взятої на TO за останній тиждень, або за період """
+        result = ClientContractTOKyiv.objects.all().filter(date__range=(self.start_date, self.end_date), sum__lt = 0).aggregate(Sum('sum'))['sum__sum'] or 0
+        return abs(result)
+		
+	
+    def changelist_view(self, request, extra_context=None):
+        
+        self.request = request # присвоюю змінній класу значення request, щоб потім використати в функціях підрахунку paid_for_the_period, payments_difference
+        #print('request changelist_view = ', request.POST) #request.POST
+        
+        self.start_date = request.POST['start_date'] if request.POST else  str(date.today() + timedelta( days=-date.today().weekday() ) )
+        self.end_date = request.POST['end_date'] if request.POST else  str(date.today() + timedelta(days = 1))
+        my_context = {
+            'start_date': self.start_date, 
+            'end_date':  self.end_date,
+            'paid_for_the_period_total': self.paid_for_the_period_total(),
+			'taken_for_the_period_total': self.taken_for_the_period_total(),
+            'payments_difference_total': self.paid_for_the_period_total() - self.taken_for_the_period_total()
+        }
+        return super(WeeklyCarTOReportAdminKyiv, self).changelist_view(request, extra_context=my_context)
+	
 admin.site.register(ClientContractWeeklyCarTOReportKyiv, WeeklyCarTOReportAdminKyiv)
 
 
