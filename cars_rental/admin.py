@@ -13,7 +13,7 @@ from .models import Color, Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeR
 # Київ
 from .models import ClientKyiv, CarKyiv, ClientContractKyiv, ClientContractTimetableKyiv, ClientContractTOKyiv, ClientContractTOTodayKyiv
 from .models import InvestorKyiv, InvestorContractKyiv, InvestorContractBodyTimetableKyiv, InvestorContractBodyPaymentKyiv, InvestorContractPercentagePaymentKyiv
-from .models import ClientContractWeeklyCarReportKyiv, ClientContractPeriodCarReportKyiv, ClientContractWeeklyCarTOReportKyiv 
+from .models import ClientContractWeeklyCarReportKyiv, ClientContractPeriodCarReportKyiv, ClientContractWeeklyCarTOReportKyiv, ClientContractFullCarReportKyiv 
 #Львів
 from .models import ClientLviv, CarLviv,  ClientContractLviv,  ClientContractTimetableLviv, ClientContractTOLviv,  ClientContractTOTodayLviv
 from .models import InvestorLviv, InvestorContractLviv,  InvestorContractBodyTimetableLviv, InvestorContractBodyPaymentLviv, InvestorContractPercentagePaymentLviv 
@@ -833,6 +833,11 @@ class WeeklyCarTOReportAdminKyiv(admin.ModelAdmin):
         return super(WeeklyCarTOReportAdminKyiv, self).changelist_view(request, extra_context=my_context)
 	
 admin.site.register(ClientContractWeeklyCarTOReportKyiv, WeeklyCarTOReportAdminKyiv)
+
+class FullCarReportAdminKyiv(admin.ModelAdmin):
+	list_display = ('number', 'client', 'car')
+
+admin.site.register(ClientContractFullCarReportKyiv, FullCarReportAdminKyiv)
 
 
 # Робота з модулем django-import-export
