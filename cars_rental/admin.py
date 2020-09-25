@@ -668,16 +668,7 @@ class PeriodCarReportAdminKyiv(WeeklyCarReportAdminKyiv):
         wb = xlwt.Workbook(encoding='utf-8')
         ws = wb.add_sheet('Звіт по авто за період')
         
-        def days_week(day):
-            DAYS_WEEK = {
-            0: "понеділок",
-            1: "вівторок",
-            2: "середа",
-            3: "четвер",
-            4: "п'ятниця",
-            5: "субота"
-            }
-            return DAYS_WEEK[day]
+
 			
         # Sheet header, first row
         row_num = 0
@@ -745,16 +736,6 @@ class WeeklyCarTOReportAdminKyiv(admin.ModelAdmin):
         wb = xlwt.Workbook(encoding='utf-8')
         ws = wb.add_sheet('Тижневий звіт по авто по ТО')
         
-        def days_week(day):
-            DAYS_WEEK = {
-            0: "понеділок",
-            1: "вівторок",
-            2: "середа",
-            3: "четвер",
-            4: "п'ятниця",
-            5: "субота"
-            }
-            return DAYS_WEEK[day]
 			
         # Sheet header, first row
         row_num = 0
