@@ -732,7 +732,7 @@ class WeeklyCarTOReportAdminKyiv(admin.ModelAdmin):
     list_display = ('number', 'client', 'car', 'paid_for_the_period', 'taken_for_the_period', 'payments_difference')
 
     actions=["export_excel_test",]
-
+    list_display
     def export_excel_test (self, request, queryset):
         #def export_users_xls(request):
         response = HttpResponse(content_type='application/ms-excel')
@@ -843,8 +843,6 @@ class FullCarReportAdminKyiv(admin.ModelAdmin):
     """ Звіт по авто повний, Київ """
     list_display = ('number', 'client', 'car')
 
-    # actions=["export_excel_test",]
-
     def export_excel_xlwt(self, request, queryset):
         #def export_users_xls(request):
         response = HttpResponse(content_type='application/ms-excel')
@@ -852,115 +850,102 @@ class FullCarReportAdminKyiv(admin.ModelAdmin):
         
         wb = xlwt.Workbook(encoding='utf-8')
         ws = wb.add_sheet('Звіт по авто повний, Київ')
-        
-			
+
         # Sheet header, first row
         row_num = 0
 
         font_style = xlwt.XFStyle()
         font_style.font.bold = True
 		
-		
-        #"""
-        columns = ['Номер контракту', 'Клієнт', 'Авто', 'Оплачено ТО, грн', 'Взято на ТО, грн',  'Різниця', ]
-
-        for col_num in range(len(columns)):
-            ws.write(row_num, col_num, columns[col_num], font_style)
-        #"""
         # Sheet body, remaining rows
         font_style = xlwt.XFStyle()
 
-        #rows = User.objects.all().values_list('username', 'first_name', 'last_name', 'email')
-        #rows = WeeklyCarReportAdminKyiv.list_display
-        
-        #print('TEST =', self.get_queryset(request))
-        #print('TEST =', self.paid_for_the_period(queryset[1]))
-        #rows = "test"
-        #ws.write(row_num+1, col_num, rows, font_style)
-        print('QUERYSET = ', queryset)
+        # print('QUERYSET = ', queryset)
         obj = queryset
-        #for obj in queryset:
-        #row_num += 1
-        #for col_num in range(4):
         client = str(obj.client)
         car = str(obj.car)
-        #print('frequency_payment = ', obj.frequency_payment)
-        
-        #ws.write(0, 0, 'ПІБ', font_style)            
-        #ws.write(0, 1, client, font_style)           
+
+        ws.write(0, 0, 'ПІБ', font_style)
+        ws.write(0, 1, client, font_style)
         ws.write(1, 0, 'Номер телефону',  font_style)
-        ws.write(1, 1, '', font_style)
+        ws.write(1, 1, obj.client.phone_number, font_style)
         ws.write(2, 0, 'Марка авто та номерний знак', font_style)
         ws.write(2, 1, car, font_style)
-		
-		
-		
-        """
-        ws.write(row_num, 3, self.paid_for_the_period(obj), font_style)
-        ws.write(row_num, 4, self.taken_for_the_period(obj), font_style)
-        ws.write(row_num, 5, self.payments_difference(obj), font_style)
+        ws.write(3, 0, 'Дата контракту', font_style)
+        ws.write(3, 1, str(obj.date), font_style)
+        ws.write(4, 0, 'Строк контракту, в днях', font_style)
+        ws.write(4, 1, obj.period_days, font_style)
+        ws.write(5, 0, 'ПІБ інвестора', font_style)
+        ws.write(5, 1, obj.investor_full_name, font_style)
+        ws.write(6, 0, 'Сума інвестиції', font_style)
+        ws.write(6, 1, obj.initial_cost_car_usd, font_style)
+        ws.write(7, 0, 'Планова сума платежу в доларах (тижнева)', font_style)
+        ws.write(7, 1, obj.amount_payment_usd, font_style)
+        ws.write(8, 0, 'Сума планових платежів', font_style)
+        ws.write(8, 1, self.planned_amount_payment_usd(obj.id), font_style)
+        ws.write(9, 0, 'Оплачена сума, фактично', font_style)
+        ws.write(9, 1, self.amount_paid_usd(obj.id), font_style)
+        ws.write(10, 0, 'Різниця', font_style)
+        ws.write(10, 1, self.amount_paid_usd(obj.id) - self.planned_amount_payment_usd(obj.id), font_style)
+        ws.write(11, 0, 'Оплачено ТО:', font_style)
+        ws.write(11, 1, self.paid_for_to(obj.id), font_style)
+        ws.write(12, 0, 'Взято на ТО:', font_style)
+        ws.write(12, 1, self.taken_for_to(obj.id), font_style)
+        ws.write(13, 0, 'Різниця (ТО):', font_style)
+        ws.write(13, 1, self.paid_for_to(obj.id) - self.taken_for_to(obj.id), font_style)
 
-            #print('TEST =', obj.client)     
-        row_num += 1			
-        ws.write(row_num, 1, 'СУМА', font_style)
-        ws.write(row_num, 3, self.paid_for_the_period_total(), font_style)
-        ws.write(row_num, 4, self.taken_for_the_period_total(), font_style)
-        ws.write(row_num, 5, self.paid_for_the_period_total() - self.taken_for_the_period_total(), font_style)
-        """
         wb.save(response)
         return response
     export_excel_xlwt.short_description="Експорт в .xls"
-    """
-    def get_osm_info(self):
-        # для прикладу
-        pass
-    """
+
+    def planned_amount_payment_usd(self, object_id):
+        """ Для розрахунку суми планових платежів для change_view """
+        return ClientContractFullCarReportKyiv.objects.get(pk=object_id).clientcontracttimetablekyiv_set.all().\
+                filter(planned_payment_date__lte = date.today() + timedelta(days = 1)).aggregate \
+                (Sum('planned_amount_payment_usd'))['planned_amount_payment_usd__sum'] or 0
+
+    def amount_paid_usd(self, object_id):
+        """ Для розрахунку суми сплачених платежів для change_view """
+        return ClientContractFullCarReportKyiv.objects.get(pk=object_id).clientcontracttimetablekyiv_set.all().\
+                filter(planned_payment_date__lte = date.today() + timedelta(days = 1)).aggregate \
+                (Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0
+
+    def paid_for_to(self, object_id):
+        """ Для розрахунку суми сплачених платежів для ТО для change_view """
+        return ClientContractFullCarReportKyiv.objects.get(pk=object_id).clientcontracttokyiv_set.all(). \
+                filter(date__lte = date.today() + timedelta(days = 1), sum__gt=0).aggregate(Sum('sum'))['sum__sum'] or 0
+
+    def taken_for_to(self, object_id):
+        """ Для розрахунку суми взятих платежів на ТО для change_view """
+        return abs (ClientContractFullCarReportKyiv.objects.get(pk=object_id).clientcontracttokyiv_set.all(). \
+                filter(date__lte = date.today() + timedelta(days = 1), sum__lt = 0).aggregate(Sum('sum'))['sum__sum']) or 0
+
     def change_view(self, request, object_id, form_url='', extra_context=None):
         my_context = extra_context or {}
         print('request = ', request, ' object_id = ', object_id, ' form_url = ', form_url, ' extra_context = ', extra_context)
         if 'csrfmiddlewaretoken' in str(request): # коли натискається кнопка 'Експорт в .xls' на формі, то передається csrf токен. По цьому будемо визначати, що була натиснута кнопка.
-            #response = self.export_excel_xlwt(None, ClientContractFullCarReportKyiv.objects.get(pk=object_id))
             return self.export_excel_xlwt(None, ClientContractFullCarReportKyiv.objects.get(pk=object_id))
-            #path('export_excel_xlwt/', self.export_excel_xlwt)
-            #url('^export_excel_xlwt/$', self.export_excel_xlwt)
-            HttpResponseRedirect('export_excel_xlwt')
-            """
-            path = os.path.expanduser("~")
-            with open(f'{path}/downloads/file.xls', 'wb') as f:   
-                f.write(response.content)
-            """
         else:
-            #print('object_id = ', object_id)
-            #extra_context['osm_data'] = self.get_osm_info()
             my_context = {
                 'client': ClientContractFullCarReportKyiv.objects.get(pk=object_id).client,
-                # Номер телефону
+                'phone_number' : ClientContractFullCarReportKyiv.objects.get(pk=object_id).client.phone_number,
                 'car': ClientContractFullCarReportKyiv.objects.get(pk=object_id).car,
                 'date': ClientContractFullCarReportKyiv.objects.get(pk=object_id).date,
                 'period_days': ClientContractFullCarReportKyiv.objects.get(pk=object_id).period_days,
                 'investor_full_name': ClientContractFullCarReportKyiv.objects.get(pk=object_id).investor_full_name,
                 'initial_cost_car_usd': ClientContractFullCarReportKyiv.objects.get(pk=object_id).initial_cost_car_usd,
                 'amount_payment_usd': ClientContractFullCarReportKyiv.objects.get(pk=object_id).amount_payment_usd,
-
+                'planned_amount_payment_usd': self.planned_amount_payment_usd(object_id),
+                'amount_paid_usd' : self.amount_paid_usd(object_id),
+                'payments_difference' : self.amount_paid_usd(object_id) - self.planned_amount_payment_usd(object_id),
+                'paid_for_to': self.paid_for_to(object_id),
+                'taken_for_to': self.taken_for_to(object_id),
+                'payments_difference_to' : self.paid_for_to(object_id) - self.taken_for_to(object_id)
             }
             return super().change_view(
                 request, object_id, form_url, extra_context=my_context,
             )
-    
-    def get_urls(self):
-        #urls = super(LoginMonitorAdmin, self).get_urls()
-        print('get_urls')
-        """
-        urls = super().get_urls()
-        custom_urls = [url('^export_excel_xlwt/$', self.export_excel_xlwt, name='export_excel_xlwt'),]
-        return custom_urls + urls
-        """
-        urls = super().get_urls()
-        my_urls = [
-            path('export_excel_xlwt/', self.export_excel_xlwt, name='export_excel_xlwt'),
-        ]
-        return my_urls + urls
-		
+
 admin.site.register(ClientContractFullCarReportKyiv, FullCarReportAdminKyiv)
 
 
