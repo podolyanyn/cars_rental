@@ -918,7 +918,7 @@ class FullCarReportAdminKyiv(admin.ModelAdmin):
     def taken_for_to(self, object_id):
         """ Для розрахунку суми взятих платежів на ТО для change_view """
         return abs (ClientContractFullCarReportKyiv.objects.get(pk=object_id).clientcontracttokyiv_set.all(). \
-                filter(date__lte = date.today() + timedelta(days = 1), sum__lt = 0).aggregate(Sum('sum'))['sum__sum']) or 0
+                filter(date__lte = date.today() + timedelta(days = 1), sum__lt = 0).aggregate(Sum('sum'))['sum__sum'] or 0)
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         my_context = extra_context or {}
