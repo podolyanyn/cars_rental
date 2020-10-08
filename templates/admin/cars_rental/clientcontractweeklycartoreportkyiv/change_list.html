@@ -7,7 +7,7 @@
 	<p>Оплачено ТО за період, сума: {{ paid_for_the_period_total }}</p> 
 	<p>Взято на ТО за період, сума: {{ taken_for_the_period_total }}</p> 
 	<p>Різниця, сума: {{ payments_difference_total }}</p>	
-	<form action="http://localhost:8000/admin/cars_rental/clientcontractweeklycartoreportkyiv/" method="post"> 	
+	<form action="" method="post"> 	<!-- http://localhost:8000/admin/cars_rental/clientcontractweeklycartoreportkyiv/ -->
 	  <input type="date" name="start_date" value={{ start_date }}>
 	  <input type="date" name="end_date" value={{ end_date }}>
 	  <input type="submit" value="Розрахувати">
