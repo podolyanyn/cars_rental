@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.urls import include, path
 from django.conf.urls import url
 #from ra.admin.admin import ra_admin_site # django-ra-erp
-from cars_rental.views import TotalProductSales # slick_reporting
+#from cars_rental.views import TotalProductSales # slick_reporting
 import cars_rental.views
 
 
@@ -25,7 +25,7 @@ urlpatterns = [
     path('polls/', include('polls.urls')),
     path('cars_rental/', include('cars_rental.urls')),
     path('admin/', admin.site.urls),
-    url(r'^report_builder/', include('report_builder.urls')),
+    #url(r'^report_builder/', include('report_builder.urls')),
     #path('admin/report_builder/', include('report_builder.urls')), # цікаво себе поводить, мабуть внаслідок того, що admin накладає свої обмеження
     #path(r'^report_builder/', include('report_builder.urls')),
     #url(r'^admin/', include(admin_reports.site.urls)),

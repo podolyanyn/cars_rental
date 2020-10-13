@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404
 
 # Create your views here.
 from django.http import HttpResponse, Http404
-from slick_reporting.views import SampleReportView  # slick_reporting
+#from slick_reporting.views import SampleReportView  # slick_reporting
 from .models import ClientContract							# slick_reporting
 
 import csv
@@ -28,7 +28,7 @@ def detail(request, clientcontract_id):
     clientcontract = get_object_or_404(ClientContract, pk=clientcontract_id)
     return render(request, 'cars_rental/timetable_to.html', {'clientcontract': clientcontract})
 
-
+"""
 class TotalProductSales(SampleReportView): # slick_reporting
     # The model where you have the data
     report_model = ClientContract
@@ -52,7 +52,7 @@ class TotalProductSales(SampleReportView): # slick_reporting
         'title_source': 'title',
      },
     ]
-	
+"""
 def export_users_csv(request):
     response = HttpResponse(content_type='text/csv')
     response['Content-Disposition'] = 'attachment; filename="users.csv"'

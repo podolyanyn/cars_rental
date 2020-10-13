@@ -305,9 +305,17 @@ class ClientContractTimetableKyiv(ClientContractTimetable):
     """ # Клієнтський контракт (Київ), графік погашення	(тіло + %) """
     client_contract = models.ForeignKey(ClientContractKyiv, on_delete=models.CASCADE, default=1)								# клієнтський контракт
 
+    class Meta:     
+        verbose_name = "Клієнтський контракт (Київ), графік погашення"
+        verbose_name_plural = "Клієнтський контракт (Київ), графік погашення"
+
 class ClientContractTimetableLviv(ClientContractTimetable):
     """ # Клієнтський контракт (Львів), графік погашення	(тіло + %) """
     client_contract = models.ForeignKey(ClientContractLviv, on_delete=models.CASCADE, default=1)								# клієнтський контракт
+
+    class Meta:     
+        verbose_name = "Клієнтський контракт (Львів), графік погашення"
+        verbose_name_plural = "Клієнтський контракт (Львів), графік погашення"
 
 class ClientContractTO(models.Model):
     """ Клієнтський контракт, ТО (кошти на ТехОбслуговування) """

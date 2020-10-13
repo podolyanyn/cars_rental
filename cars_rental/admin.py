@@ -148,8 +148,8 @@ class ClientContractTimetableInlineEditKyiv(admin.TabularInline):
     extra = 0
     fields = ['planned_payment_date', 'planned_amount_payment_usd', 'amount_paid_usd', 'note']
     readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd']
-    #verbose_name = "Клієнтський контракт, графік погашення; Введення даних"
-    verbose_name_plural = "Клієнтський контракт, графік погашення; Введення даних"
+    verbose_name = "Клієнтський контракт (Київ), графік погашення; Введення даних"
+    verbose_name_plural = "Клієнтський контракт (Київ), графік погашення; Введення даних"
     classes = ['collapse']
     
     def get_queryset(self, request):
@@ -179,6 +179,8 @@ class ClientContractTimetableInlineKyiv(admin.TabularInline):
     #readonly_fields = ['planned_payment_date', 'planned_amount_payment_usd', 'real_payment_date', 'amount_paid_usd', 'note']
     ordering = ['planned_payment_date']
     classes = ['collapse']
+    verbose_name = "Клієнтський контракт (Київ), графік погашення"
+    verbose_name_plural = "Клієнтський контракт (Київ), графік погашення"
 	
     def has_delete_permission(self, request, obj=None):
         return not request.user.groups.filter(name='ManagerKyiv').exists()  
