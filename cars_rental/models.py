@@ -295,8 +295,8 @@ class ClientContractTimetable(models.Model):
     #   return self.number
     class Meta:
         abstract = True	
-        verbose_name = "Клієнтський контракт, графік погашення"
-        verbose_name_plural = "Клієнтський контракт, графік погашення"
+        verbose_name = "Клієнтський контракт, графік погашення (abstract class)"
+        verbose_name_plural = "Клієнтський контракт, графік погашення (abstract class)"
 
     def __str__(self):
         return ""
@@ -335,17 +335,23 @@ class ClientContractTO(models.Model):
 class ClientContractTOKyiv(ClientContractTO):
     """ Клієнтський контракт, ТО, Київ (кошти на ТехОбслуговування) """
     client_contract = models.ForeignKey(ClientContractKyiv, on_delete=models.CASCADE, default=1)		# клієнтський контракт	
+    class Meta:
+        verbose_name = "Клієнтський контракт, ТО (Київ)"
+        verbose_name_plural = "Клієнтський контракт, ТО (Київ)"     
 
 class ClientContractTOLviv(ClientContractTO):
     """ Клієнтський контракт, ТО, Львів (кошти на ТехОбслуговування) """
     client_contract = models.ForeignKey(ClientContractLviv, on_delete=models.CASCADE, default=1)		# клієнтський контракт	
+    class Meta:
+        verbose_name = "Клієнтський контракт, ТО (Львів)"
+        verbose_name_plural = "Клієнтський контракт, ТО (Львів)"  
 	
 class ClientContractTOTodayKyiv(ClientContractTOKyiv):
     """ Клієнтський контракт, ТО; Proxy-модель для вводу даних (для менеджера) (Київ) """
     class Meta:
         proxy = True
-        verbose_name = "Клієнтський контракт, ТО; введення даних"
-        verbose_name_plural = "Клієнтський контракт, ТО; введення даних"        
+        verbose_name = "Клієнтський контракт, ТО (Київ); введення даних"
+        verbose_name_plural = "Клієнтський контракт, ТО (Київ); введення даних"        
 
     def __str__(self):
         return ""
@@ -354,8 +360,8 @@ class ClientContractTOTodayLviv(ClientContractTOLviv):
     """ Клієнтський контракт, ТО; Proxy-модель для вводу даних (для менеджера) (Львів) """
     class Meta:
         proxy = True
-        verbose_name = "Клієнтський контракт, ТО; введення даних"
-        verbose_name_plural = "Клієнтський контракт, ТО; введення даних"        
+        verbose_name = "Клієнтський контракт, ТО (Львів); введення даних"
+        verbose_name_plural = "Клієнтський контракт, ТО (Львів); введення даних"        
 
     def __str__(self):
         return ""		
