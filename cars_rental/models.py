@@ -72,8 +72,8 @@ class Car(models.Model):
 
     class Meta:    
         abstract = True	    
-        verbose_name = "Автомобіль"
-        verbose_name_plural = "Автомобілі"
+        #verbose_name = "Автомобіль"
+        #verbose_name_plural = "Автомобілі"
 
 # Авто, Київ	
 class CarKyiv(Car):  

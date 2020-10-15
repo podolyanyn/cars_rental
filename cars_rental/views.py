@@ -3,7 +3,7 @@ from django.shortcuts import render, get_object_or_404
 # Create your views here.
 from django.http import HttpResponse, Http404
 #from slick_reporting.views import SampleReportView  # slick_reporting
-from .models import ClientContract							# slick_reporting
+#from .models import ClientContract							# slick_reporting
 
 import csv
 from django.contrib.auth.models import User
