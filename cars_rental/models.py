@@ -232,8 +232,9 @@ class ClientContractKyiv(ClientContract):
 
 # Клієнтський контракт	, Львів	
 class ClientContractLviv(ClientContract):
-    client = models.ForeignKey(ClientLviv, on_delete=models.CASCADE, default=1)			# Клієнт    
-    car = models.OneToOneField(CarLviv, on_delete=models.CASCADE, default=1)			# 	Авто
+    client = models.ForeignKey(ClientLviv, on_delete=models.CASCADE, default=1, verbose_name = 'ПІБ клієнта')			# Клієнт    
+    car = models.OneToOneField(CarLviv, on_delete=models.CASCADE, default=1, verbose_name = 'Авто')			# 	Авто
+    investor_full_name = models.ForeignKey('InvestorLviv', on_delete=models.CASCADE, default=1, verbose_name = 'ПІБ інвестора')		
 
     class Meta:        
         verbose_name = "Клієнтський контракт (Львів)"
