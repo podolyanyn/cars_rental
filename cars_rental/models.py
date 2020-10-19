@@ -139,11 +139,12 @@ class ClientContract(models.Model):
     )
     number = models.CharField('Номер контракту', max_length=10) 				# номер контракту
     number_number = models.IntegerField('Номер номеру контракту', null = True)	# номер номеру контракту ), власне сам порядковий номер 1, 2, .. від початку року
-    city = models.CharField('Місто, де заключений контракт', max_length=10)	# Назва міста, в якому заключений контракт !!! Доопрацювати вибір зі списку
+    city = models.CharField('Місто, де заключений контракт', max_length=10, default = 'Київ')	# Назва міста, в якому заключений контракт !!! Доопрацювати вибір зі списку; (19.10.2020) - не потрібно давати вибір
     date = models.DateField('Дата контракту')									# Дата контракту
-    client = models.ForeignKey(ClientKyiv, on_delete=models.CASCADE, default=1)			# Клієнт    
-    car = models.OneToOneField(CarKyiv, on_delete=models.CASCADE, default=1)			# 	Авто
-    investor_full_name = models.CharField('ПІБ інвестора',max_length=50)				# ПІБ інвестора	
+    client = models.ForeignKey(ClientKyiv, on_delete=models.CASCADE, default=1, verbose_name = 'ПІБ клієнта')			# Клієнт    
+    car = models.OneToOneField(CarKyiv, on_delete=models.CASCADE, default=1, verbose_name = 'Авто')			# 	Авто
+    #investor_full_name = models.CharField('ПІБ інвестора',max_length=50)				# ПІБ інвестора
+    investor_full_name = models.ForeignKey('InvestorKyiv', on_delete=models.CASCADE, default=1, verbose_name = 'ПІБ інвестора')			# 	
     director_full_name = models.CharField('ПІБ директора фірми/філіалу фірми',max_length=50)				# ПІБ директора фірми/філіалу фірми
     #client_full_name = models.CharField('ПІБ клієнта', max_length=50) 					# ПІБ клієнта
     initial_cost_car_usd = models.FloatField('Вартість автомобіля в доларах, на момент складання контракту')# Вартість автомобіля в доларах, на момент складання контракту
