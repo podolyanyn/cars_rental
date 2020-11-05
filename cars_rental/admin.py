@@ -9,7 +9,7 @@ from django.template import loader
 from django.utils.safestring import mark_safe
 
 # Register your models here.
-from .models import Color, Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa
+from .models import Color, Branch, ExchangeRateKyiv, ExchangeRateLviv, ExchangeRateOdesa, Test
 # Київ
 from .models import ClientKyiv, CarKyiv, ClientContractKyiv, ClientContractTimetableKyiv, ClientContractTOKyiv, ClientContractTOTodayKyiv
 from .models import InvestorKyiv, InvestorContractKyiv, InvestorContractBodyTimetableKyiv, InvestorContractBodyPaymentKyiv, InvestorContractPercentagePaymentKyiv
@@ -80,8 +80,12 @@ class InvestorContractAdmin(admin.ModelAdmin):
 admin.site.register(InvestorContract, InvestorContractAdmin)
 """
 admin.site.register(Color)
-admin.site.register(Branch)
 
+class BranchAdmin(admin.ModelAdmin):
+    list_display = ('id', 'city', 'full_name' )
+admin.site.register(Branch, BranchAdmin)
+
+#admin.site.register(Test)
 
 class ExchangeRateKyivAdmin(admin.ModelAdmin):
     list_display = ('date', 'sum')    
@@ -278,7 +282,7 @@ class ClientContractAdminKyiv(admin.ModelAdmin):
     #list_filter = ['brand', 'model']
     #search_fields = [ 'client', 'car']
     search_fields = [ 'number', 'client__full_name',  'car__license_plate']
-    readonly_fields = ['commercial_course_usd_test', 'initial_cost_car_uah', 'amount_payment_uah', 'balance_TO_uah', 'loan_amount_paid_usd', 'loan_amount_to_be_paid_usd', 'status_body_usd']
+    readonly_fields = ['city', 'director_full_name', 'commercial_course_usd_test', 'initial_cost_car_uah', 'amount_payment_uah', 'balance_TO_uah', 'loan_amount_paid_usd', 'loan_amount_to_be_paid_usd', 'status_body_usd']
     #date_hierarchy = 'pub_date'
     def save_model(self, request, obj, form, change):
         obj.save()
