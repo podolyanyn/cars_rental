@@ -4,15 +4,24 @@ from django.db.models import Avg, Max, Min, Sum
 from django.utils import timezone
 # Create your models here.
 
-#Відділення
 class Branch(models.Model):
+    """ Відділення """
+    id = models.AutoField('Номер відділення', primary_key=True)
     city = models.CharField('Місто', max_length=25) 									# Місто
+    full_name = models.CharField('ПІБ директора фірми/філіалу фірми:', max_length=50, null=True) 									# ПІБ
+
     def __str__(self):
         return self.city
 		
     class Meta:        
         verbose_name = "Відділення"
         verbose_name_plural = "Відділення"
+        ordering = ['id']
+
+class Test(models.Model):
+    test_field = models.CharField('тест',  max_length=25, default=Branch.objects.get(pk=1).full_name)			
+
+    #Test.objects.get(pk=1).test_field.full_name
 
 # Валютний курс
 class ExchangeRate(models.Model):
@@ -139,13 +148,14 @@ class ClientContract(models.Model):
     )
     number = models.CharField('Номер контракту', max_length=10) 				# номер контракту
     number_number = models.IntegerField('Номер номеру контракту', null = True)	# номер номеру контракту ), власне сам порядковий номер 1, 2, .. від початку року
-    city = models.CharField('Місто, де заключений контракт', max_length=10, default = 'Київ')	# Назва міста, в якому заключений контракт !!! Доопрацювати вибір зі списку; (19.10.2020) - не потрібно давати вибір
+    city = models.CharField('Місто, де заключений контракт', max_length=10, default =Branch.objects.get(pk=1).city)	# Назва міста, в якому заключений контракт !!! Доопрацювати вибір зі списку; (19.10.2020) - не потрібно давати вибір
     date = models.DateField('Дата контракту')									# Дата контракту
     client = models.ForeignKey(ClientKyiv, on_delete=models.CASCADE, default=1, verbose_name = 'ПІБ клієнта')			# Клієнт    
     car = models.OneToOneField(CarKyiv, on_delete=models.CASCADE, default=1, verbose_name = 'Авто')			# 	Авто
     #investor_full_name = models.CharField('ПІБ інвестора',max_length=50)				# ПІБ інвестора
     investor_full_name = models.ForeignKey('InvestorKyiv', on_delete=models.CASCADE, default=1, verbose_name = 'ПІБ інвестора')			# 	
-    director_full_name = models.CharField('ПІБ директора фірми/філіалу фірми',max_length=50)				# ПІБ директора фірми/філіалу фірми
+    director_full_name = models.CharField('ПІБ директора фірми/філіалу фірми',max_length=50, default=Branch.objects.get(pk=1).full_name)					# ПІБ директора фірми/філіалу фірми
+    #director_full_name = models.ForeignKey('Branch', on_delete=models.CASCADE, default=1, verbose_name = 'ПІБ директора фірми/філіалу фірми')				# ПІБ директора фірми/філіалу фірми
     #client_full_name = models.CharField('ПІБ клієнта', max_length=50) 					# ПІБ клієнта
     initial_cost_car_usd = models.FloatField('Вартість автомобіля в доларах, на момент складання контракту')# Вартість автомобіля в доларах, на момент складання контракту
     #commercial_course_usd = models.FloatField('Комерційний курс долара', null=True) #, limit_choices_to={'date': date})		# Комерційний курс долара
@@ -232,10 +242,13 @@ class ClientContractKyiv(ClientContract):
 
 # Клієнтський контракт	, Львів	
 class ClientContractLviv(ClientContract):
+    # Назва міста, в якому заключений контракт !!! Доопрацювати вибір зі списку; (19.10.2020) - не потрібно давати вибір; не потрібно доопрацьовувати вибір зі списку. Додавання відділення не тривіальна задача, потрібно багато роботи робити "вручну"
+    city = models.CharField('Місто, де заключений контракт', max_length=10, default = Branch.objects.get(pk=2).city)	
     client = models.ForeignKey(ClientLviv, on_delete=models.CASCADE, default=1, verbose_name = 'ПІБ клієнта')			# Клієнт    
     car = models.OneToOneField(CarLviv, on_delete=models.CASCADE, default=1, verbose_name = 'Авто')			# 	Авто
     investor_full_name = models.ForeignKey('InvestorLviv', on_delete=models.CASCADE, default=1, verbose_name = 'ПІБ інвестора')		
-
+    #director_full_name = models.ForeignKey('Branch', on_delete=models.CASCADE, default=2, verbose_name = 'ПІБ директора фірми/філіалу фірми')				# ПІБ директора фірми/філіалу фірми
+    director_full_name = models.CharField('ПІБ директора фірми/філіалу фірми',max_length=50, default=Branch.objects.get(pk=2).full_name)
     class Meta:        
         verbose_name = "Клієнтський контракт (Львів)"
         verbose_name_plural = "Клієнтські контракти (Львів)"
