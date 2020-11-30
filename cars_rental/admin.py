@@ -282,7 +282,9 @@ class ClientContractAdminKyiv(admin.ModelAdmin):
     #list_filter = ['brand', 'model']
     #search_fields = [ 'client', 'car']
     search_fields = [ 'number', 'client__full_name',  'car__license_plate']
-    readonly_fields = [ 'city', 'director_full_name', 'commercial_course_usd_test', 'initial_cost_car_uah', 'amount_payment_uah', 'balance_TO_uah', 'loan_amount_paid_usd', 'loan_amount_to_be_paid_usd', 'status_body_usd']
+
+    readonly_fields = ['city', 'director_full_name', 'commercial_course_usd_test', 'initial_cost_car_uah', 'amount_payment_uah', 'balance_TO_uah', 'loan_amount_paid_usd', 'loan_amount_to_be_paid_usd', 'status_body_usd']
+
     #date_hierarchy = 'pub_date'
 
 #    def save_related(self, request, form, formsets, change):
