@@ -210,11 +210,14 @@ class ClientContract(models.Model):
                 #self.clientcontracttimetable_set.create(planned_payment_date = i, planned_amount_payment_usd=self.amount_payment_usd, real_payment_date=i, amount_paid_usd=self.amount_payment_usd)
                 self.clientcontracttimetablekyiv_set.create(planned_payment_date = i, planned_amount_payment_usd=self.amount_payment_usd, amount_paid_usd=None)
                 i = i + timedelta(days=7)
+    # чому тут не має команди self.save ???
+	# мабуть тому, що команда create виконує і команду save
                 
     # Розрахунок залишку ТО
     def to_calc(self):
         self.balance_TO_uah = self.clientcontracttokyiv_set.all().aggregate(Sum('sum'))['sum__sum']
         self.save()
+#        print('self.balance_TO_uah = ', self.balance_TO_uah)
     
     # Розрахунок номера контракту
     #def number_calc():

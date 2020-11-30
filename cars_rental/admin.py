@@ -282,21 +282,35 @@ class ClientContractAdminKyiv(admin.ModelAdmin):
     #list_filter = ['brand', 'model']
     #search_fields = [ 'client', 'car']
     search_fields = [ 'number', 'client__full_name',  'car__license_plate']
-    readonly_fields = ['city', 'director_full_name', 'commercial_course_usd_test', 'initial_cost_car_uah', 'amount_payment_uah', 'balance_TO_uah', 'loan_amount_paid_usd', 'loan_amount_to_be_paid_usd', 'status_body_usd']
+    readonly_fields = [ 'city', 'director_full_name', 'commercial_course_usd_test', 'initial_cost_car_uah', 'amount_payment_uah', 'balance_TO_uah', 'loan_amount_paid_usd', 'loan_amount_to_be_paid_usd', 'status_body_usd']
     #date_hierarchy = 'pub_date'
-    def save_model(self, request, obj, form, change):
-        obj.save()
-        obj.timetable_calc()
-        obj.to_calc()
-        obj.get_commercial_course_usd_test()
-        obj.calc_loan_amount_paid()
+
+#    def save_related(self, request, form, formsets, change):
+#        super().save_related(request, form, formsets, change)
+
+#    def save_model(self, request, obj, form, change):
+#        super().save_model(request, obj, form, change)
+
+        # obj.save()
+#        obj.timetable_calc()
+#        obj.to_calc()
+#        obj.get_commercial_course_usd_test()
+#        obj.calc_loan_amount_paid()
         #obj.save()
            #obj.user = request.user
         #super().save_model(request, obj, form, change)
         #self.clientcontracttimetable_set.create(planned_amount_payment_usd=222)
         #super().test()
         #super().save_model(request, obj, form, change)
-		
+
+    def response_change(self, request, obj):
+        obj.timetable_calc()
+        obj.to_calc()
+        obj.get_commercial_course_usd_test()
+        obj.calc_loan_amount_paid()
+        return super().response_change(request, obj)
+
+
     # початкові дані для форми нового об'єкту/редагування об'єкту. 
     def get_changeform_initial_data(self, request):
         #return {'number': '100'}
