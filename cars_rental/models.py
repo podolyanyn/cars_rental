@@ -223,14 +223,19 @@ class ClientContract(models.Model):
     #def number_calc():
     #    return {'number': '200'}
 	
-    def calc_loan_amount_paid(self):
-        """ Розрахунок виплаченої суми кредиту та залишку по кредиту, стану розрахунку по платежах """
+    def calc_loan_amount_paid_usd(self):
+        """ Розрахунок виплаченої суми кредиту та залишку по кредиту """
     
         today=date.today()
         #self.loan_amount_paid_usd = self.clientcontracttimetable_set.all().filter(real_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum']
         self.loan_amount_paid_usd = self.clientcontracttimetablekyiv_set.all().filter(planned_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0 # оплачено, на дату
         self.loan_amount_to_be_paid_usd = self.initial_cost_car_usd - self.loan_amount_paid_usd # скільки залишилось оплатити; загальна сума - оплачено
-        planned_amount_payment_usd_sum = self.clientcontracttimetablekyiv_set.all().filter(planned_payment_date__lte=today).aggregate(Sum('planned_amount_payment_usd'))['planned_amount_payment_usd__sum'] or 0 # планова сумарна сума, на дату
+        self.save()       
+
+    def calc_status_body_usd(self):
+        """ Розрахунок стану розрахунку по платежах """
+        today=date.today()
+        planned_amount_payment_usd_sum = self.clientcontracttimetablekyiv_set.all().filter(planned_payment_date__lte=today).aggregate(Sum('planned_amount_payment_usd'))['planned_amount_payment_usd__sum'] or 0 # планова сумарна сума платежів, на дату
         self.status_body_usd = self.loan_amount_paid_usd - planned_amount_payment_usd_sum # Стан розрахунку по платежам. Переплата/прострочка (-)
         self.save()
 
@@ -293,14 +298,19 @@ class ClientContractLviv(ClientContract):
     #def number_calc():
     #    return {'number': '200'}
 	
-    def calc_loan_amount_paid(self):
+    def calc_loan_amount_paid_usd(self):
         """ Розрахунок виплаченої суми кредиту та залишку по кредиту """
     
         today=date.today()
         #self.loan_amount_paid_usd = self.clientcontracttimetable_set.all().filter(real_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum']
         self.loan_amount_paid_usd = self.clientcontracttimetablelviv_set.all().filter(planned_payment_date__lte=today).aggregate(Sum('amount_paid_usd'))['amount_paid_usd__sum'] or 0
         self.loan_amount_to_be_paid_usd = self.initial_cost_car_usd - self.loan_amount_paid_usd
-        planned_amount_payment_usd_sum = self.clientcontracttimetablelviv_set.all().filter(planned_payment_date__lte=today).aggregate(Sum('planned_amount_payment_usd'))['planned_amount_payment_usd__sum'] or 0 # планова сумарна сума, на дату
+        self.save()
+
+    def calc_status_body_usd(self):
+        """ Розрахунок стану розрахунку по платежах """
+        today=date.today()
+        planned_amount_payment_usd_sum = self.clientcontracttimetablelviv_set.all().filter(planned_payment_date__lte=today).aggregate(Sum('planned_amount_payment_usd'))['planned_amount_payment_usd__sum'] or 0 # планова сумарна сума платежів, на дату
         self.status_body_usd = self.loan_amount_paid_usd - planned_amount_payment_usd_sum # Стан розрахунку по платежам. Переплата/прострочка (-)
         self.save()
 		

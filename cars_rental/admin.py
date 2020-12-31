@@ -309,7 +309,7 @@ class ClientContractAdminKyiv(admin.ModelAdmin):
         obj.timetable_calc()
         obj.to_calc()
         obj.get_commercial_course_usd_test()
-        obj.calc_loan_amount_paid()
+        obj.calc_loan_amount_paid_usd()
         return super().response_change(request, obj)
 
 
@@ -327,7 +327,14 @@ class ClientContractAdminKyiv(admin.ModelAdmin):
         #commercial_c_u = ExchangeRateKyiv.objects.all().filter(date == self.fields['date'])
         #print ('self = ', self.fields)		
         return {'number': str(date.today().year) + '-' + str(max_number+1) + '/К', 'number_number':max_number+1} #, 'commercial_course_usd_test':commercial_c_u}
-        
+
+    def change_view(self, request, object_id, form_url='', extra_context=None):
+        extra_context = extra_context or {}
+        c = ClientContractKyiv.objects.get(pk=object_id)
+        c.calc_status_body_usd()
+        return super().change_view(
+            request, object_id, form_url, extra_context=extra_context,
+        )        
 admin.site.register(ClientContractKyiv, ClientContractAdminKyiv)
 
 class ClientContractAdminLviv(ClientContractAdminKyiv):
