@@ -36,7 +36,7 @@ from django.conf.urls import url
 import os
 from django.urls import path
 from django.http import HttpResponseRedirect
-
+from django.contrib import messages
 
 #------------- Блок експериментів з віджетами
 #class YourModelAdmin(admin.ModelAdmin):
@@ -446,7 +446,7 @@ class InvestorContractAdminKyiv(admin.ModelAdmin):
         #obj.status_body_calc() # видала система помилку при відсутності платежів по тілу: unsupported operand type(s) for -: 'NoneType' and 'float'
         obj.percentage_calc()
         if obj.control_number_periods() == False:
-            self.message_user(request, "tttr")		
+            self.message_user(request, "Кількість записів в графіку погашення тіла таблиці перевищує значення поля 'Кількість періодів'" ,level=messages.ERROR)		
        #
 admin.site.register(InvestorContractKyiv, InvestorContractAdminKyiv)
 
@@ -479,7 +479,7 @@ class InvestorContractAdminLviv(InvestorContractAdminKyiv):
         #obj.status_body_calc() # видала система помилку при відсутності платежів по тілу: unsupported operand type(s) for -: 'NoneType' and 'float'
         obj.percentage_calc()
         if obj.control_number_periods() == False:
-            self.message_user(request, "tttr")		
+            self.message_user(request, "Кількість записів в графіку погашення тіла таблиці перевищує значення поля 'Кількість періодів'" ,level=messages.ERROR)
 
 admin.site.register(InvestorContractLviv, InvestorContractAdminLviv)
 			

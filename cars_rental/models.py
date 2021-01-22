@@ -499,8 +499,9 @@ class InvestorContract(models.Model):
         #self.investorcontractbodytimetable_set.create(payment_date = self.period_1, payment_percentage = self.period_1_percentage, payment_usd = self.period_1_percentage / 100 * self.initial_cost_car_usd)		
         self.investorcontractbodytimetablekyiv_set.update(payment_usd = payment_percentage / 100 * self.initial_cost_car_usd)		
         #
-    #  розрахунок status_body
+
     def status_body_calc(self):
+        """Стан розрахунку по тілу кредита (status_body). Переплата/прострочка (-)"""
         today=date.today()
         timetable=self.investorcontractbodytimetablekyiv_set.all()
         #print('timetable.aggregate  = ', timetable.all().aggregate(Sum('payment_usd')) )
@@ -531,12 +532,10 @@ class InvestorContract(models.Model):
     def control_number_periods(self):
         timetable=self.investorcontractbodytimetablekyiv_set.all()
         if self.investorcontractbodytimetablekyiv_set.count() > self.number_periods:
-            #print ('karaul')
-            #self.message_user(request, "tttr")
             return False
 
-    # Розрахунок відсотків
     def percentage_calc(self):    
+        """ Розрахунок відсотків за попередні місяць; Стан розрахунку по відсотках кредиту. Прострочка (-)  """ 
         today=date.today()
         if today.month == self.date.month and today.year == self.date.year: # якщо поточний день та день початку договору знаходяться в одному місяці одного року, то нарахування % за минулий місяць, та стан нарахування %  рівні 0
             self.last_month_percentage = 0
@@ -664,8 +663,6 @@ class InvestorContractLviv(InvestorContract):
     def control_number_periods(self):
         timetable=self.investorcontractbodytimetablelviv_set.all()
         if self.investorcontractbodytimetablelviv_set.count() > self.number_periods:
-            #print ('karaul')
-            #self.message_user(request, "tttr")
             return False
 
     # Розрахунок відсотків
